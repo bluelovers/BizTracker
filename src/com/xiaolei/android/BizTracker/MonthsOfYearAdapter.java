@@ -9,13 +9,19 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xiaolei.android.common.Utility;
+import com.xiaolei.android.event.OnLoadCursorCompletedListener;
+import com.xiaolei.android.listener.OnStarImageViewClickListener;
 import com.xiaolei.android.service.DataService;
 
 /**
@@ -28,6 +34,9 @@ public class MonthsOfYearAdapter extends BaseAdapter {
 	private Date[] items;
 	private LayoutInflater inflater;
 	private String defaultCurrencyCode = "";
+
+	private OnLoadCursorCompletedListener loadCursorCompletedListener;
+	private ListView listView;
 
 	public MonthsOfYearAdapter(Context context, Date date) {
 		this.context = context;
@@ -45,6 +54,15 @@ public class MonthsOfYearAdapter extends BaseAdapter {
 		inflater = LayoutInflater.from(context);
 		defaultCurrencyCode = DataService.GetInstance(context)
 				.getDefaultCurrencyCode();
+	}
+
+	public MonthsOfYearAdapter(Context context, ListView listView, Date date,
+			OnLoadCursorCompletedListener loadCursorCompletedListener) {
+		this(context, date);
+
+		this.loadCursorCompletedListener = loadCursorCompletedListener;
+		this.listView = listView;
+		this.listView.setAdapter(this);
 	}
 
 	@Override
@@ -101,5 +119,7 @@ public class MonthsOfYearAdapter extends BaseAdapter {
 
 		return convertView;
 	}
+	
+
 
 }
