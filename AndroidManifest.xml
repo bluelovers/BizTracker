@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:installLocation="auto"
+    package="com.xiaolei.android.BizTracker"
+    android:versionCode="25"
+    android:versionName="1.2.5" >
+
+    <uses-sdk android:minSdkVersion="8" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" >
+        <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    </uses-permission>
+
+    <application
+        android:icon="@drawable/ico"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.NoTitleBar" >
+        <activity
+            android:name=".BizTracker"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.FunctionTypes" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.TransactionListDaily" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.TransactionListWeekly" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.TransactionListMonthly" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.TransactionListDaily" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.TransactionListYearly" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.Config" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.CurrencySettings" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.ProjectManager" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.PagerDailyTransactionList" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.TransactionSearchResult" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.PhotoViewer" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.ControlPanel" >
+        </activity>
+        <activity android:name="com.xiaolei.android.activity.TransactionDetails" >
+        </activity>
+    </application>
+
+</manifest>

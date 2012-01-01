@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:padding="10dip"
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<TextView android:layout_width="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:text="@string/transaction_location" android:layout_height="wrap_content"
+		android:id="@+id/textView1"></TextView>
+	<LinearLayout android:layout_width="fill_parent"
+		android:id="@+id/linearLayout1" android:layout_height="wrap_content">
+		<EditText android:layout_weight="1" android:layout_width="fill_parent"
+			android:id="@+id/editTextTransactionLocation" android:hint="@string/type_transaction_location"
+			android:layout_height="wrap_content" android:layout_marginTop="5dip"></EditText>
+		<Button android:layout_width="wrap_content" android:id="@+id/buttonGPS"
+			android:text="GPS" android:layout_marginTop="4dip"
+			android:layout_height="wrap_content"></Button>
+	</LinearLayout>
+
+</LinearLayout>

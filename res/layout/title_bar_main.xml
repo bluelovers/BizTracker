@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="wrap_content">
+	<ViewSwitcher android:layout_width="fill_parent"
+		android:measureAllChildren="false" android:inAnimation="@anim/push_top_in"
+		android:outAnimation="@anim/push_top_out" android:id="@+id/viewSwitcherTitleBar"
+		android:layout_height="wrap_content">
+		<include layout="@layout/title_bar_without_buttons" />
+		<include layout="@layout/search_bar" />
+	</ViewSwitcher>
+
+</LinearLayout>

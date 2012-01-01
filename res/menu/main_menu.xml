@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<item android:id="@+id/itemViewCostHistory" android:enabled="true"
+		android:icon="@drawable/eye" android:title="@string/view_cost_history"
+		android:visible="true"></item>
+
+	<item android:id="@+id/itemConfig" android:enabled="true"
+		android:icon="@drawable/config" android:title="@string/config"
+		android:visible="true"></item>
+	<!-- <item android:id="@+id/itemControlPanel" android:enabled="true" android:icon="@drawable/config" 
+		android:title="@string/control_panel" android:visible="true"></item> -->
+	<item android:id="@+id/itemExport" android:enabled="true"
+		android:icon="@drawable/export" android:title="@string/export"
+		android:visible="true"></item>
+
+</menu>

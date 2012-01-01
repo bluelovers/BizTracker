@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:baselineAligned="false">
+	<LinearLayout android:id="@+id/linearLayoutRow1"
+		android:layout_weight="1" android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/title_bar_button_bg"
+			android:layout_height="fill_parent"></Button>
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/title_bar_button_bg"
+			android:layout_height="fill_parent"></Button>
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/title_bar_button_bg"
+			android:layout_height="fill_parent"></Button>
+	</LinearLayout>
+	<LinearLayout android:id="@+id/linearLayoutRow2"
+		android:layout_weight="1" android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/title_bar_button_bg"
+			android:layout_height="fill_parent"></Button>
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/title_bar_button_bg"
+			android:layout_height="fill_parent"></Button>
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/title_bar_button_bg"
+			android:layout_height="fill_parent"></Button>
+	</LinearLayout>
+	<LinearLayout android:id="@+id/linearLayoutRow3"
+		android:layout_weight="1" android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/title_bar_button_bg"
+			android:layout_height="fill_parent"></Button>
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/title_bar_button_bg"
+			android:layout_height="fill_parent"></Button>
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/title_bar_button_bg"
+			android:layout_height="fill_parent"></Button>
+	</LinearLayout>
+	<LinearLayout android:id="@+id/linearLayoutRow4"
+		android:layout_weight="1" android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/title_bar_button_bg"
+			android:layout_height="fill_parent"></Button>
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/blue_button" android:layout_height="fill_parent"></Button>
+		<Button android:layout_weight="1" android:layout_width="fill_parent"
+			android:layout_margin="3dip" android:textColor="@android:color/white"
+			android:background="@drawable/blue_button" android:layout_height="fill_parent"></Button>
+	</LinearLayout>
+</LinearLayout>

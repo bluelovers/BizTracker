@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#bbc9dd"
+    android:orientation="vertical" >
+
+    <include layout="@layout/title_bar" >
+    </include>
+
+    <include layout="@layout/top_screen" >
+    </include>
+
+    <ViewFlipper
+        android:id="@+id/viewFlipperMain"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_margin="5dip"
+        android:layout_weight="1"
+        android:inAnimation="@anim/push_right_in"
+        android:outAnimation="@anim/push_left_out" >
+
+        <include layout="@layout/stuffs_panel2" >
+        </include>
+
+        <include layout="@layout/numbers_panel" >
+        </include>
+    </ViewFlipper>
+
+</LinearLayout>

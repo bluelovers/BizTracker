@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<ViewSwitcher android:layout_height="fill_parent"
+		android:layout_below="@layout/title_bar_main" android:id="@+id/viewSwitcherDayBizLog"
+		android:layout_width="fill_parent">
+		<ViewSwitcher android:layout_height="fill_parent"
+			android:outAnimation="@anim/fade_out" android:id="@+id/viewSwitcherContent"
+			android:layout_width="fill_parent">
+			<include layout="@layout/loading" />
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="fill_parent" android:orientation="vertical">
+				<ListView android:id="@+id/listViewBizLogByDay"
+					android:longClickable="true" android:layout_height="fill_parent"
+					android:layout_width="fill_parent"></ListView>
+			</LinearLayout>
+		</ViewSwitcher>
+		<RelativeLayout android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+			<TextView android:text="@string/no_day_biz_log"
+			    android:id="@+id/textViewEmpty"
+				android:layout_centerInParent="true" android:layout_centerVertical="true"
+				android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium"
+				android:layout_width="wrap_content"></TextView>
+		</RelativeLayout>
+
+	</ViewSwitcher>
+</LinearLayout>

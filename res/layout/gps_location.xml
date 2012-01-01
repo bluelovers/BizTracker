@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_marginBottom="10dip" android:layout_height="fill_parent">
+	<ViewFlipper android:id="@+id/viewSwitcherGPSLocation"
+		android:measureAllChildren="false" android:inAnimation="@anim/push_top_in"
+		android:outAnimation="@anim/push_bottom_out" android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<include layout="@layout/gps_location_working" />
+		<include layout="@layout/gps_location_editor" />
+		<include layout="@layout/gps_location_error" />
+	</ViewFlipper>
+</LinearLayout>

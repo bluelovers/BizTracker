@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingBottom="10dip"
+    android:paddingLeft="10dip"
+    android:paddingRight="10dip"
+    android:paddingTop="10dip" android:baselineAligned="false">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textViewCurrencyName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/textViewLastUpdateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textViewProjectTotalCostMoney"
+            android:textColor="#ff6600"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="right|center"
+            android:textAppearance="?android:attr/textAppearanceMedium" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/textViewProjectTotalIncomeMoney"
+            android:textColor="#99CC00"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="right|center"
+            android:textAppearance="?android:attr/textAppearanceMedium" >
+        </TextView>
+    </LinearLayout>
+
+</LinearLayout>

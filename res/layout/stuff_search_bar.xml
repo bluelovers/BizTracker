@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/frameLayoutStuffSearchBar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="invisible" >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/title_bar_bg"
+        android:padding="5dip" >
+
+        <com.xiaolei.android.controls.AutoCompleteStuffNameTextView
+            android:id="@+id/autoCompleteTextViewStuffNameKeyword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:drawableLeft="@drawable/search"
+            android:hint="@string/input_stuff_name"
+            android:maxLength="40"
+            android:selectAllOnFocus="true"
+            android:singleLine="true" >
+
+            <requestFocus />
+        </com.xiaolei.android.controls.AutoCompleteStuffNameTextView>
+    </FrameLayout>
+
+</FrameLayout>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal" >
+
+        <Button
+            style="@style/button_style"
+            android:background="@drawable/button_disabled"
+            android:tag="buttonStuff1" />
+
+        <Button
+            style="@style/button_style"
+            android:background="@drawable/button_disabled"
+            android:tag="buttonStuff2" />
+
+        <Button
+            style="@style/button_style"
+            android:background="@drawable/button_disabled"
+            android:tag="buttonStuff3" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal" >
+
+        <Button
+            style="@style/button_style"
+            android:background="@drawable/button_disabled"
+            android:tag="buttonStuff4" />
+
+        <Button
+            style="@style/button_style"
+            android:background="@drawable/button_disabled"
+            android:tag="buttonStuff5" />
+
+        <Button
+            style="@style/button_style"
+            android:background="@drawable/button_disabled"
+            android:tag="buttonStuff6" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal" >
+
+        <Button
+            style="@style/button_style"
+            android:background="@drawable/button_disabled"
+            android:tag="buttonStuff7" />
+
+        <Button
+            style="@style/button_style"
+            android:background="@drawable/button_disabled"
+            android:tag="buttonStuff8" />
+
+        <Button
+            style="@style/button_style"
+            android:background="@drawable/button_disabled"
+            android:tag="buttonStuff9" />
+    </LinearLayout>
+
+</LinearLayout>

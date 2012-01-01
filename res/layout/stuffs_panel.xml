@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewFlipperStuffsPanel"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:inAnimation="@anim/fade_in"
+    android:outAnimation="@anim/fade_out" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <ProgressBar
+            android:id="@+id/progressBarLoadingStuffs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" >
+        </ProgressBar>
+    </RelativeLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayoutStuffPanel"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:clipChildren="true"
+        android:weightSum="4" >
+
+        <TableRow
+            android:id="@+id/tableRowStuff1"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
+
+        <TableRow
+            android:id="@+id/tableRowStuff2"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
+
+        <TableRow
+            android:id="@+id/tableRowStuff3"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
+
+        <TableRow
+            android:id="@+id/tableRowStuff4"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+
+            <Button
+                android:id="@+id/buttonSubtract"
+                style="@style/button_style"
+                android:background="@drawable/blue_button"
+                android:text="@string/plus_pay" />
+
+            <Button
+                android:id="@+id/buttonPlus"
+                style="@style/button_style"
+                android:background="@drawable/blue_button"
+                android:text="@string/substract_earn" />
+
+            <Button
+                android:id="@+id/buttonMoreStuff"
+                style="@style/button_style"
+                android:text="@string/more_stuffs" >
+            </Button>
+        </TableRow>
+    </TableLayout>
+
+</ViewFlipper>

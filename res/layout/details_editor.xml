@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:paddingLeft="10dip"
+	android:paddingRight="10dip" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<TextView android:textAppearance="?android:attr/textAppearanceSmall"
+		android:layout_height="wrap_content" android:text="@string/stuff_name"
+		android:layout_width="wrap_content"></TextView>
+	<EditText android:layout_height="wrap_content"
+		android:selectAllOnFocus="true" android:maxLength="40"
+		android:id="@+id/editTextDetailEditor_StuffName" android:hint="@string/input_stuff_name"
+		android:layout_width="fill_parent">
+	</EditText>
+	<TextView android:textAppearance="?android:attr/textAppearanceSmall"
+		android:layout_height="wrap_content" android:text="@string/money"
+		android:layout_width="wrap_content" android:id="@+id/textView1"></TextView>
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_gravity="center" android:id="@+id/linearLayout1"
+		android:layout_height="wrap_content">
+		<EditText android:layout_weight="1" android:layout_height="wrap_content"
+			android:hint="@string/input_cost" android:maxLength="8"
+			android:selectAllOnFocus="true" android:id="@+id/editTextDetailsEditor_Cost"
+			android:inputType="numberDecimal" android:layout_width="fill_parent"></EditText>
+		<Button android:text="USD" android:id="@+id/buttonChooseCurrency"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+	</LinearLayout>
+	<LinearLayout android:layout_width="fill_parent"
+		android:id="@+id/linearLayout2" android:layout_height="wrap_content">
+		<RadioGroup android:id="@+id/radioGroupPayOrEarch"
+			android:orientation="horizontal" android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+			<RadioButton android:id="@+id/radioPay"
+				android:layout_height="wrap_content" android:text="@string/expense"
+				android:layout_width="wrap_content" android:checked="true"></RadioButton>
+			<RadioButton android:id="@+id/radioEarn"
+				android:layout_marginLeft="10dip" android:layout_height="wrap_content"
+				android:text="@string/income" android:layout_width="wrap_content"></RadioButton>
+		</RadioGroup>
+	</LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:padding="15dip" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<TextView android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_height="wrap_content" android:text="@string/detectiong_location"
+		android:layout_width="wrap_content" android:id="@+id/textViewGPS"
+		android:layout_alignParentTop="true" android:layout_centerHorizontal="true"
+		android:layout_marginTop="10dip" android:layout_marginBottom="10dip"></TextView>
+	<ProgressBar android:layout_height="wrap_content"
+		android:id="@+id/progressBarGPSWorking" android:layout_width="wrap_content"
+		android:layout_below="@+id/textViewGPS"
+		android:layout_centerHorizontal="true"></ProgressBar>
+
+</RelativeLayout>

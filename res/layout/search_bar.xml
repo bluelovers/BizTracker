@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="5dip"
+    android:paddingLeft="10dip"
+    android:paddingRight="10dip"
+    android:background="@drawable/title_bar_bg"
+    android:paddingTop="5dip" >
+
+    <EditText
+        android:id="@+id/editTextKeyword"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:drawableLeft="@drawable/search"
+        android:hint="@string/search_transaction_hint" >
+
+        <requestFocus >
+        </requestFocus>
+    </EditText>
+
+    <ImageButton
+        android:visibility="visible"
+        android:id="@+id/imageButtonClear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/editTextKeyword"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dip"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_input_delete" />
+
+</RelativeLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/note_editor_bg"
+    android:orientation="vertical" >
+
+    <include layout="@layout/photo_viewer_title_bar" />
+
+    <ViewFlipper
+        android:id="@+id/viewFlipperPhotoViewer"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <include layout="@layout/photo_viewer_loading" />
+
+        <include layout="@layout/photo_viewer_empty" />
+
+        <include layout="@layout/photo_viewer_gallery" />
+    </ViewFlipper>
+
+</LinearLayout>

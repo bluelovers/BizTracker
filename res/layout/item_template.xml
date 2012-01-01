@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal" android:layout_width="fill_parent"
+	android:padding="10dip" android:layout_height="70dip">
+	<RelativeLayout android:layout_weight="1"
+		android:gravity="center_vertical" android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<TextView android:layout_height="wrap_content"
+			android:singleLine="true" android:layout_width="fill_parent"
+			android:id="@+id/textViewItemTemplateStuffName"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+			android:text="Good Stuff" android:layout_alignParentLeft="true"></TextView>
+		<TextView android:layout_height="wrap_content"
+			android:singleLine="true" android:layout_width="wrap_content"
+			android:layout_below="@+id/textViewItemTemplateStuffName" android:id="@+id/textViewDate"
+			android:text="2011/6/12" android:layout_alignLeft="@+id/textViewItemTemplateStuffName"
+			android:layout_alignRight="@+id/textViewItemTemplateStuffName"></TextView>
+		<TextView android:layout_height="wrap_content"
+			android:textColor="#ff6600" android:singleLine="true"
+			android:layout_width="wrap_content" android:id="@+id/textViewTotalPay"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:gravity="right" android:text=""
+			android:layout_alignParentRight="true"></TextView>
+		<!-- <TextView android:layout_height="wrap_content" android:layout_marginRight="5dip" 
+			android:singleLine="true" android:layout_width="wrap_content" android:layout_toLeftOf="@+id/textViewTotalPay" 
+			android:id="@+id/textView5" android:text="@string/pay" android:gravity="center_vertical" 
+			android:layout_alignTop="@+id/textViewTotalPay" android:layout_alignBottom="@+id/textViewTotalPay"></TextView> -->
+		<TextView android:layout_height="wrap_content"
+			android:textColor="#99CC00" android:singleLine="true"
+			android:layout_width="wrap_content" android:id="@+id/textViewTotalEarn"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:text="" android:layout_below="@+id/textViewTotalPay"
+			android:gravity="right" android:layout_alignParentRight="true"></TextView>
+		<!--<TextView android:layout_height="wrap_content" android:layout_marginRight="5dip" 
+			android:singleLine="true" android:gravity="center_vertical" android:layout_width="wrap_content" 
+			android:layout_toLeftOf="@+id/textViewTotalEarn" android:id="@+id/textView6" 
+			android:text="@string/earn" android:layout_alignTop="@+id/textViewTotalEarn" 
+			android:layout_alignBottom="@+id/textViewTotalEarn"></TextView> -->
+	</RelativeLayout>
+</LinearLayout>

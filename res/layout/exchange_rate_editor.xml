@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:padding="10dip" android:layout_height="fill_parent">
+	<EditText android:layout_width="fill_parent" android:hint="@string/input_exchange_rate"
+		android:maxLines="1" android:singleLine="true" android:maxLength="8"
+		android:selectAllOnFocus="true" android:layout_height="wrap_content"
+		android:id="@+id/editTextExchangeRate" android:inputType="numberDecimal">
+	</EditText>
+
+</LinearLayout>

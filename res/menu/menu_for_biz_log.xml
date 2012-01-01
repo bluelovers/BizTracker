@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/itemAppendLog" android:enabled="true"
+		android:title="@string/append_log" android:visible="true"
+		android:icon="@android:drawable/ic_menu_add"></item>
+	<item android:id="@+id/itemRemoveTodayLog" android:enabled="true"
+		android:title="@string/reset_today_cost" android:visible="true"
+		android:icon="@drawable/ic_menu_clear_transaction_list"></item> 
+</menu>

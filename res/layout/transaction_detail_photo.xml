@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewFlipperTransactionPhoto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:inAnimation="@anim/fade_in"
+    android:outAnimation="@anim/fade_out" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutNoPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ProgressBar
+            android:id="@+id/progressBarLoadingTranPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@+id/textViewNoTransactionPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/no_photo2"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/frameLayoutPhotos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewPaperTransactionPhotos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:src="@android:drawable/ic_menu_delete" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:src="@android:drawable/ic_menu_gallery" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:src="@android:drawable/ic_menu_info_details" />
+        </LinearLayout>
+    </FrameLayout>
+
+</ViewFlipper>

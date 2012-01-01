@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayoutTopScreen"
+    android:layout_width="fill_parent"
+    android:layout_height="100dip"
+    android:orientation="vertical"
+    android:paddingLeft="10dip"
+    android:paddingRight="10dip"
+    android:paddingTop="10dip" >
+
+    <ViewSwitcher
+        android:id="@+id/viewSwitcherPanel"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/output_screen"
+        android:clickable="true"
+        android:inAnimation="@anim/push_top_in"
+        android:outAnimation="@anim/push_bottom_out" >
+
+        <LinearLayout
+            android:id="@+id/linearLayoutPrior"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:gravity="left" >
+
+                    <TextView
+                        android:id="@+id/textViewPayOrEarn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:textColor="#99CC00" />
+
+                    <TextView
+                        android:id="@+id/textViewTopLeft"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dip"
+                        android:gravity="left"
+                        android:textColor="#99CC00" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textViewDefaultCurrencyCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:gravity="right"
+                    android:textColor="#99CC00" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" >
+
+                <TextSwitcher
+                    android:id="@+id/textSwitcherStuffName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:inAnimation="@anim/push_top_in"
+                    android:measureAllChildren="false"
+                    android:outAnimation="@anim/push_bottom_out" >
+
+                    <TextView
+                        android:id="@+id/textViewStuffName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:gravity="left|center_vertical"
+                        android:marqueeRepeatLimit="1"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:textSize="30sp" >
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/textViewStuffNameNext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:gravity="left|center_vertical"
+                        android:marqueeRepeatLimit="1"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:textSize="30sp" >
+                    </TextView>
+                </TextSwitcher>
+                <!--
+                     <ImageView android:layout_width="wrap_content" android:layout_gravity="center_horizontal" 
+					android:scaleType="center" android:layout_height="fill_parent" android:id="@+id/imageViewPrior"></ImageView>
+                -->
+
+                <TextView
+                    android:id="@+id/textViewCost"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="right"
+                    android:maxLength="10"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:text="0"
+                    android:textColor="#99CC00"
+                    android:textColorHighlight="#FFCC00"
+                    android:textSize="30sp" >
+                </TextView>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textViewTodayTotalCost"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="left"
+                android:text="@string/today_total_pay_and_earn" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayoutNext"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+        </LinearLayout>
+    </ViewSwitcher>
+
+</LinearLayout>

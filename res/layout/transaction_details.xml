@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <include layout="@layout/title_bar_with_camera_button" />
+
+    <ViewFlipper
+        android:id="@+id/viewFlipperTransactionDetails"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:outAnimation="@anim/fade_out" >
+
+        <include layout="@layout/loading" />
+
+        <include layout="@layout/transaction_detail_content2" />
+    </ViewFlipper>
+
+</LinearLayout>
