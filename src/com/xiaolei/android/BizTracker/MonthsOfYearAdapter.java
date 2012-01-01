@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +24,12 @@ import com.xiaolei.android.service.DataService;
  */
 public class MonthsOfYearAdapter extends BaseAdapter {
 
-	private Activity context;
+	private Context context;
 	private Date[] items;
 	private LayoutInflater inflater;
 	private String defaultCurrencyCode = "";
 
-	public MonthsOfYearAdapter(Activity context, Date date) {
+	public MonthsOfYearAdapter(Context context, Date date) {
 		this.context = context;
 		items = new Date[0];
 		ArrayList<Date> dates = new ArrayList<Date>();
