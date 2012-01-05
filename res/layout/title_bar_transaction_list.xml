@@ -7,15 +7,15 @@
     android:paddingLeft="5dip"
     android:paddingRight="5dip" >
 
-     <TextSwitcher
+    <TextSwitcher
         android:id="@+id/textSwitcherCaption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_centerVertical="true"
-        android:inAnimation="@anim/push_top_in"
+        android:inAnimation="@anim/fade_in"
         android:measureAllChildren="true"
-        android:outAnimation="@anim/push_bottom_out" >
+        android:outAnimation="@anim/fade_out" >
 
         <TextView
             android:id="@+id/textViewTitle"

@@ -43,11 +43,15 @@ public class TransactionListMonthly extends Activity implements
 
 		TextView tvTitle = (TextView) findViewById(R.id.textViewTitle);
 		Date now = new Date();
-		if (month.getMonth() != now.getMonth()) {
-			SimpleDateFormat format = new SimpleDateFormat("MMMM");
-			tvTitle.setText(format.format(month));
+		if (month.getYear() == now.getYear()) {
+			if (month.getMonth() != now.getMonth()) {
+				SimpleDateFormat format = new SimpleDateFormat("MMMM");
+				tvTitle.setText(format.format(month));
+			} else {
+				tvTitle.setText(getString(R.string.this_month));
+			}
 		} else {
-			tvTitle.setText(getString(R.string.this_month));
+			tvTitle.setText(month.getYear() + 1900 + getString(R.string.year));
 		}
 
 		lv = (ListView) findViewById(R.id.listViewDaysOfMonth);
@@ -67,14 +71,16 @@ public class TransactionListMonthly extends Activity implements
 		Date date = (Date) lv.getItemAtPosition(position);
 		Intent intent = new Intent(this, PagerDailyTransactionList.class);
 		intent.putExtra(PagerDailyTransactionList.KEY_DATE, date);
-		this.startActivityForResult(intent, PagerDailyTransactionList.REQUEST_CODE);
+		this.startActivityForResult(intent,
+				PagerDailyTransactionList.REQUEST_CODE);
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == PagerDailyTransactionList.REQUEST_CODE && resultCode == RESULT_OK) {
+		if (requestCode == PagerDailyTransactionList.REQUEST_CODE
+				&& resultCode == RESULT_OK) {
 			setResult(RESULT_OK, new Intent());
 			fillData();
 		}
