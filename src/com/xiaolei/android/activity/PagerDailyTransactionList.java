@@ -27,7 +27,7 @@ import android.widget.ImageButton;
 import android.widget.TextSwitcher;
 
 import com.xiaolei.android.BizTracker.BizTracker;
-import com.xiaolei.android.BizTracker.DayLogPagerAdapter;
+import com.xiaolei.android.BizTracker.DailyTransactionListPagerAdapter;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.listener.OnCostValueChangedListener;
@@ -48,7 +48,7 @@ public class PagerDailyTransactionList extends Activity implements OnPageChangeL
 	private int pageCount = 365;
 	private ViewPager viewPager;
 	private int currentPosition = -1;
-	private DayLogPagerAdapter adapter;
+	private DailyTransactionListPagerAdapter adapter;
 	// private TransactionListPagerAdapter adapter;
 
 	public static final String KEY_DATE = "date";
@@ -108,7 +108,7 @@ public class PagerDailyTransactionList extends Activity implements OnPageChangeL
 		viewPager.setOnPageChangeListener(this);
 
 		minDate = Utility.addDays(date, -pageCount);
-		adapter = new DayLogPagerAdapter(this, minDate, pageCount);
+		adapter = new DailyTransactionListPagerAdapter(this, minDate, pageCount);
 		// adapter = new TransactionListPagerAdapter(this, minDate, pageCount);
 		adapter.addCostValueChangedListener(this);
 		adapter.setOnItemClickListener(this);

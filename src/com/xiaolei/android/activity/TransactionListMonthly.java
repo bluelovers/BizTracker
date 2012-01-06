@@ -4,17 +4,20 @@
 package com.xiaolei.android.activity;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
-import com.xiaolei.android.BizTracker.DaysOfMonthAdapter;
+import com.xiaolei.android.BizTracker.MonthlyTransactionListPagerAdapter;
 import com.xiaolei.android.BizTracker.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 /**
@@ -22,10 +25,14 @@ import android.widget.TextView;
  * 
  */
 public class TransactionListMonthly extends Activity implements
-		AdapterView.OnItemClickListener {
+		AdapterView.OnItemClickListener, OnPageChangeListener {
 
-	private ListView lv;
 	private Date month;
+	private Date startDayOfYear;
+	private MonthlyTransactionListPagerAdapter pagerAdapter;
+	private Date currentDate;
+	private int currentPosition = 0;
+	private TextView tvTitle;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -33,44 +40,51 @@ public class TransactionListMonthly extends Activity implements
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.days_of_month);
+		setContentView(R.layout.pager_monthly_transaction_list);
 
 		month = new Date();
 		try {
 			month = (Date) this.getIntent().getExtras().get("date");
 		} catch (Exception ex) {
 		}
+		startDayOfYear = new Date(month.getYear(), Calendar.JANUARY, 1);
+		currentDate = month;
+		refreshTitle(month);
 
-		TextView tvTitle = (TextView) findViewById(R.id.textViewTitle);
+		ViewPager viewPager = (ViewPager) findViewById(R.id.viewPaperMonthlyTransactionList);
+		if (viewPager != null) {
+			viewPager.setOnPageChangeListener(this);
+			pagerAdapter = new MonthlyTransactionListPagerAdapter(this, month);
+			pagerAdapter.setOnItemClickListener(this);
+			viewPager.setAdapter(pagerAdapter);
+			viewPager.setCurrentItem(month.getMonth());
+		}
+	}
+
+	private void refreshTitle(Date date) {
+		tvTitle = (TextView) findViewById(R.id.textViewTitle);
 		Date now = new Date();
-		if (month.getYear() == now.getYear()) {
-			if (month.getMonth() != now.getMonth()) {
+		if (date.getYear() == now.getYear()) {
+			if (date.getMonth() != now.getMonth()) {
 				SimpleDateFormat format = new SimpleDateFormat("MMMM");
-				tvTitle.setText(format.format(month));
+				tvTitle.setText(format.format(date));
 			} else {
 				tvTitle.setText(getString(R.string.this_month));
 			}
 		} else {
-			tvTitle.setText(month.getYear() + 1900 + getString(R.string.year));
+			tvTitle.setText(date.getYear() + 1900 + getString(R.string.year));
 		}
-
-		lv = (ListView) findViewById(R.id.listViewDaysOfMonth);
-		lv.setOnItemClickListener(this);
-
-		fillData();
-	}
-
-	private void fillData() {
-		DaysOfMonthAdapter listAdapter = new DaysOfMonthAdapter(this, month);
-		lv.setAdapter(listAdapter);
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
-		Date date = (Date) lv.getItemAtPosition(position);
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime(currentDate);
+		cal.add(Calendar.DAY_OF_MONTH, position);
+
 		Intent intent = new Intent(this, PagerDailyTransactionList.class);
-		intent.putExtra(PagerDailyTransactionList.KEY_DATE, date);
+		intent.putExtra(PagerDailyTransactionList.KEY_DATE, cal.getTime());
 		this.startActivityForResult(intent,
 				PagerDailyTransactionList.REQUEST_CODE);
 	}
@@ -82,7 +96,33 @@ public class TransactionListMonthly extends Activity implements
 		if (requestCode == PagerDailyTransactionList.REQUEST_CODE
 				&& resultCode == RESULT_OK) {
 			setResult(RESULT_OK, new Intent());
-			fillData();
+			if (pagerAdapter != null) {
+				pagerAdapter.reloadView(currentPosition);
+			}
 		}
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onPageScrolled(int arg0, float arg1, int arg2) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		currentPosition = position;
+
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime(startDayOfYear);
+		cal.add(Calendar.MONTH, position);
+		currentDate = cal.getTime();
+
+		refreshTitle(cal.getTime());
 	}
 }

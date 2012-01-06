@@ -8,42 +8,43 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
+import com.xiaolei.android.listener.OnLoadCompletedListener;
+
 import android.app.Activity;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import com.xiaolei.android.listener.OnLoadCompletedListener;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * @author xiaolei
  * 
  */
-public class YearlyTransactionListPagerAdapter extends PagerAdapter {
+public class MonthlyTransactionListPagerAdapter extends PagerAdapter {
 
+	private int count = 12;
+	private Date currentDate = new Date();
 	private Date date = new Date();
 	private Activity context;
-	private int count = 100;
 	private LayoutInflater inflater;
 	private OnItemClickListener onItemClickListener;
 
 	private HashMap<Integer, View> viewPositionMapping = new HashMap<Integer, View>();
 
-	public YearlyTransactionListPagerAdapter(Activity context, Date date,
-			int pageCount) {
+	public MonthlyTransactionListPagerAdapter(Activity context, Date date) {
 		this.context = context;
 		this.inflater = LayoutInflater.from(context);
-		this.count = pageCount;
 
+		// Set the start day of the specified month of date
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.setTime(date);
-		cal.add(Calendar.YEAR, -pageCount + 1);
 		cal.set(Calendar.MONTH, Calendar.JANUARY);
 		cal.set(Calendar.DAY_OF_MONTH, 1);
 		this.date = cal.getTime();
+		this.currentDate = date;
 	}
 
 	public View getViewAtPosition(int position) {
@@ -61,7 +62,7 @@ public class YearlyTransactionListPagerAdapter extends PagerAdapter {
 			ListView lv = (ListView) view
 					.findViewById(R.id.listViewYearlyTransactionList);
 			if (lv != null) {
-				YearlyTransactionListAdapter adapter = (YearlyTransactionListAdapter) lv
+				MonthlyTransactionListAdapter adapter = (MonthlyTransactionListAdapter) lv
 						.getAdapter();
 				if (adapter != null) {
 					adapter.loadDataAsync();
@@ -103,7 +104,6 @@ public class YearlyTransactionListPagerAdapter extends PagerAdapter {
 	 */
 	@Override
 	public int getCount() {
-		// count = count + (currentDate.before(new Date()) ? 1 : 0);
 		return count;
 	}
 
@@ -118,33 +118,33 @@ public class YearlyTransactionListPagerAdapter extends PagerAdapter {
 	public Object instantiateItem(View collection, int position) {
 		ViewPager pager = (ViewPager) collection;
 		View result = inflater.inflate(
-				R.layout.pager_yearly_transaction_list_item, pager, false);
+				R.layout.pager_monthly_transaction_list_item, pager, false);
 		if (!viewPositionMapping.containsKey(position)) {
 			viewPositionMapping.put(position, result);
 		}
 		pager.addView(result);
 
-		Date currentDate = null;
 		if (date != null) {
 			GregorianCalendar cal = new GregorianCalendar();
 			cal.setTime(date);
-			cal.add(Calendar.YEAR, position);
+			cal.add(Calendar.MONTH, position);
 			currentDate = cal.getTime();
 		}
 
 		ListView lv = (ListView) result
-				.findViewById(R.id.listViewYearlyTransactionList);
+				.findViewById(R.id.listViewMonthlyTransactionList);
 		if (lv != null && onItemClickListener != null) {
 			lv.setOnItemClickListener(onItemClickListener);
 		}
 
-		YearlyTransactionListAdapter adpt = new YearlyTransactionListAdapter(
-				context, result, lv, currentDate, new OnLoadCompletedListener() {
+		MonthlyTransactionListAdapter adpt = new MonthlyTransactionListAdapter(
+				context, result, lv, currentDate,
+				new OnLoadCompletedListener() {
 
 					@Override
 					public void onLoadCompleted(Boolean loadSuccess) {
 						if (loadSuccess == true) {
-							
+
 						}
 					}
 

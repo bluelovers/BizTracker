@@ -5,7 +5,7 @@ package com.xiaolei.android.listener;
 
 import android.widget.ImageView;
 
-import com.xiaolei.android.BizTracker.DayLogCursorAdapter;
+import com.xiaolei.android.BizTracker.DailyTransactionListCursorAdapter;
 import com.xiaolei.android.entity.BizLog;
 
 /**
@@ -13,5 +13,5 @@ import com.xiaolei.android.entity.BizLog;
  * 
  */
 public interface OnStarImageViewClickListener {
-	void onStarImageViewClick(ImageView imageView, BizLog bizLog, DayLogCursorAdapter listViewAdapter);
+	void onStarImageViewClick(ImageView imageView, BizLog bizLog, DailyTransactionListCursorAdapter listViewAdapter);
 }

@@ -33,7 +33,7 @@ import com.xiaolei.android.service.DataService;
  * @author xiaolei
  * 
  */
-public class DayLogPagerAdapter extends PagerAdapter {
+public class DailyTransactionListPagerAdapter extends PagerAdapter {
 	private Date date = new Date();
 	private Activity context;
 	private int count = 365;
@@ -43,7 +43,7 @@ public class DayLogPagerAdapter extends PagerAdapter {
 
 	private HashMap<Integer, View> viewPositionMapping = new HashMap<Integer, View>();
 
-	public DayLogPagerAdapter(Activity context, Date date, int pageCount) {
+	public DailyTransactionListPagerAdapter(Activity context, Date date, int pageCount) {
 		this.context = context;
 		this.date = date;
 		this.inflater = LayoutInflater.from(context);
@@ -75,7 +75,7 @@ public class DayLogPagerAdapter extends PagerAdapter {
 			ListView lv = (ListView) view
 					.findViewById(R.id.listViewBizLogByDay);
 			if (lv != null) {
-				DayLogCursorAdapter adapter = (DayLogCursorAdapter) lv
+				DailyTransactionListCursorAdapter adapter = (DailyTransactionListCursorAdapter) lv
 						.getAdapter();
 				if (adapter != null) {
 					adapter.loadDataAsync();
@@ -163,7 +163,7 @@ public class DayLogPagerAdapter extends PagerAdapter {
 			lv.setOnItemClickListener(onItemClickListener);
 		}
 
-		DayLogCursorAdapter adpt = new DayLogCursorAdapter(context, result, lv,
+		DailyTransactionListCursorAdapter adpt = new DailyTransactionListCursorAdapter(context, result, lv,
 				currentDate, new OnLoadCursorCompletedListener() {
 
 					@Override
@@ -191,7 +191,7 @@ public class DayLogPagerAdapter extends PagerAdapter {
 
 					@Override
 					public void onStarImageViewClick(ImageView imageView,
-							BizLog bizLog, DayLogCursorAdapter listViewAdapter) {
+							BizLog bizLog, DailyTransactionListCursorAdapter listViewAdapter) {
 						if (bizLog != null && listViewAdapter != null) {
 							if (bizLog.getStar() == true) {
 								DataService.GetInstance(context).removeStar(
@@ -223,7 +223,7 @@ public class DayLogPagerAdapter extends PagerAdapter {
 										Boolean effectCostValue) {
 									if (result == true) {
 										// Reload ListView
-										DayLogCursorAdapter adapter = (DayLogCursorAdapter) listView
+										DailyTransactionListCursorAdapter adapter = (DailyTransactionListCursorAdapter) listView
 												.getAdapter();
 										if (adapter != null) {
 											adapter.loadDataAsync();

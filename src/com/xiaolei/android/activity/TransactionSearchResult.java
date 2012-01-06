@@ -24,7 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import com.xiaolei.android.BizTracker.DayLogCursorAdapter;
+import com.xiaolei.android.BizTracker.DailyTransactionListCursorAdapter;
 import com.xiaolei.android.BizTracker.Helper;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.entity.BizLog;
@@ -46,7 +46,7 @@ public class TransactionSearchResult extends Activity implements
 	public static final int REQUEST_CODE = 10;
 	public static final String KEY_SEARCH_KEYWORD = "searchKeyword";
 	private OnCostValueChangedListener onCostValueChangedListener;
-	private DayLogCursorAdapter adpt;
+	private DailyTransactionListCursorAdapter adpt;
 	private TextView tvHeader;
 
 	/** Called when the activity is first created. */
@@ -150,7 +150,7 @@ public class TransactionSearchResult extends Activity implements
 			lv.addHeaderView(header);
 		}
 
-		adpt = new DayLogCursorAdapter(context, lv, new Date(),
+		adpt = new DailyTransactionListCursorAdapter(context, lv, new Date(),
 				new OnLoadCursorCompletedListener() {
 
 					@Override
@@ -199,7 +199,7 @@ public class TransactionSearchResult extends Activity implements
 
 					@Override
 					public void onStarImageViewClick(ImageView imageView,
-							BizLog bizLog, DayLogCursorAdapter listViewAdapter) {
+							BizLog bizLog, DailyTransactionListCursorAdapter listViewAdapter) {
 						if (bizLog != null && listViewAdapter != null) {
 							if (bizLog.getStar() == true) {
 								DataService.GetInstance(context).removeStar(

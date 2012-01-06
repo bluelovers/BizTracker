@@ -31,14 +31,14 @@ import com.xiaolei.android.service.DataService;
  * @author xiaolei
  * 
  */
-public class DayLogCursorAdapter extends CursorAdapter {
+public class DailyTransactionListCursorAdapter extends CursorAdapter {
 
 	private LayoutInflater inflater;
 	private Boolean showFullDateTime = false;
 	private OnStarImageViewClickListener starOnClickListener;
 	private ListView listView;
 	private Activity context;
-	private DayLogCursorAdapter self;
+	private DailyTransactionListCursorAdapter self;
 	private Date date = new Date();
 	private OnLoadCursorCompletedListener loadCursorCompletedListener;
 	private View parentView;
@@ -58,19 +58,19 @@ public class DayLogCursorAdapter extends CursorAdapter {
 		}
 	}
 
-	public DayLogCursorAdapter(Context context, Cursor c) {
+	public DailyTransactionListCursorAdapter(Context context, Cursor c) {
 		super(context, c);
 
 		self = this;
 	}
 
-	public DayLogCursorAdapter(Context context, Cursor c, boolean autoRequery) {
+	public DailyTransactionListCursorAdapter(Context context, Cursor c, boolean autoRequery) {
 		super(context, c, autoRequery);
 
 		self = this;
 	}
 
-	public DayLogCursorAdapter(Activity context, View parentView,
+	public DailyTransactionListCursorAdapter(Activity context, View parentView,
 			ListView listView, Date date,
 			OnLoadCursorCompletedListener loadCursorCompletedListener,
 			OnStarImageViewClickListener starOnClickListener) {
@@ -88,7 +88,7 @@ public class DayLogCursorAdapter extends CursorAdapter {
 		this.listView.setAdapter(this);
 	}
 
-	public DayLogCursorAdapter(Activity context, ListView listView, Date date,
+	public DailyTransactionListCursorAdapter(Activity context, ListView listView, Date date,
 			OnLoadCursorCompletedListener loadCursorCompletedListener,
 			OnStarImageViewClickListener starOnClickListener) {
 		super(context, null);
