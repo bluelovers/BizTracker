@@ -448,8 +448,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		tvCurrency.setText(defaultCurrencyCode);
 		tvTodayTotalCost.setText(getString(R.string.today_total_pay_and_earn)
 				+ " " + this.defaultCurrencyCode + " "
-				+ Utility.formatCurrency(todaySumPay, null) + " / "
-				+ Utility.formatCurrency(todaySumEarn, null));
+				+ Utility.formatCurrency(todaySumPay, defaultCurrencyCode, false) + " / "
+				+ Utility.formatCurrency(todaySumEarn, defaultCurrencyCode, false));
 	}
 
 	private void setCurrentStuffId(int stuffId) {

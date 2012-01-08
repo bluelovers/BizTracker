@@ -27,10 +27,11 @@ import android.widget.TextView;
 public class TransactionListMonthly extends Activity implements
 		AdapterView.OnItemClickListener, OnPageChangeListener {
 
+	private static final int REQUEST_CODE = TransactionListMonthly.class
+			.getName().hashCode();
 	private Date month;
 	private Date startDayOfYear;
 	private MonthlyTransactionListPagerAdapter pagerAdapter;
-	private Date currentDate;
 	private int currentPosition = 0;
 	private TextView tvTitle;
 
@@ -48,7 +49,6 @@ public class TransactionListMonthly extends Activity implements
 		} catch (Exception ex) {
 		}
 		startDayOfYear = new Date(month.getYear(), Calendar.JANUARY, 1);
-		currentDate = month;
 		refreshTitle(month);
 
 		ViewPager viewPager = (ViewPager) findViewById(R.id.viewPaperMonthlyTransactionList);
@@ -80,20 +80,19 @@ public class TransactionListMonthly extends Activity implements
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
 		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(currentDate);
+		cal.setTime(startDayOfYear);
 		cal.add(Calendar.DAY_OF_MONTH, position);
 
 		Intent intent = new Intent(this, PagerDailyTransactionList.class);
 		intent.putExtra(PagerDailyTransactionList.KEY_DATE, cal.getTime());
-		this.startActivityForResult(intent,
-				PagerDailyTransactionList.REQUEST_CODE);
+		this.startActivityForResult(intent, TransactionListMonthly.REQUEST_CODE);
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == PagerDailyTransactionList.REQUEST_CODE
+		if (requestCode == TransactionListMonthly.REQUEST_CODE
 				&& resultCode == RESULT_OK) {
 			setResult(RESULT_OK, new Intent());
 			if (pagerAdapter != null) {
@@ -121,7 +120,6 @@ public class TransactionListMonthly extends Activity implements
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.setTime(startDayOfYear);
 		cal.add(Calendar.MONTH, position);
-		currentDate = cal.getTime();
 
 		refreshTitle(cal.getTime());
 	}

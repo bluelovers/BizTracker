@@ -77,11 +77,11 @@ public class DayLogDataAdapter extends CursorAdapter {
 		tvTime.setText(lastUpdateTime);
 
 		if (cost > 0) {
-			tvCost.setText(Utility.formatCurrency(cost, ""));
+			tvCost.setText(Utility.formatCurrency(cost, currencyCode, false));
 			tvCost.setTextColor(Color.parseColor("#99CC00"));
 			tvCurrencyCode.setTextColor(Color.parseColor("#99CC00"));
 		} else {
-			tvCost.setText(Utility.formatCurrency(cost, ""));
+			tvCost.setText(Utility.formatCurrency(cost, currencyCode, false));
 			tvCost.setTextColor(Color.parseColor("#ff6600"));
 			tvCurrencyCode.setTextColor(Color.parseColor("#ff6600"));
 		}

@@ -6,15 +6,16 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 import java.util.Locale;
 
 import org.xmlpull.v1.XmlSerializer;
-
-import com.xiaolei.android.BizTracker.BizTracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -40,6 +41,8 @@ import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import com.xiaolei.android.BizTracker.BizTracker;
 
 public final class Utility {
 	public static Location LatestLocation = null;
@@ -213,15 +216,40 @@ public final class Utility {
 		}
 	}
 
+	/**
+	 * Format money with the specified currency code. If the currency code is
+	 * not presented, use the system default local currency.
+	 * 
+	 * @value the money value
+	 * @currencyCode the currency code you want to use to format the money
+	 * */
 	public static String formatCurrency(double value, String currencyCode) {
-		// NumberFormat format = NumberFormat.getCurrencyInstance();
-		// return format.format(value);
+		return formatCurrency(value, currencyCode, true);
+	}
 
+	public static String formatCurrency(double value, String currencyCode,
+			Boolean showCurrencyCode) {
+		Currency currency = Currency.getInstance(Locale.getDefault());
 		if (!TextUtils.isEmpty(currencyCode)) {
-			return (value > 0 ? "+" : "")
-					+ String.format("%.2f %s", value, currencyCode);
+			currency = Currency.getInstance(currencyCode);
+		}
+		NumberFormat format = NumberFormat.getCurrencyInstance();
+		if (format != null && (format instanceof DecimalFormat)) {
+			DecimalFormat decFormat = (DecimalFormat) format;
+			decFormat.setCurrency(currency);
+			decFormat.setNegativePrefix("-");
+			decFormat.setDecimalSeparatorAlwaysShown(true);
+			decFormat.setPositivePrefix("+");
+
+			return format.format(value)
+					+ (showCurrencyCode ? " " + currencyCode : "");
 		} else {
-			return (value > 0 ? "+" : "") + String.format("%.2f", value);
+			if (!TextUtils.isEmpty(currencyCode) && showCurrencyCode == true) {
+				return (value > 0 ? "+" : "")
+						+ String.format("%.2f %s", value, currencyCode);
+			} else {
+				return (value > 0 ? "+" : "") + String.format("%.2f", value);
+			}
 		}
 	}
 

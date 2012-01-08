@@ -226,11 +226,11 @@ public class DailyTransactionListCursorAdapter extends CursorAdapter {
 		tvTime.setText(lastUpdateTime);
 
 		if (currentLog.getCost() > 0) {
-			tvCost.setText(Utility.formatCurrency(currentLog.getCost(), ""));
+			tvCost.setText(Utility.formatCurrency(currentLog.getCost(), currentLog.getCurrencyCode(), false));
 			tvCost.setTextColor(Color.parseColor("#99CC00"));
 			tvCurrencyCode.setTextColor(Color.parseColor("#99CC00"));
 		} else {
-			tvCost.setText(Utility.formatCurrency(currentLog.getCost(), ""));
+			tvCost.setText(Utility.formatCurrency(currentLog.getCost(), currentLog.getCurrencyCode(), false));
 			tvCost.setTextColor(Color.parseColor("#ff6600"));
 			tvCurrencyCode.setTextColor(Color.parseColor("#ff6600"));
 		}

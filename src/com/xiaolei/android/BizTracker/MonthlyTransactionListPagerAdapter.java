@@ -60,7 +60,7 @@ public class MonthlyTransactionListPagerAdapter extends PagerAdapter {
 		View view = getViewAtPosition(position);
 		if (view != null) {
 			ListView lv = (ListView) view
-					.findViewById(R.id.listViewYearlyTransactionList);
+					.findViewById(R.id.listViewMonthlyTransactionList);
 			if (lv != null) {
 				MonthlyTransactionListAdapter adapter = (MonthlyTransactionListAdapter) lv
 						.getAdapter();
