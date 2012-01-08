@@ -237,9 +237,14 @@ public final class Utility {
 		if (format != null && (format instanceof DecimalFormat)) {
 			DecimalFormat decFormat = (DecimalFormat) format;
 			decFormat.setCurrency(currency);
-			decFormat.setNegativePrefix("-");
 			decFormat.setDecimalSeparatorAlwaysShown(true);
-			decFormat.setPositivePrefix("+");
+			if (value != 0) {
+				decFormat.setNegativePrefix("-");
+				decFormat.setPositivePrefix("+");
+			}else{
+				decFormat.setNegativePrefix("");
+				decFormat.setPositivePrefix("");
+			}
 
 			return format.format(value)
 					+ (showCurrencyCode ? " " + currencyCode : "");
@@ -436,7 +441,7 @@ public final class Utility {
 		if (TextUtils.isEmpty(plainText)) {
 			plainText = "";
 		}
-		
+
 		// Reverse
 		StringBuilder text = new StringBuilder();
 		for (int i = plainText.length() - 1; i >= 0; i--) {
@@ -465,8 +470,11 @@ public final class Utility {
 	}
 
 	/**
-	 * Use an one way encrypt algorithm to encrypt the plain text then returns the hex string.
-	 * @param plainText plain text you want to encrypt
+	 * Use an one way encrypt algorithm to encrypt the plain text then returns
+	 * the hex string.
+	 * 
+	 * @param plainText
+	 *            plain text you want to encrypt
 	 * @return the encrypted hex string
 	 */
 	public static String encrypt(String plainText) {
