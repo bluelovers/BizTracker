@@ -105,10 +105,10 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.setContentView(R.layout.main);
-		
+
 		context = this;
 
 		Intent intent = this.getIntent();
@@ -444,12 +444,22 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 	private void refreshTodayCost() {
 		TextView tvCurrency = (TextView) findViewById(R.id.textViewDefaultCurrencyCode);
-		TextView tvTodayTotalCost = (TextView) findViewById(R.id.textViewTodayTotalCost);
-		tvCurrency.setText(defaultCurrencyCode);
-		tvTodayTotalCost.setText(getString(R.string.today_total_pay_and_earn)
-				+ " " + this.defaultCurrencyCode + " "
-				+ Utility.formatCurrency(todaySumPay, defaultCurrencyCode, false) + " / "
-				+ Utility.formatCurrency(todaySumEarn, defaultCurrencyCode, false));
+		TextSwitcher tvTodayTotalCost = (TextSwitcher) findViewById(R.id.textViewTodayTotalCost);
+		if (tvCurrency != null) {
+			tvCurrency.setText(defaultCurrencyCode);
+		}
+		if (tvTodayTotalCost != null) {
+			tvTodayTotalCost
+					.setText(getString(R.string.today_total_pay_and_earn)
+							+ " "
+							+ this.defaultCurrencyCode
+							+ " "
+							+ Utility.formatCurrency(todaySumPay,
+									defaultCurrencyCode, false)
+							+ " / "
+							+ Utility.formatCurrency(todaySumEarn,
+									defaultCurrencyCode, false));
+		}
 	}
 
 	private void setCurrentStuffId(int stuffId) {
@@ -599,7 +609,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			break;
 		}
 	}
-	
+
 	private void gotoNextPageStuffs() {
 		ViewPager viewPager = (ViewPager) findViewById(R.id.viewPaperStuffs);
 		if (viewPager != null) {
@@ -654,9 +664,12 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 						AutoCompleteTextView editView = (AutoCompleteTextView) ((AlertDialog) dialog)
 								.findViewById(R.id.editTextStuffName);
 						if (editView != null) {
-							InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-							imm.showSoftInput(editView,
-									InputMethodManager.SHOW_IMPLICIT);
+							try {
+								InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+								imm.showSoftInput(editView,
+										InputMethodManager.SHOW_IMPLICIT);
+							} catch (Exception ex) {
+							}
 						}
 					}
 				});

@@ -56,7 +56,7 @@ public class TransactionSearchResult extends Activity implements
 
 		context = this;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		this.setContentView(R.layout.search_result);
+		this.setContentView(R.layout.transaction_search_result);
 
 		onCostValueChangedListener = this;
 
