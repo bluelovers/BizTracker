@@ -29,14 +29,16 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Location;
-import android.media.ThumbnailUtils;
+import android.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -241,7 +243,7 @@ public final class Utility {
 			if (value != 0) {
 				decFormat.setNegativePrefix("-");
 				decFormat.setPositivePrefix("+");
-			}else{
+			} else {
 				decFormat.setNegativePrefix("");
 				decFormat.setPositivePrefix("");
 			}
@@ -655,6 +657,10 @@ public final class Utility {
 			return null;
 		}
 
+		if (desiredWidth <= 0 || desiredHeight <= 0) {
+			return null;
+		}
+
 		String photoPath = Environment.getExternalStorageDirectory()
 				.getAbsolutePath() + File.separator + BizTracker.PHOTO_PATH;
 
@@ -669,25 +675,103 @@ public final class Utility {
 				result = BitmapFactory.decodeFile(file.getAbsolutePath(),
 						options);
 
-				int originalWidth = options.outWidth;
-				int originalHeight = options.outHeight;
+				double sampleSize = 1;
 
-				int sampleSize = Math.max(
-						1,
-						Math.max(originalWidth / desiredWidth, originalHeight
-								/ desiredHeight));
+				Boolean scaleByHeight = Math.abs(options.outHeight
+						- desiredHeight) >= Math.abs(options.outWidth
+						- desiredWidth);
+
+				sampleSize = scaleByHeight ? options.outHeight / desiredHeight
+						: options.outWidth / desiredWidth;
+				options.inSampleSize = (int) Math.pow(2d,
+						Math.floor(Math.log(sampleSize) / Math.log(2d)));
+
+				Log.i("DEBUG", String.format("inSampleSize: %f", sampleSize));
 
 				options.inJustDecodeBounds = false;
-				options.inSampleSize = sampleSize;
 
+				String orientation = "";
+				try {
+					ExifInterface exifReader = new ExifInterface(
+							file.getAbsolutePath());
+					orientation = exifReader
+							.getAttribute(ExifInterface.TAG_ORIENTATION);
+					Log.i("DEBUG",
+							String.format("TAG_ORIENTATION: %s", orientation));
+				} catch (IOException e) {
+					// do nothing
+				}
 				result = BitmapFactory.decodeFile(file.getAbsolutePath(),
 						options);
-				result = ThumbnailUtils.extractThumbnail(result, desiredWidth,
-						desiredHeight);
+				if (!TextUtils.isEmpty(orientation)) {
+					try {
+						int value = Integer.parseInt(orientation);
+						if (value == 6) {
+							result = Utility.rotate(result, 90, null);
+						}
+					} catch (Exception ex) {
+					}
+				}
+
+				// result = ThumbnailUtils.extractThumbnail(result,
+				// desiredWidth,
+				// desiredHeight);
 			}
 		}
 		return result;
 	}
+
+	// Rotates the bitmap by the specified degree.
+	// If a new bitmap is created, the original bitmap is recycled.
+	public static Bitmap rotate(Bitmap b, int degrees, Matrix m) {
+		if (degrees != 0 && b != null) {
+			if (m == null) {
+				m = new Matrix();
+			}
+			m.setRotate(degrees, (float) b.getWidth() / 2,
+					(float) b.getHeight() / 2);
+			try {
+				Bitmap b2 = Bitmap.createBitmap(b, 0, 0, b.getWidth(),
+						b.getHeight(), m, true);
+				if (b != b2) {
+					b.recycle();
+					b = b2;
+				}
+			} catch (OutOfMemoryError ex) {
+				// We have no memory to rotate. Return the original bitmap.
+			}
+		}
+		return b;
+	}
+
+	/*
+	 * public static Bitmap getScaledBitmap(String fileName, int desiredWidth,
+	 * int desiredHeight) { if (!Environment.MEDIA_MOUNTED.equals(Environment
+	 * .getExternalStorageState())) { return null; }
+	 * 
+	 * String photoPath = Environment.getExternalStorageDirectory()
+	 * .getAbsolutePath() + File.separator + BizTracker.PHOTO_PATH;
+	 * 
+	 * Bitmap result = null; if (!TextUtils.isEmpty(fileName)) { File file = new
+	 * File(photoPath, fileName);
+	 * 
+	 * if (file.exists() == true) { BitmapFactory.Options options = new
+	 * BitmapFactory.Options(); options.inTempStorage = new byte[16 * 1024];
+	 * options.inJustDecodeBounds = true; result =
+	 * BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+	 * 
+	 * int originalWidth = options.outWidth; int originalHeight =
+	 * options.outHeight;
+	 * 
+	 * int sampleSize = Math.max( 1, Math.max(originalWidth / desiredWidth,
+	 * originalHeight / desiredHeight));
+	 * 
+	 * options.inJustDecodeBounds = false; options.inSampleSize = sampleSize;
+	 * 
+	 * result = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+	 * result = ThumbnailUtils.extractThumbnail(result, desiredWidth,
+	 * desiredHeight); } } return result; }
+	 */
 
 	/*
 	 * 
