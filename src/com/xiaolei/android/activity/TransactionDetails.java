@@ -18,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -73,6 +74,11 @@ public class TransactionDetails extends CameraSupportableActivity implements
 		ImageButton btnNewPhoto = (ImageButton) findViewById(R.id.buttonNewPhoto);
 		if (btnNewPhoto != null) {
 			btnNewPhoto.setOnClickListener(this);
+		}
+
+		RelativeLayout relativeLayoutNoPhoto = (RelativeLayout) findViewById(R.id.relativeLayoutNoPhoto);
+		if (relativeLayoutNoPhoto != null) {
+			relativeLayoutNoPhoto.setOnClickListener(this);
 		}
 
 		/*
@@ -343,6 +349,7 @@ public class TransactionDetails extends CameraSupportableActivity implements
 
 		switch (v.getId()) {
 		case R.id.buttonNewPhoto:
+		case R.id.relativeLayoutNoPhoto:
 			openCamera();
 			break;
 		/*

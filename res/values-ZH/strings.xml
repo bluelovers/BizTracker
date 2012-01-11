@@ -122,7 +122,7 @@
     <string name="search_help">输入物品名称，即可搜索到交易记录</string>
     <string name="choose_search_type">选择搜索方式</string>
     <string name="transaction_date">交易日期</string>
-    <string name="no_photo">还没有照片，照一张吗？</string>
+    <string name="no_photo">还没有照片，触摸此处开始拍照</string>
     <string name="create_photo_folder_failed">尝试创建照片文件夹失败。</string>
     <string name="control_panel">管理</string>
     <string name="choose_project">选择理财项目</string>
@@ -140,5 +140,7 @@
     <string name="not_rated">未分级</string>
     <string name="best">最佳</string>
     <string name="confirm_password_not_match">请输入一致的密码</string>
+    <string name="photo_info">详细信息</string>
+    <string name="open_photo">查看原图</string>
 
 </resources>

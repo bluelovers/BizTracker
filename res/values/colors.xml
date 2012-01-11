@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <drawable name="buttonNormalBackgroundColor" >
+#50000000
+    </drawable>
+    <drawable name="buttonPressedBackgroundColor" >
+#50ffa200
+    </drawable>
+    <drawable name="buttonFocusedBackgroundColor" >
+#80000000
+    </drawable>
+
+</resources>

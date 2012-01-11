@@ -3,11 +3,12 @@
     android:id="@+id/viewFlipperTransactionPhoto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     android:inAnimation="@anim/fade_in"
     android:outAnimation="@anim/fade_out" >
 
     <RelativeLayout
-        android:id="@+id/relativeLayoutNoPhoto"
+        android:id="@+id/relativeLayoutLoaingPhoto"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
@@ -20,6 +21,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/relativeLayoutNoPhoto"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
@@ -29,8 +31,8 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="@string/no_photo2"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:text="@string/no_photo"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
 
     <FrameLayout
@@ -46,29 +48,36 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
+            android:layout_gravity="bottom"
+            android:background="#50000000"
             android:orientation="horizontal" >
 
-            <ImageButton
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:scaleType="centerInside"
-                android:src="@android:drawable/ic_menu_delete" />
+                android:layout_weight="1"
+                android:background="@drawable/button_backgroud"
+                android:drawableLeft="@android:drawable/ic_menu_delete"
+                android:text="@string/delete"
+                android:textColor="#d2d2d2" />
 
-            <ImageButton
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:scaleType="centerInside"
-                android:src="@android:drawable/ic_menu_gallery" />
+                android:layout_weight="1"
+                android:background="@drawable/button_backgroud"
+                android:drawableLeft="@android:drawable/ic_menu_gallery"
+                android:text="@string/open_photo"
+                android:textColor="#d2d2d2" />
 
-            <ImageButton
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:scaleType="centerInside"
-                android:src="@android:drawable/ic_menu_info_details" />
+                android:layout_weight="1"
+                android:background="@drawable/button_backgroud"
+                android:drawableLeft="@android:drawable/ic_menu_info_details"
+                android:text="@string/photo_info"
+                android:textColor="#d2d2d2" />
         </LinearLayout>
     </FrameLayout>
 
