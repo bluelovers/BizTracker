@@ -705,9 +705,22 @@ public final class Utility {
 						options);
 				if (!TextUtils.isEmpty(orientation)) {
 					try {
-						int value = Integer.parseInt(orientation);
-						if (value == 6) {
-							result = Utility.rotate(result, 90, null);
+						int exifOrientation = Integer.parseInt(orientation);
+						int degrees = 0;
+						switch (exifOrientation) {
+						case ExifInterface.ORIENTATION_ROTATE_90:
+							degrees = 90;
+							break;
+						case ExifInterface.ORIENTATION_ROTATE_180:
+							degrees = 180;
+							break;
+						case ExifInterface.ORIENTATION_ROTATE_270:
+							degrees = 270;
+							break;
+						}
+
+						if (degrees > 0) {
+							result = Utility.rotate(result, degrees);
 						}
 					} catch (Exception ex) {
 					}
@@ -723,25 +736,23 @@ public final class Utility {
 
 	// Rotates the bitmap by the specified degree.
 	// If a new bitmap is created, the original bitmap is recycled.
-	public static Bitmap rotate(Bitmap b, int degrees, Matrix m) {
-		if (degrees != 0 && b != null) {
-			if (m == null) {
-				m = new Matrix();
-			}
-			m.setRotate(degrees, (float) b.getWidth() / 2,
-					(float) b.getHeight() / 2);
+	public static Bitmap rotate(Bitmap bmp, int degrees) {
+		if (degrees != 0 && bmp != null) {
+			Matrix m = new Matrix();
+			m.setRotate(degrees, (float) bmp.getWidth() / 2,
+					(float) bmp.getHeight() / 2);
 			try {
-				Bitmap b2 = Bitmap.createBitmap(b, 0, 0, b.getWidth(),
-						b.getHeight(), m, true);
-				if (b != b2) {
-					b.recycle();
-					b = b2;
+				Bitmap b2 = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(),
+						bmp.getHeight(), m, true);
+				if (bmp != b2) {
+					bmp.recycle();
+					bmp = b2;
 				}
 			} catch (OutOfMemoryError ex) {
 				// We have no memory to rotate. Return the original bitmap.
 			}
 		}
-		return b;
+		return bmp;
 	}
 
 	/*
