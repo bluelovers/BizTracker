@@ -28,7 +28,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dip"
             android:layout_weight="1"
             android:orientation="vertical"
             android:padding="10dip" >
@@ -37,12 +37,8 @@
                 android:id="@+id/textViewStuffName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:shadowColor="#686868"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="1"
                 android:text="Stuff Name Here"
-                android:textColor="#FFFFFF"
+                android:textColor="#33b4e4"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 

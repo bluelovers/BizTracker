@@ -12,6 +12,7 @@ import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
@@ -50,8 +52,8 @@ import com.xiaolei.android.service.DataService;
  * @author xiaolei
  * 
  */
-public class TransactionListDaily extends Activity implements OnItemLongClickListener,
-		View.OnClickListener {
+public class TransactionListDaily extends Activity implements
+		OnItemLongClickListener, View.OnClickListener {
 
 	private TransactionListDaily context;
 	private Cursor cursor;
@@ -424,6 +426,26 @@ public class TransactionListDaily extends Activity implements OnItemLongClickLis
 							public void onClick(DialogInterface dialog,
 									int which) {
 								dialog.dismiss();
+							}
+						}, new DialogInterface.OnShowListener() {
+
+							@Override
+							public void onShow(DialogInterface dialog) {
+								AlertDialog dlg = (AlertDialog) dialog;
+								if (dlg != null) {
+									EditText txtComment = (EditText) dlg
+											.findViewById(R.id.editTextComment);
+									if (txtComment != null) {
+										try {
+											InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+											imm.showSoftInput(
+													txtComment,
+													InputMethodManager.SHOW_IMPLICIT);
+										} catch (Exception ex) {
+										}
+									}
+								}
+
 							}
 						});
 				EditText txtComment = (EditText) dlgComment

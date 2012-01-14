@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -316,7 +317,26 @@ public class Config extends Activity implements OnItemClickListener {
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
 					}
-				}, null);
+				}, new DialogInterface.OnShowListener() {
+
+					@Override
+					public void onShow(DialogInterface dialog) {
+						AlertDialog dlg = (AlertDialog) dialog;
+						if (dlg != null) {
+							EditText txtPassword = (EditText) dlg
+									.findViewById(R.id.editTextNewPassword);
+							if (txtPassword != null) {
+								try {
+									//Show soft keyboard
+									InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+									imm.showSoftInput(txtPassword,
+											InputMethodManager.SHOW_IMPLICIT);
+								} catch (Exception ex) {
+								}
+							}
+						}
+					}
+				});
 		EditText txtPassword = (EditText) dialog
 				.findViewById(R.id.editTextNewPassword);
 		if (txtPassword != null) {
