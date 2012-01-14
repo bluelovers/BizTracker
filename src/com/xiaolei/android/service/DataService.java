@@ -1084,6 +1084,11 @@ public class DataService {
 		return result;
 	}
 
+	public int removeTransactionPhotoRelation(long id) {
+		return db.delete(PhotoSchema.TableName, "_id=?",
+				new String[] { String.valueOf(id) });
+	}
+
 	public int getTransactionPhotoCount(long transactionId) {
 		int result = 0;
 		String sql = "select count(_id) as PhotoCount from Photo where BizLogId=? order by CreatedTime desc";

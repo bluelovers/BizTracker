@@ -142,5 +142,8 @@
     <string name="confirm_password_not_match">请输入一致的密码</string>
     <string name="photo_info">详细信息</string>
     <string name="open_photo">查看原图</string>
-
+    <string name="no_stuff_hint">开始记账前，请触摸这里，增加你的第一个物品。</string>
+    <string name="confirm">确认</string>
+    <string name="confirm_delete_photo">确定要删除这张照片吗?</string>
+    <string name="take_photo">拍照</string>
 </resources>

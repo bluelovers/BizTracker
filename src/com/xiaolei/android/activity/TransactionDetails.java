@@ -6,18 +6,22 @@ package com.xiaolei.android.activity;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +40,7 @@ import com.xiaolei.android.service.DataService;
  * 
  */
 public class TransactionDetails extends CameraSupportableActivity implements
-		OnClickListener, OnCameraTakedPhotoListener {
+		OnClickListener, OnCameraTakedPhotoListener, OnPageChangeListener {
 
 	private static final String JPG = ".jpg";
 	private long transactionId = -1;
@@ -52,6 +56,7 @@ public class TransactionDetails extends CameraSupportableActivity implements
 	private ViewPager viewPager;
 	private TransactionPhotoPageAdapter adpt;
 	private Boolean reloadingPhoto = false;
+	private TransactionPhoto currentPhotoInfo;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -80,6 +85,12 @@ public class TransactionDetails extends CameraSupportableActivity implements
 		if (relativeLayoutNoPhoto != null) {
 			relativeLayoutNoPhoto.setOnClickListener(this);
 		}
+		
+		viewPager = (ViewPager) context
+				.findViewById(R.id.viewPaperTransactionPhotos);
+		if (viewPager != null) {
+			viewPager.setOnPageChangeListener(this);
+		}
 
 		/*
 		 * ImageView ivTakePhoto = (ImageView)
@@ -89,6 +100,21 @@ public class TransactionDetails extends CameraSupportableActivity implements
 		 * if (ivTakePhoto != null) { ivTakePhoto.setOnClickListener(this); } if
 		 * (ivStar != null) { ivStar.setOnClickListener(this); }
 		 */
+
+		// Bind click listener for all tool buttons
+		LinearLayout linearLayoutToolButtons = (LinearLayout) findViewById(R.id.linearLayoutToolButtons);
+		if (linearLayoutToolButtons != null) {
+			int childCount = linearLayoutToolButtons.getChildCount();
+			for (int i = 0; i < childCount; i++) {
+				View child = linearLayoutToolButtons.getChildAt(i);
+				if (child instanceof Button) {
+					Button button = (Button) child;
+					if (button != null) {
+						button.setOnClickListener(this);
+					}
+				}
+			}
+		}
 
 		this.AddCameraTakedPhotoListener(this);
 	}
@@ -350,7 +376,11 @@ public class TransactionDetails extends CameraSupportableActivity implements
 		switch (v.getId()) {
 		case R.id.buttonNewPhoto:
 		case R.id.relativeLayoutNoPhoto:
+		case R.id.toolButtonNewPhoto:
 			openCamera();
+			break;
+		case R.id.toolButtonDeletePhoto:
+			deletePhoto();
 			break;
 		/*
 		 * case R.id.imageViewTDStar: changeStar(); break;
@@ -358,6 +388,50 @@ public class TransactionDetails extends CameraSupportableActivity implements
 		default:
 			break;
 		}
+	}
+
+	private void deletePhoto() {
+		if (currentPhotoInfo == null) {
+			return;
+		}
+
+		Utility.showConfirmDialog(this, getString(R.string.confirm),
+				getString(R.string.confirm_delete_photo),
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						deletePhotoAsync();
+					}
+				});
+	}
+
+	private void deletePhotoAsync() {
+		if (currentPhotoInfo == null) {
+			return;
+		}
+		AsyncTask<Long, Void, Boolean> task = new AsyncTask<Long, Void, Boolean>() {
+
+			@Override
+			protected Boolean doInBackground(Long... ids) {
+				if (ids != null && ids.length > 0) {
+					long id = ids[0];
+					DataService.GetInstance(context)
+							.removeTransactionPhotoRelation(id);
+				} else {
+					return false;
+				}
+				return true;
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (result == true) {
+					loadPhotoAsync();
+				}
+			}
+		};
+		task.execute(currentPhotoInfo.getId());
 	}
 
 	@Override
@@ -383,5 +457,25 @@ public class TransactionDetails extends CameraSupportableActivity implements
 		super.onResume();
 
 		reloadPhotos();
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onPageScrolled(int arg0, float arg1, int arg2) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		currentPhotoInfo = null;
+		if (adpt != null) {
+			currentPhotoInfo = adpt.GetItemSource(position);
+		}
 	}
 }

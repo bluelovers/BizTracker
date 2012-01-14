@@ -140,7 +140,11 @@
     <string name="strong">Strong</string>
     <string name="not_rated">Not Rated</string>
     <string name="best">Best</string>
-    <string name="confirm_password_not_match">Passwords do not match.</string><string name="photo_info">Details</string>
+    <string name="confirm_password_not_match">Passwords do not match.</string>
+    <string name="photo_info">Details</string>
     <string name="open_photo">Open</string>
-
+    <string name="no_stuff_hint">Touch here to add your first stuff.</string>
+    <string name="confirm">Confirm</string>
+    <string name="confirm_delete_photo">Are you sure to delete the current photo?</string>
+    <string name="take_photo">Take Photo</string>
 </resources>

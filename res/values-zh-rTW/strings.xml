@@ -142,5 +142,8 @@
     <string name="confirm_password_not_match">請輸入一致的密碼</string>
     <string name="photo_info">詳細資訊</string>
     <string name="open_photo">查看原圖</string>
-
+    <string name="no_stuff_hint">開始記賬前，請觸摸這裏，增加你的第一個物品。</string>
+    <string name="confirm">確認</string>
+    <string name="confirm_delete_photo">確定要刪除這張照片嗎？</string>
+    <string name="take_photo">拍照</string>
 </resources>

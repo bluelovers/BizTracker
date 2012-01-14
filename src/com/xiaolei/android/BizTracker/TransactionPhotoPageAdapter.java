@@ -3,6 +3,9 @@
  */
 package com.xiaolei.android.BizTracker;
 
+import java.io.File;
+import java.util.Hashtable;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -16,6 +19,7 @@ import android.view.View;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.customControl.ImageViewEx;
 import com.xiaolei.android.entity.PhotoSchema;
+import com.xiaolei.android.entity.TransactionPhoto;
 import com.xiaolei.android.listener.OnSizeChangedListener;
 
 /**
@@ -29,16 +33,26 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 	private LayoutInflater inflater;
 	@SuppressWarnings("unused")
 	private Context context;
+	private Hashtable<Integer, TransactionPhoto> itemsSource;
 
 	public TransactionPhotoPageAdapter(Context context, Cursor cursor) {
 		this.cursor = cursor;
 		this.context = context;
+		this.itemsSource = new Hashtable<Integer, TransactionPhoto>();
 
 		if (cursor != null && cursor.isClosed() == false) {
 			count = cursor.getCount();
 		}
 
 		inflater = LayoutInflater.from(context);
+	}
+
+	public TransactionPhoto GetItemSource(int position) {
+		if (itemsSource.containsKey(position)) {
+			return itemsSource.get(position);
+		} else {
+			return null;
+		}
 	}
 
 	public void changeCursor(Cursor newCursor) {
@@ -61,6 +75,9 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 	 */
 	@Override
 	public void destroyItem(View collection, int position, Object view) {
+		if (itemsSource.containsKey(position)) {
+			itemsSource.remove(position);
+		}
 		if (view != null) {
 			((ViewPager) collection).removeView((View) view);
 		}
@@ -103,6 +120,16 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 		}
 
 		if (cursor != null && cursor.moveToPosition(position)) {
+			final String fileName = cursor.getString(cursor
+					.getColumnIndex(PhotoSchema.FileName));
+			if (TextUtils.isEmpty(fileName)) {
+				return null;
+			}
+			File file = new File(fileName);
+			if (file.exists() == false) {
+				return null;
+			}
+
 			result = inflater.inflate(R.layout.photo_template, null);
 			pager.addView(result);
 
@@ -110,26 +137,34 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 				final ImageViewEx ivPhoto = (ImageViewEx) result
 						.findViewById(R.id.imageViewPhoto);
 				if (ivPhoto != null) {
-					final String fileName = cursor.getString(cursor
-							.getColumnIndex(PhotoSchema.FileName));
-					if (!TextUtils.isEmpty(fileName)) {
-						ivPhoto.setOnSizeChangeListener(new OnSizeChangedListener() {
 
-							@Override
-							public void onSizeChanged(int width, int height) {
-								if (width > 0 && height > 0) {
-									Bitmap bitmap = Utility.getScaledBitmap(
-											fileName,
-											ivPhoto.getMeasuredWidth(),
-											ivPhoto.getMeasuredHeight());
-									if (bitmap != null) {
-										ivPhoto.setImageBitmap(bitmap);
-									}
+					int id = cursor.getInt(cursor
+							.getColumnIndex(PhotoSchema.Id));
+					int transactionId = cursor.getInt(cursor
+							.getColumnIndex(PhotoSchema.BizLogId));
+
+					TransactionPhoto photoInfo = new TransactionPhoto();
+					photoInfo.setFileName(fileName);
+					photoInfo.setId(id);
+					photoInfo.setBizLogId(transactionId);
+
+					itemsSource.put(position, photoInfo);
+
+					ivPhoto.setOnSizeChangeListener(new OnSizeChangedListener() {
+
+						@Override
+						public void onSizeChanged(int width, int height) {
+							if (width > 0 && height > 0) {
+								Bitmap bitmap = Utility.getScaledBitmap(
+										fileName, ivPhoto.getMeasuredWidth(),
+										ivPhoto.getMeasuredHeight());
+								if (bitmap != null) {
+									ivPhoto.setImageBitmap(bitmap);
 								}
 							}
-						});
+						}
+					});
 
-					}
 				}
 			}
 		}

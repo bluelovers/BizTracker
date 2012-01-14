@@ -29,7 +29,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,6 +43,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextSwitcher;
@@ -77,8 +77,6 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	private double todaySumPay = 0;
 	private double todaySumEarn = 0;
 	private String stuffName = "";
-	private AlertDialog alertDialog;
-	private Boolean isFirstUse = false;
 	private DataService service;
 	private Date updateDate;
 	private Dialog inputPasswordDlg;
@@ -176,6 +174,10 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		Button btnSearchStuff = (Button) findViewById(R.id.buttonSearchStuff);
 		TextView tvDefaultCurrencyCode = (TextView) this
 				.findViewById(R.id.textViewDefaultCurrencyCode);
+		RelativeLayout relativeLayoutNoStuff = (RelativeLayout) findViewById(R.id.relativeLayoutNoStuff);
+		if (relativeLayoutNoStuff != null) {
+			relativeLayoutNoStuff.setOnClickListener(this);
+		}
 
 		if (btnPay != null) {
 			btnPay.setOnClickListener(this);
@@ -230,21 +232,6 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 		if (TextUtils.isEmpty(defaultCurrencyCode)) {
 			showDefaultCurrencyDialog(true, null);
-		}
-
-		Parameter paramFirstUse = DataService.GetInstance(context)
-				.getParameterByKey(Parameters.FirstUse);
-		if (paramFirstUse != null) {
-			String value = paramFirstUse.getValue();
-			if (value == null || value.equals("true")) {
-				isFirstUse = true;
-			}
-		} else {
-			isFirstUse = true;
-		}
-
-		if (isFirstUse) {
-			welcome();
 		}
 
 		loadAsync();
@@ -417,13 +404,25 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			@Override
 			protected void onPostExecute(Boolean result) {
 				if (result) {
-					showStuffs();
+					if (cursor != null && cursor.isClosed() == false) {
+						if (cursor.getCount() > 0) {
+							bindStuffsDataSource();
 
-					ViewFlipper viewFlipper = (ViewFlipper) context
-							.findViewById(R.id.viewFlipperStuffsPanel);
-					if (viewFlipper.getDisplayedChild() != 1) {
-						viewFlipper.setDisplayedChild(1);
+							ViewFlipper viewFlipper = (ViewFlipper) context
+									.findViewById(R.id.viewFlipperStuffsPanel);
+							if (viewFlipper != null
+									&& viewFlipper.getDisplayedChild() != 1) {
+								viewFlipper.setDisplayedChild(1);
+							}
+						} else {
+							ViewFlipper viewFlipper = (ViewFlipper) context
+									.findViewById(R.id.viewFlipperStuffsPanel);
+							if (viewFlipper != null) {
+								viewFlipper.setDisplayedChild(2);
+							}
+						}
 					}
+
 				}
 			}
 		};
@@ -431,7 +430,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		task.execute();
 	}
 
-	private void showStuffs() {
+	private void bindStuffsDataSource() {
 		if (cursor != null && cursor.isClosed() == false) {
 			ViewPager stuffViewPager = (ViewPager) findViewById(R.id.viewPaperStuffs);
 			if (stuffViewPager != null) {
@@ -478,6 +477,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.buttonNew:
+		case R.id.relativeLayoutNoStuff:
 			newStuff();
 
 			break;
@@ -679,45 +679,6 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		 * ); DataService.GetInstance(context).createStuff(stuff);
 		 * fillDataAsync();
 		 */
-	}
-
-	private void welcome() {
-		AlertDialog.Builder builder;
-		builder = new AlertDialog.Builder(this);
-
-		LayoutInflater inflater = getLayoutInflater();
-		View layout = inflater.inflate(R.layout.welcome, null);
-
-		builder.setView(layout);
-		builder.setTitle(R.string.welcome);
-		builder.setIcon(android.R.drawable.ic_dialog_info);
-		builder.setNegativeButton(getString(R.string.understand),
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Parameter param = DataService.GetInstance(context)
-								.getParameterByKey("FirstUse");
-						if (param != null) {
-							String value = param.getValue();
-							if (value == null || !value.equals("true")) {
-								param.setValue("false");
-								DataService.GetInstance(context).saveParameter(
-										param);
-							}
-						} else {
-							Parameter paramFirstUse = new Parameter();
-							paramFirstUse.setKey("FirstUse");
-							paramFirstUse.setValue("false");
-							DataService.GetInstance(context).saveParameter(
-									paramFirstUse);
-						}
-
-						alertDialog.dismiss();
-					}
-				});
-		alertDialog = builder.create();
-		alertDialog.show();
 	}
 
 	private void saveAsync(double money, int idOfStuff, String stuffName) {
