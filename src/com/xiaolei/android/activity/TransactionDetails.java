@@ -3,12 +3,15 @@
  */
 package com.xiaolei.android.activity;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -42,11 +45,10 @@ import com.xiaolei.android.service.DataService;
 public class TransactionDetails extends CameraSupportableActivity implements
 		OnClickListener, OnCameraTakedPhotoListener, OnPageChangeListener {
 
-	private static final String JPG = ".jpg";
 	private long transactionId = -1;
 	private BizLog source;
 	public static String TRANSACTION_ID = "TransactionId";
-	public static final int REQUEST_CODE = 101;
+	public static final int REQUEST_CODE = TransactionDetails.class.hashCode();
 	private TransactionDetails context;
 	private String defaultCurrencyCode = "CNY";
 	private int photoCount = 0;
@@ -85,7 +87,7 @@ public class TransactionDetails extends CameraSupportableActivity implements
 		if (relativeLayoutNoPhoto != null) {
 			relativeLayoutNoPhoto.setOnClickListener(this);
 		}
-		
+
 		viewPager = (ViewPager) context
 				.findViewById(R.id.viewPaperTransactionPhotos);
 		if (viewPager != null) {
@@ -257,6 +259,7 @@ public class TransactionDetails extends CameraSupportableActivity implements
 					.findViewById(R.id.viewPaperTransactionPhotos);
 			if (viewPager != null) {
 				viewPager.setAdapter(adpt);
+				currentPhotoInfo = adpt.GetItemSource(0);
 			}
 		}
 	}
@@ -319,12 +322,30 @@ public class TransactionDetails extends CameraSupportableActivity implements
 	}
 
 	private void addTransactionPhoto(String fullFileName) {
-		if (TextUtils.isEmpty(currentPhotoFileName) || transactionId <= 0) {
+		if (TextUtils.isEmpty(fullFileName) || transactionId <= 0) {
 			return;
 		}
 		TransactionPhoto photo = new TransactionPhoto();
+		String shortFileName = "";
+		String fileName = "";
+
+		File file = new File(fullFileName);
+		if (file.exists() == true) {
+			shortFileName = file.getName();
+			
+			//If the photo storages in the default photoPath then use its short file name,
+			//otherwise, use the full file name.
+			if (!file.getParent().equalsIgnoreCase(photoPath)) {
+				fileName = fullFileName;
+			} else {
+				fileName = shortFileName;
+			}
+		} else {
+			return;
+		}
+
 		photo.setBizLogId(transactionId);
-		photo.setFileName(currentPhotoFileName + JPG);
+		photo.setFileName(fileName);
 		photo.setCreatedTime(new Date());
 
 		AsyncTask<TransactionPhoto, Void, Boolean> task = new AsyncTask<TransactionPhoto, Void, Boolean>() {
@@ -382,12 +403,21 @@ public class TransactionDetails extends CameraSupportableActivity implements
 		case R.id.toolButtonDeletePhoto:
 			deletePhoto();
 			break;
+		case R.id.toolButtonAddExistingPhoto:
+			choosePhotoFromGallery();
+			break;
 		/*
 		 * case R.id.imageViewTDStar: changeStar(); break;
 		 */
 		default:
 			break;
 		}
+	}
+
+	private void choosePhotoFromGallery() {
+		Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+		photoPickerIntent.setType("image/*");
+		startActivityForResult(photoPickerIntent, REQUEST_CODE);
 	}
 
 	private void deletePhoto() {
@@ -439,6 +469,20 @@ public class TransactionDetails extends CameraSupportableActivity implements
 		if (error == null) {
 			if (!TextUtils.isEmpty(fileName)) {
 				addTransactionPhoto(fileName);
+			}
+		}
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == REQUEST_CODE) {
+			if (resultCode == RESULT_OK) {
+				Uri selectedImageUri = data.getData();
+				String selectedPhotoFileName = Utility.getPhotoPathFromGallery(
+						this, selectedImageUri);
+				addTransactionPhoto(selectedPhotoFileName);
 			}
 		}
 	}

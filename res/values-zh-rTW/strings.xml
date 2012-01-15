@@ -146,4 +146,6 @@
     <string name="confirm">確認</string>
     <string name="confirm_delete_photo">確定要刪除這張照片嗎？</string>
     <string name="take_photo">拍照</string>
+    <string name="add_photo">添加照片</string>
+
 </resources>

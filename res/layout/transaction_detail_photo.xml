@@ -74,13 +74,13 @@
                 android:textColor="#d2d2d2" />
 
             <Button
-                android:id="@+id/toolButtonOpenPhoto"
+                android:id="@+id/toolButtonAddExistingPhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/button_backgroud"
                 android:drawableLeft="@android:drawable/ic_menu_gallery"
-                android:text="@string/open_photo"
+                android:text="@string/add_photo"
                 android:textColor="#d2d2d2" />
         </LinearLayout>
     </FrameLayout>

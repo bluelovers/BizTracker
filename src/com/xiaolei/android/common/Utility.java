@@ -36,6 +36,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -650,10 +651,24 @@ public final class Utility {
 		return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA);
 	}
 
-	public static Bitmap getScaledBitmap(String fileName, int desiredWidth,
-			int desiredHeight) {
-		if (!Environment.MEDIA_MOUNTED.equals(Environment
+	public static String getPhotoStoragePath() {
+		String result = "";
+		if (Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState())) {
+			result = Environment.getExternalStorageDirectory() + File.separator
+					+ BizTracker.PHOTO_PATH;
+		}
+		return result;
+	}
+
+	public static Bitmap getScaledBitmap(String fullFileName, int desiredWidth,
+			int desiredHeight) {
+		if (TextUtils.isEmpty(fullFileName)) {
+			return null;
+		}
+
+		File file = new File(fullFileName);
+		if (file.exists() != true) {
 			return null;
 		}
 
@@ -661,76 +676,64 @@ public final class Utility {
 			return null;
 		}
 
-		String photoPath = Environment.getExternalStorageDirectory()
-				.getAbsolutePath() + File.separator + BizTracker.PHOTO_PATH;
-
 		Bitmap result = null;
-		if (!TextUtils.isEmpty(fileName)) {
-			File file = new File(photoPath, fileName);
 
-			if (file.exists() == true) {
-				BitmapFactory.Options options = new BitmapFactory.Options();
-				options.inTempStorage = new byte[16 * 1024];
-				options.inJustDecodeBounds = true;
-				result = BitmapFactory.decodeFile(file.getAbsolutePath(),
-						options);
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inTempStorage = new byte[16 * 1024];
+		options.inJustDecodeBounds = true;
+		result = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
 
-				double sampleSize = 1;
+		double sampleSize = 1;
 
-				Boolean scaleByHeight = Math.abs(options.outHeight
-						- desiredHeight) >= Math.abs(options.outWidth
-						- desiredWidth);
+		Boolean scaleByHeight = Math.abs(options.outHeight - desiredHeight) >= Math
+				.abs(options.outWidth - desiredWidth);
 
-				sampleSize = scaleByHeight ? options.outHeight / desiredHeight
-						: options.outWidth / desiredWidth;
-				options.inSampleSize = (int) Math.pow(2d,
-						Math.floor(Math.log(sampleSize) / Math.log(2d)));
+		sampleSize = scaleByHeight ? options.outHeight / desiredHeight
+				: options.outWidth / desiredWidth;
+		options.inSampleSize = (int) Math.pow(2d,
+				Math.floor(Math.log(sampleSize) / Math.log(2d)));
 
-				Log.i("DEBUG", String.format("inSampleSize: %f", sampleSize));
+		Log.i("DEBUG", String.format("inSampleSize: %f", sampleSize));
 
-				options.inJustDecodeBounds = false;
+		options.inJustDecodeBounds = false;
 
-				String orientation = "";
-				try {
-					ExifInterface exifReader = new ExifInterface(
-							file.getAbsolutePath());
-					orientation = exifReader
-							.getAttribute(ExifInterface.TAG_ORIENTATION);
-					Log.i("DEBUG",
-							String.format("TAG_ORIENTATION: %s", orientation));
-				} catch (IOException e) {
-					// do nothing
-				}
-				result = BitmapFactory.decodeFile(file.getAbsolutePath(),
-						options);
-				if (!TextUtils.isEmpty(orientation)) {
-					try {
-						int exifOrientation = Integer.parseInt(orientation);
-						int degrees = 0;
-						switch (exifOrientation) {
-						case ExifInterface.ORIENTATION_ROTATE_90:
-							degrees = 90;
-							break;
-						case ExifInterface.ORIENTATION_ROTATE_180:
-							degrees = 180;
-							break;
-						case ExifInterface.ORIENTATION_ROTATE_270:
-							degrees = 270;
-							break;
-						}
-
-						if (degrees > 0) {
-							result = Utility.rotate(result, degrees);
-						}
-					} catch (Exception ex) {
-					}
+		String orientation = "";
+		try {
+			ExifInterface exifReader = new ExifInterface(file.getAbsolutePath());
+			orientation = exifReader
+					.getAttribute(ExifInterface.TAG_ORIENTATION);
+			Log.i("DEBUG", String.format("TAG_ORIENTATION: %s", orientation));
+		} catch (IOException e) {
+			// do nothing
+		}
+		result = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+		if (!TextUtils.isEmpty(orientation)) {
+			try {
+				int exifOrientation = Integer.parseInt(orientation);
+				int degrees = 0;
+				switch (exifOrientation) {
+				case ExifInterface.ORIENTATION_ROTATE_90:
+					degrees = 90;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_180:
+					degrees = 180;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_270:
+					degrees = 270;
+					break;
 				}
 
-				// result = ThumbnailUtils.extractThumbnail(result,
-				// desiredWidth,
-				// desiredHeight);
+				if (degrees > 0) {
+					result = Utility.rotate(result, degrees);
+				}
+			} catch (Exception ex) {
 			}
 		}
+
+		// result = ThumbnailUtils.extractThumbnail(result,
+		// desiredWidth,
+		// desiredHeight);
+
 		return result;
 	}
 
@@ -753,6 +756,19 @@ public final class Utility {
 			}
 		}
 		return bmp;
+	}
+
+	public static String getPhotoPathFromGallery(Activity activity, Uri photoUri) {
+		if (photoUri == null) {
+			return "";
+		}
+		String[] projection = { MediaStore.Images.Media.DATA };
+		
+		Cursor cursor = activity.managedQuery(photoUri, projection, null, null, null);
+		int column_index = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		cursor.moveToFirst();
+		return cursor.getString(column_index);
 	}
 
 	/*

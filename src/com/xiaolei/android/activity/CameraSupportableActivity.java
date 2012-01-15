@@ -24,7 +24,7 @@ public class CameraSupportableActivity extends Activity {
 
 	private Uri imageUri;
 	private String fileName = "";
-	protected final int REQUEST_CODE = 1024;
+	public final int REQUEST_CODE = 1024;
 	private OnCameraTakedPhotoListener onCameraTakedPhotoListener;
 	protected String photoPath = "";
 	protected String packageName = "BizTracker";

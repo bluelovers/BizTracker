@@ -34,6 +34,7 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 	@SuppressWarnings("unused")
 	private Context context;
 	private Hashtable<Integer, TransactionPhoto> itemsSource;
+	private String photoFolerPath = "";
 
 	public TransactionPhotoPageAdapter(Context context, Cursor cursor) {
 		this.cursor = cursor;
@@ -45,6 +46,8 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 		}
 
 		inflater = LayoutInflater.from(context);
+
+		photoFolerPath = Utility.getPhotoStoragePath();
 	}
 
 	public TransactionPhoto GetItemSource(int position) {
@@ -104,6 +107,15 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 		return count;
 	}
 
+	private Boolean fileExists(String fileName) {
+		if (TextUtils.isEmpty(fileName)) {
+			return false;
+		}
+
+		File file = new File(fileName);
+		return file.exists();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -119,17 +131,21 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 			return null;
 		}
 
-		if (cursor != null && cursor.moveToPosition(position)) {
-			final String fileName = cursor.getString(cursor
+		if (cursor != null && cursor.isClosed() == false
+				&& cursor.moveToPosition(position)) {
+			String fileName = cursor.getString(cursor
 					.getColumnIndex(PhotoSchema.FileName));
-			if (TextUtils.isEmpty(fileName)) {
-				return null;
-			}
-			File file = new File(fileName);
-			if (file.exists() == false) {
-				return null;
+			if (!fileExists(fileName)) {
+				String fullFileName = photoFolerPath + File.separator
+						+ fileName;
+				if (!fileExists(fullFileName)) {
+					return null;
+				} else {
+					fileName = fullFileName;
+				}
 			}
 
+			final String fullFileName = fileName;
 			result = inflater.inflate(R.layout.photo_template, null);
 			pager.addView(result);
 
@@ -144,7 +160,7 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 							.getColumnIndex(PhotoSchema.BizLogId));
 
 					TransactionPhoto photoInfo = new TransactionPhoto();
-					photoInfo.setFileName(fileName);
+					photoInfo.setFileName(fullFileName);
 					photoInfo.setId(id);
 					photoInfo.setBizLogId(transactionId);
 
@@ -156,7 +172,8 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 						public void onSizeChanged(int width, int height) {
 							if (width > 0 && height > 0) {
 								Bitmap bitmap = Utility.getScaledBitmap(
-										fileName, ivPhoto.getMeasuredWidth(),
+										fullFileName,
+										ivPhoto.getMeasuredWidth(),
 										ivPhoto.getMeasuredHeight());
 								if (bitmap != null) {
 									ivPhoto.setImageBitmap(bitmap);
