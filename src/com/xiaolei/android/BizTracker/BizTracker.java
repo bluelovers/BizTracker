@@ -326,21 +326,28 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		ArrayList<CharSequence> strings = new ArrayList<CharSequence>();
 
 		int index = 0;
-		if (cursor.moveToFirst()) {
-			do {
-				String currencyCode = cursor.getString(cursor
-						.getColumnIndex(CurrencySchema.Code));
-				String currency = String.format("%s (%s)", cursor
-						.getString(cursor.getColumnIndex(CurrencySchema.Name)),
-						currencyCode);
-				strings.add(currency);
-				if (value != null && selectedItemIndex == -1
-						&& value.equalsIgnoreCase(currencyCode)) {
-					selectedItemIndex = index;
-				}
+		try {
+			if (cursor.moveToFirst()) {
+				do {
+					String currencyCode = cursor.getString(cursor
+							.getColumnIndex(CurrencySchema.Code));
+					String currency = String.format("%s (%s)", cursor
+							.getString(cursor
+									.getColumnIndex(CurrencySchema.Name)),
+							currencyCode);
+					strings.add(currency);
+					if (value != null && selectedItemIndex == -1
+							&& value.equalsIgnoreCase(currencyCode)) {
+						selectedItemIndex = index;
+					}
 
-				index++;
-			} while (cursor.moveToNext());
+					index++;
+				} while (cursor.moveToNext());
+			}
+		} finally {
+			if (cursor.isClosed() == false) {
+				cursor.close();
+			}
 		}
 
 		CharSequence[] items = new CharSequence[0];
