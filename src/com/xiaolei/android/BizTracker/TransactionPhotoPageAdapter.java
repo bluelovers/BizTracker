@@ -15,6 +15,8 @@ import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.customControl.ImageViewEx;
@@ -135,54 +137,76 @@ public class TransactionPhotoPageAdapter extends PagerAdapter {
 				&& cursor.moveToPosition(position)) {
 			String fileName = cursor.getString(cursor
 					.getColumnIndex(PhotoSchema.FileName));
-			if (!fileExists(fileName)) {
+			int id = cursor.getInt(cursor.getColumnIndex(PhotoSchema.Id));
+			int transactionId = cursor.getInt(cursor
+					.getColumnIndex(PhotoSchema.BizLogId));
+
+			TransactionPhoto photoInfo = new TransactionPhoto();
+			photoInfo.setId(id);
+			photoInfo.setBizLogId(transactionId);
+
+			itemsSource.put(position, photoInfo);
+
+			Boolean fileExists = false;
+			String finalFileName = fileName;
+
+			if (fileExists(fileName)) {
+				finalFileName = fileName;
+				fileExists = true;
+			} else {
 				String fullFileName = photoFolerPath + File.separator
 						+ fileName;
-				if (!fileExists(fullFileName)) {
-					return null;
-				} else {
-					fileName = fullFileName;
+				if (fileExists(fullFileName)) {
+					finalFileName = fullFileName;
+					fileExists = true;
 				}
 			}
 
-			final String fullFileName = fileName;
-			result = inflater.inflate(R.layout.photo_template, null);
-			pager.addView(result);
+			final String fullFileName = finalFileName;
+			photoInfo.setFileName(fullFileName);
 
-			if (result != null) {
-				final ImageViewEx ivPhoto = (ImageViewEx) result
-						.findViewById(R.id.imageViewPhoto);
-				if (ivPhoto != null) {
+			if (fileExists == true) {
+				result = inflater.inflate(R.layout.photo_template, null);
+				pager.addView(result);
 
-					int id = cursor.getInt(cursor
-							.getColumnIndex(PhotoSchema.Id));
-					int transactionId = cursor.getInt(cursor
-							.getColumnIndex(PhotoSchema.BizLogId));
+				if (result != null) {
+					final ImageViewEx ivPhoto = (ImageViewEx) result
+							.findViewById(R.id.imageViewPhoto);
+					if (ivPhoto != null) {
 
-					TransactionPhoto photoInfo = new TransactionPhoto();
-					photoInfo.setFileName(fullFileName);
-					photoInfo.setId(id);
-					photoInfo.setBizLogId(transactionId);
+						ivPhoto.setOnSizeChangeListener(new OnSizeChangedListener() {
 
-					itemsSource.put(position, photoInfo);
-
-					ivPhoto.setOnSizeChangeListener(new OnSizeChangedListener() {
-
-						@Override
-						public void onSizeChanged(int width, int height) {
-							if (width > 0 && height > 0) {
-								Bitmap bitmap = Utility.getScaledBitmap(
-										fullFileName,
-										ivPhoto.getMeasuredWidth(),
-										ivPhoto.getMeasuredHeight());
-								if (bitmap != null) {
-									ivPhoto.setImageBitmap(bitmap);
+							@Override
+							public void onSizeChanged(int width, int height) {
+								if (width > 0 && height > 0) {
+									Bitmap bitmap = Utility.getScaledBitmap(
+											fullFileName,
+											ivPhoto.getMeasuredWidth(),
+											ivPhoto.getMeasuredHeight());
+									if (bitmap != null) {
+										ivPhoto.setImageBitmap(bitmap);
+									} else {
+										RelativeLayout parentView = (RelativeLayout) ivPhoto
+												.getParent();
+										if (parentView != null) {
+											TextView tvFailLoadPhoto = (TextView) parentView
+													.findViewById(R.id.textViewFailLoadPhoto);
+											if (tvFailLoadPhoto != null) {
+												tvFailLoadPhoto
+														.setVisibility(TextView.VISIBLE);
+											}
+										}
+									}
 								}
 							}
-						}
-					});
+						});
 
+					}
 				}
+			} else {
+				result = inflater.inflate(R.layout.transaction_photo_not_exist,
+						null);
+				pager.addView(result);
 			}
 		}
 

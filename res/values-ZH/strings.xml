@@ -147,4 +147,7 @@
     <string name="confirm_delete_photo">确定要删除这张照片吗?</string>
     <string name="take_photo">拍照</string>
     <string name="add_photo">添加照片</string>
+    <string name="photo_not_exist">照片文件不存在，可能已经被删除。</string>
+    <string name="fail_load_photo">加载照片失败，请重试。</string>
+
 </resources>

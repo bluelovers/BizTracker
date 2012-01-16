@@ -148,4 +148,6 @@
     <string name="confirm_delete_photo">Are you sure to delete the current photo?</string>
     <string name="take_photo">Take Photo</string>
     <string name="add_photo">Add Photo</string>
+    <string name="photo_not_exist">Cannot found this photo. Maybe it has been deleted.</string>
+    <string name="fail_load_photo">Failed to load this photo. Please try again.</string>
 </resources>

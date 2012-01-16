@@ -147,5 +147,7 @@
     <string name="confirm_delete_photo">確定要刪除這張照片嗎？</string>
     <string name="take_photo">拍照</string>
     <string name="add_photo">添加照片</string>
+    <string name="photo_not_exist">照片檔案不存在，可能已經被移除。</string>
+    <string name="fail_load_photo">載入照片失敗，請重試。</string>
 
 </resources>

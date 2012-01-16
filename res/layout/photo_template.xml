@@ -12,4 +12,13 @@
         android:layout_centerVertical="true"
         android:src="@android:drawable/ic_menu_gallery" />
 
+    <TextView
+        android:id="@+id/textViewFailLoadPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/fail_load_photo"
+        android:visibility="invisible" />
+
 </RelativeLayout>
