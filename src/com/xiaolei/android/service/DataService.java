@@ -342,6 +342,7 @@ public class DataService {
 	public Parameter getParameterByKey(String key) {
 		Parameter result = new Parameter();
 		result.setKey(key);
+		result.setValue("");
 		if (!TextUtils.isEmpty(key)) {
 			String sql = String.format("select * from Parameter where %s = ?",
 					ParameterSchema.Key);
@@ -364,14 +365,16 @@ public class DataService {
 				cursor = null;
 			}
 
-			return result;
-		} else {
-			return null;
 		}
+
+		return result;
 	}
 
 	public Parameter getParameterById(int id) {
 		Parameter result = new Parameter();
+		result.setId(id);
+		result.setValue("");
+
 		if (id > 0) {
 			String sql = String.format("select * from Parameter where %s = ?",
 					ParameterSchema.Id);
@@ -392,8 +395,6 @@ public class DataService {
 
 				return result;
 			}
-		} else {
-			return result;
 		}
 		return result;
 	}
@@ -858,7 +859,7 @@ public class DataService {
 		String defaultCurrencyCode = "";
 		Parameter param = this
 				.getParameterByKey(ParameterKeys.DefaultCurrencyCode);
-		if (param != null && !param.isEmpty()) {
+		if (param != null && param.isEmpty() == false) {
 			defaultCurrencyCode = param.getValue();
 		}
 

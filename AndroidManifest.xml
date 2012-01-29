@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:installLocation="auto"
     package="com.xiaolei.android.BizTracker"
-    android:versionCode="25"
-    android:versionName="1.2.5" >
+    android:versionCode="26"
+    android:versionName="1.2.6" >
 
     <uses-sdk android:minSdkVersion="8" />
 

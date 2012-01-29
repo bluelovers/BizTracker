@@ -97,6 +97,8 @@ public class MonthlyTransactionListAdapter extends BaseAdapter {
 			protected Boolean doInBackground(Void... args) {
 				defaultCurrencyCode = DataService.GetInstance(context)
 						.getDefaultCurrencyCode();
+				defaultCurrencyCode = defaultCurrencyCode != null ? defaultCurrencyCode
+						: "";
 				for (int i = 0; i < items.length; i++) {
 					Date dayOfMonth = items[i];
 					double pay = DataService.GetInstance(context).getTotalPay(
