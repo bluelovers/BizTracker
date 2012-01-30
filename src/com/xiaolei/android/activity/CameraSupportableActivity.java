@@ -8,9 +8,11 @@ import java.io.File;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.xiaolei.android.BizTracker.R;
@@ -95,21 +97,32 @@ public class CameraSupportableActivity extends Activity {
 			if (resultCode == Activity.RESULT_OK) {
 				Uri selectedImage = imageUri;
 				getContentResolver().notifyChange(selectedImage, null);
-				
+
 				OnCameraTakedPhoto(fileName, null);
 				/*
-				ContentResolver cr = getContentResolver();
-				Bitmap bitmap = null;
-				try {
-					bitmap = android.provider.MediaStore.Images.Media
-							.getBitmap(cr, selectedImage);
-
-					OnCameraTakedPhoto(bitmap, null);
-				} catch (Exception e) {
-					OnCameraTakedPhoto(bitmap, e);
-				}
-				*/
+				 * ContentResolver cr = getContentResolver(); Bitmap bitmap =
+				 * null; try { bitmap = android.provider.MediaStore.Images.Media
+				 * .getBitmap(cr, selectedImage);
+				 * 
+				 * OnCameraTakedPhoto(bitmap, null); } catch (Exception e) {
+				 * OnCameraTakedPhoto(bitmap, e); }
+				 */
+			}else{
+				fileName = "";
 			}
 		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putString("photoFileName", fileName);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		Log.i("DEBUG", "onRestoreInstanceState(): " + fileName);
+		fileName = savedInstanceState.getString("photoFileName");
+		
+		OnCameraTakedPhoto(fileName, null);
 	}
 }
