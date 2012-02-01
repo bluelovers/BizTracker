@@ -46,6 +46,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.xiaolei.android.BizTracker.BizTracker;
+import com.xiaolei.android.BizTracker.R;
 
 public final class Utility {
 	public static Location LatestLocation = null;
@@ -632,14 +633,14 @@ public final class Utility {
 	}
 
 	public static String getVersion(Context context) {
-		String version = "";
+		String version = context.getString(R.string.unknown);
 		PackageManager manager = context.getPackageManager();
 		PackageInfo info;
 		try {
 			info = manager.getPackageInfo(context.getPackageName(), 0);
 			version = info.versionName;
 		} catch (NameNotFoundException e) {
-			version = "";
+			version = context.getString(R.string.unknown);
 		}
 
 		return version;
