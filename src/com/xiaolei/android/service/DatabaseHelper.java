@@ -5,6 +5,8 @@ package com.xiaolei.android.service;
 
 import java.util.ArrayList;
 
+import com.xiaolei.android.entity.CurrencySchema;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,7 +19,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String databaseName = "biz_tracker_data.db";
-	private static final int databaseVersion = 6;
+	private static final int databaseVersion = 7;
 
 	public DatabaseHelper(Context context) {
 		super(context, databaseName, null, databaseVersion);
@@ -33,8 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String createIndex_BizLog = "CREATE INDEX IF NOT EXISTS \"Idx_BizLog\" ON \"BizLog\" (\"Cost\" ASC, \"LastUpdateTime\" ASC)";
 		String createTable_Project = "CREATE TABLE IF NOT EXISTS \"Project\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"Name\" TEXT NOT NULL , \"Description\" TEXT, \"CreatedTime\" DATETIME NOT NULL  DEFAULT CURRENT_TIMESTAMP, \"LastUpdateTime\" DATETIME NOT NULL  DEFAULT CURRENT_TIMESTAMP, \"IsActive\" BOOL NOT NULL  DEFAULT true, \"Tag\" TEXT)";
 		String createIndex_Project = "CREATE INDEX IF NOT EXISTS \"Idx_Project\" ON \"Project\" (\"Name\" DESC, \"CreatedTime\" DESC, \"LastUpdateTime\" DESC, \"IsActive\" DESC)";
-	
-		
+
 		db.execSQL(createTable_Stuff);
 		db.execSQL(createIndex_Stuff);
 
@@ -43,16 +44,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		db.execSQL(createTable_BizLog);
 		db.execSQL(createIndex_BizLog);
-		
+
 		supportMultiCurrency(db);
-		
+
 		db.execSQL(createTable_Project);
 		db.execSQL(createIndex_Project);
-		
+
 		updateDBToVersion5(db);
 		updateDBToVersion6(db);
 	}
-	
+
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		int currentDBVersion = db.getVersion();
@@ -66,55 +67,78 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (currentDBVersion <= 2) {
 			updateDBToVersion3(db);
 		}
-		
-		if(currentDBVersion <= 3){
+
+		if (currentDBVersion <= 3) {
 			updateDBToVersion4(db);
 		}
-		
-		if(currentDBVersion <= 4){
+
+		if (currentDBVersion <= 4) {
 			updateDBToVersion5(db);
 		}
-		
-		if(currentDBVersion <= 5){
+
+		if (currentDBVersion <= 5) {
 			updateDBToVersion6(db);
 		}
+
+		if (currentDBVersion <= 6) {
+			updateDBToVersion7(db);
+		}
 	}
-	
-	private void updateDBToVersion6(SQLiteDatabase db){
+
+	private void updateDBToVersion7(SQLiteDatabase db) {
+		Boolean rowExists = false;
+		Cursor cursor = db.query(CurrencySchema.TableName,
+				new String[] { CurrencySchema.Code }, " Code=? ",
+				new String[] { "MOP" }, null, null, null);
+		if (cursor != null && cursor.getCount() > 0) {
+			rowExists = true;
+			cursor.close();
+			cursor = null;
+		}
+
+		if (rowExists == false) {
+			// Add "MOP" currency for Macau
+			String sql_AddMOPCurrency = "INSERT INTO \"Currency\" (Name, Code, Symbol, USDExchangeRate, LastUpdateTime, IsActive)  VALUES (\"Macau Pataca\",\"MOP\",null,\"7.989\",\"2012-02-01 19:11:00\",\"true\");";
+
+			db.execSQL(sql_AddMOPCurrency);
+		}
+	}
+
+	private void updateDBToVersion6(SQLiteDatabase db) {
 		String createTable_TransactionProjectRelation = "CREATE TABLE IF NOT EXISTS \"TransactionProjectRelation\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"TransactionId\" INTEGER NOT NULL , \"ProjectId\" INTEGER NOT NULL , \"CreatedTime\" DATETIME DEFAULT CURRENT_TIMESTAMP)";
 		String createIndex_TransProjectRelation = "CREATE INDEX IF NOT EXISTS \"Idx_TransProjectRelation\" ON \"TransactionProjectRelation\" (\"TransactionId\" ASC, \"ProjectId\" ASC, \"CreatedTime\" ASC)";
-		
+
 		db.execSQL(createTable_TransactionProjectRelation);
 		db.execSQL(createIndex_TransProjectRelation);
 	}
-		
-	private void updateDBToVersion5(SQLiteDatabase db){
-		//v1.2.5
+
+	private void updateDBToVersion5(SQLiteDatabase db) {
+		// v1.2.5
 		String createTable_Photo = "CREATE TABLE IF NOT EXISTS \"Photo\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"BizLogId\" INTEGER NOT NULL , \"FileName\" TEXT NOT NULL , \"Thumbnail\" BLOB, \"CreatedTime\" DATETIME DEFAULT CURRENT_TIMESTAMP, \"Comment\" TEXT, \"Name\" TEXT, \"Tag\" TEXT)";
 		String createIndex_Photo = "CREATE INDEX IF NOT EXISTS \"Idx_Photo\" ON \"Photo\" (\"_id\" ASC, \"BizLogId\" ASC, \"CreatedTime\" ASC, \"Comment\" ASC, \"Name\" ASC)";
-		
+
 		db.execSQL(createTable_Photo);
 		db.execSQL(createIndex_Photo);
 	}
 
-	private void updateDBToVersion4(SQLiteDatabase db){
+	private void updateDBToVersion4(SQLiteDatabase db) {
 		String createTable_Project = "CREATE TABLE IF NOT EXISTS \"Project\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"Name\" TEXT NOT NULL , \"Description\" TEXT, \"CreatedTime\" DATETIME NOT NULL  DEFAULT CURRENT_TIMESTAMP, \"LastUpdateTime\" DATETIME NOT NULL  DEFAULT CURRENT_TIMESTAMP, \"IsActive\" BOOL NOT NULL  DEFAULT true, \"Tag\" TEXT)";
 		String createIndex_Project = "CREATE INDEX IF NOT EXISTS \"Idx_Project\" ON \"Project\" (\"Name\" DESC, \"CreatedTime\" DESC, \"LastUpdateTime\" DESC, \"IsActive\" DESC)";
-		
+
 		db.execSQL(createTable_Project);
 		db.execSQL(createIndex_Project);
-		
+
 		if (!columnExists(db, "BizLog", "Tag")) {
 			String sql_AddTagColumn = "ALTER TABLE \"BizLog\" ADD COLUMN \"Tag\" TEXT";
 			db.execSQL(sql_AddTagColumn);
 		}
-		
-		if(!columnExists(db, "BizLog", "LocationName")){
+
+		if (!columnExists(db, "BizLog", "LocationName")) {
 			String sql_AddLocationNameColumn = "ALTER TABLE \"BizLog\" ADD COLUMN \"LocationName\" TEXT";
 			db.execSQL(sql_AddLocationNameColumn);
 		}
-		
-		if(!columnExists(db, "BizLog", "Location")){
+
+		if (!columnExists(db, "BizLog", "Location")) {
 			String sql_AddLocationColumn = "ALTER TABLE \"BizLog\" ADD COLUMN \"Location\" TEXT";
 			db.execSQL(sql_AddLocationColumn);
 		}
@@ -151,7 +175,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		return false;
 	}
-	
+
 	private void supportMultiCurrency(SQLiteDatabase db) {
 		String createTable_Currency = "CREATE TABLE IF NOT EXISTS \"Currency\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"Name\" TEXT NOT NULL , \"Code\" TEXT NOT NULL , \"Symbol\" TEXT, \"USDExchangeRate\" DOUBLE NOT NULL , \"LastUpdateTime\" DATETIME DEFAULT CURRENT_TIMESTAMP, \"IsActive\" BOOL NOT NULL  DEFAULT true)";
 		String createIndex_Currency = "CREATE INDEX IF NOT EXISTS \"Idx_Currency\" ON \"Currency\" (\"Code\" ASC)";
@@ -258,6 +282,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				.add("INSERT INTO \"Currency\" (Name, Code, Symbol, USDExchangeRate, LastUpdateTime, IsActive)  VALUES (\"Moldovan Leu\",\"MDL\",null,\"11.4575\",\"2011-08-06 05:33:04\",\"true\");");
 		records_Currency
 				.add("INSERT INTO \"Currency\" (Name, Code, Symbol, USDExchangeRate, LastUpdateTime, IsActive)  VALUES (\"Macedonian Denar\",\"MKD\",null,\"43.195\",\"2011-08-06 05:33:04\",\"true\");");
+		// Add "MOP" currency for Macau
+		records_Currency
+				.add("INSERT INTO \"Currency\" (Name, Code, Symbol, USDExchangeRate, LastUpdateTime, IsActive)  VALUES (\"Macau Pataca\",\"MOP\",null,\"7.989\",\"2012-02-01 19:11:00\",\"true\");");
 		records_Currency
 				.add("INSERT INTO \"Currency\" (Name, Code, Symbol, USDExchangeRate, LastUpdateTime, IsActive)  VALUES (\"Mauritian Rupee\",\"MUR\",null,\"28.1\",\"2011-08-06 05:33:04\",\"true\");");
 		records_Currency

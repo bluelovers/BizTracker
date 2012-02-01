@@ -1,6 +1,7 @@
 package com.xiaolei.android.entity;
 
 public class CurrencySchema {
+	public static final String TableName = "Currency";
 	public static final String Id = "Id";
 	public static final String USDExchangeRate = "USDExchangeRate";
 	public static final String Name = "Name";
