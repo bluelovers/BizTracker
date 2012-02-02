@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/security" >
+        <com.xiaolei.android.preference.PasswordPreference
+            android:key="USER_PASSWORD"
+            android:summary="@string/password_protection_description"
+            android:title="@string/password" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/currency" >
+        <com.xiaolei.android.preference.CurrencyListPreference
+            android:key="DefaultCurrencyCode"
+            android:summary="@string/default_currency_description"
+            android:title="@string/default_currency" />
+
+        <Preference
+            android:key="EXCHANGE_RATE"
+            android:summary="@string/config_exchange_rate_description"
+            android:title="@string/config_exchange_rate" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/sound" >
+        <com.xiaolei.android.preference.VolumeControlPreference
+            android:key="Volume"
+            android:summary="@string/volume_description"
+            android:title="@string/volume" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/feedback" >
+        <Preference
+            android:key="FEEDBACK"
+            android:summary="@string/send_feedback_desc"
+            android:title="@string/send_feedback" />
+        <Preference
+            android:key="LOCATE_IN_MARKET"
+            android:summary="@string/go_to_android_market_description"
+            android:title="@string/go_to_android_market" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/about" >
+        <com.xiaolei.android.preference.VersionNamePreference android:title="@string/version" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

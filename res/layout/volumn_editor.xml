@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:paddingLeft="10dip" android:paddingRight="10dip"
-	android:paddingTop="20dip" android:paddingBottom="20dip"
-	android:layout_height="fill_parent">
-	<SeekBar android:id="@+id/seekBarVolume" android:layout_height="wrap_content"
-		android:layout_width="fill_parent"></SeekBar>
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:paddingBottom="20dip"
+    android:paddingLeft="10dip"
+    android:paddingRight="10dip"
+    android:paddingTop="20dip" >
+
+    <TextView
+        android:id="@+id/textViewVolumePercentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dip" />
+
+    <SeekBar
+        android:id="@+id/seekBarVolume"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+    </SeekBar>
 
 </LinearLayout>

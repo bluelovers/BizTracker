@@ -496,7 +496,7 @@ public final class Utility {
 
 		MessageDigest mDigest;
 		try {
-			mDigest = MessageDigest.getInstance("SHA-512");
+			mDigest = MessageDigest.getInstance("SHA-256");
 		} catch (NoSuchAlgorithmException e) {
 			return plainText;
 		}

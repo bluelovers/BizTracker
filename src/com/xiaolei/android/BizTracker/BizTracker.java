@@ -52,7 +52,6 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
-import com.xiaolei.android.activity.Config;
 import com.xiaolei.android.activity.FunctionTypes;
 import com.xiaolei.android.common.BaseActivity;
 import com.xiaolei.android.common.Utility;
@@ -815,8 +814,9 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 			return true;
 		case R.id.itemConfig:
-			this.startActivityForResult(new Intent(this, Config.class),
-					Config.REQUEST_CODE);
+			this.startActivityForResult(new Intent(this,
+					com.xiaolei.android.activity.Settings.class),
+					com.xiaolei.android.activity.Settings.REQUEST_CODE);
 
 			return true;
 			/*

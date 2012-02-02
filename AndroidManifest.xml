@@ -55,6 +55,8 @@
         </activity>
         <activity android:name="com.xiaolei.android.activity.TransactionDetails" >
         </activity>
+        <activity android:name="com.xiaolei.android.activity.Settings" >
+        </activity>
     </application>
 
 </manifest>

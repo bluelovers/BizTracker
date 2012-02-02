@@ -14,7 +14,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.xiaolei.android.activity.Config;
 import com.xiaolei.android.activity.FunctionTypes;
 import com.xiaolei.android.activity.ProjectManager;
 import com.xiaolei.android.activity.TransactionSearchResult;
@@ -48,14 +47,16 @@ public class ControlPanelAdapter extends BaseAdapter {
 		itemProject.setIntent(new Intent(context, ProjectManager.class));
 
 		ControlPanelItem itemSearch = new ControlPanelItem();
-		itemSearch.setName(context.getString(R.string.search)); 
+		itemSearch.setName(context.getString(R.string.search));
 		itemSearch.setIconResourceId(R.drawable.ic_search);
-		itemSearch.setIntent(new Intent(context, TransactionSearchResult.class));
+		itemSearch
+				.setIntent(new Intent(context, TransactionSearchResult.class));
 
 		ControlPanelItem itemConfig = new ControlPanelItem();
 		itemConfig.setName(context.getString(R.string.config));
 		itemConfig.setIconResourceId(R.drawable.config);
-		itemConfig.setIntent(new Intent(context, Config.class));
+		itemConfig.setIntent(new Intent(context,
+				com.xiaolei.android.activity.Settings.class));
 
 		itemsSource.add(itemViewHistory);
 		itemsSource.add(itemProject);

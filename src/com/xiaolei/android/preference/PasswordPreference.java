@@ -3,6 +3,7 @@ package com.xiaolei.android.preference;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.PasswordStrengthChecker;
 import com.xiaolei.android.common.PasswordStrengthChecker.PasswordStrength;
+import com.xiaolei.android.common.Utility;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -147,6 +148,16 @@ public class PasswordPreference extends DialogPreference {
 		persistString(mPassword);
 		
 		//If password changed, change the title
+		refreshTitle();
+
+		//Notify dependents change
+		final boolean isBlocking = shouldDisableDependents();
+		if (isBlocking != wasBlocking) {
+			notifyDependencyChange(isBlocking);
+		}
+	}
+
+	private void refreshTitle() {
 		String persisedString = getPersistedString("");
 		if (!TextUtils.isEmpty(persisedString)) {
 			this.setTitle(String.format("%s (%s)",
@@ -156,12 +167,6 @@ public class PasswordPreference extends DialogPreference {
 			this.setTitle(String.format("%s (%s)",
 					this.getContext().getString(R.string.password), this
 							.getContext().getString(R.string.disabled)));
-		}
-
-		//Notify dependents change
-		final boolean isBlocking = shouldDisableDependents();
-		if (isBlocking != wasBlocking) {
-			notifyDependencyChange(isBlocking);
 		}
 	}
 
@@ -187,8 +192,9 @@ public class PasswordPreference extends DialogPreference {
 
 	@Override
 	protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-		// Do nothing, for safe, always display empty string, whatever whether
-		// the password is not empty.
+		super.onSetInitialValue(restoreValue, defaultValue);
+		
+		refreshTitle();
 	}
 
 	@Override
@@ -204,7 +210,7 @@ public class PasswordPreference extends DialogPreference {
 
 	protected String encrypt(String plainText) {
 		if (!TextUtils.isEmpty(plainText)) {
-			return "*****";
+			return Utility.encrypt(plainText);
 		} else {
 			return "";
 		}

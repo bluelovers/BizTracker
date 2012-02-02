@@ -149,5 +149,10 @@
     <string name="add_photo">添加照片</string>
     <string name="photo_not_exist">照片檔案不存在，可能已經被移除。</string>
     <string name="fail_load_photo">載入照片失敗，請重試。</string>
+    <string name="security">安全</string>
+    <string name="about">關於</string>
+    <string name="sound">聲音</string>
+    <string name="volume">音量</string>
+    <string name="volume_description">調整按鍵音量</string>
 
 </resources>

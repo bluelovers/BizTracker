@@ -150,4 +150,10 @@
     <string name="add_photo">Add Photo</string>
     <string name="photo_not_exist">Cannot found this photo. Maybe it has been deleted.</string>
     <string name="fail_load_photo">Failed to load this photo. Please try again.</string>
+    <string name="security">Security</string>
+    <string name="about">About</string>
+    <string name="sound">Sound</string>
+    <string name="volume">Volume</string>
+    <string name="volume_description">Change the volume of the button click</string>
+
 </resources>
