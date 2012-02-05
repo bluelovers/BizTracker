@@ -7,9 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.xiaolei.android.BizTracker.R;
-import com.xiaolei.android.BizTracker.YearlyTransactionListPagerAdapter;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,7 +16,12 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.xiaolei.android.BizTracker.R;
+import com.xiaolei.android.BizTracker.YearlyTransactionListAdapter;
+import com.xiaolei.android.BizTracker.YearlyTransactionListPagerAdapter;
 
 /**
  * @author xiaolei
@@ -28,6 +30,7 @@ import android.widget.TextView;
 public class TransactionListYearly extends Activity implements
 		OnItemClickListener, OnPageChangeListener {
 
+	@SuppressWarnings("unused")
 	private Date currentYear = new Date();
 	private TextView tvTitle;
 	private Date now = new Date();
@@ -55,7 +58,7 @@ public class TransactionListYearly extends Activity implements
 			cal.set(Calendar.DAY_OF_MONTH, 1);
 			cal.add(Calendar.YEAR, -MAX_PAGE_COUNT + 1);
 			startDate = cal.getTime();
-			
+
 			viewPager.setOnPageChangeListener(this);
 			pagerAdapter = new YearlyTransactionListPagerAdapter(this, now,
 					MAX_PAGE_COUNT);
@@ -68,15 +71,20 @@ public class TransactionListYearly extends Activity implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View view, int position,
 			long id) {
-		Intent intentDaysOfMonth = new Intent(this,
-				TransactionListMonthly.class);
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(currentYear);
-		cal.set(Calendar.MONTH, position);
-		cal.set(Calendar.DAY_OF_MONTH, 1);
-		
-		intentDaysOfMonth.putExtra("date", cal.getTime());
-		this.startActivityForResult(intentDaysOfMonth, 0);
+		ListView lv = (ListView) arg0;
+		if (lv != null) {
+			YearlyTransactionListAdapter adpt = (YearlyTransactionListAdapter) lv
+					.getAdapter();
+			if (adpt != null) {
+				Date selectedDate = (Date) adpt.getItem(position);
+				if (selectedDate != null) {
+					Intent intentDaysOfMonth = new Intent(this,
+							TransactionListMonthly.class);
+					intentDaysOfMonth.putExtra("date", selectedDate);
+					this.startActivityForResult(intentDaysOfMonth, 0);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -112,8 +120,7 @@ public class TransactionListYearly extends Activity implements
 		currentYear = cal.getTime();
 
 		if (tvTitle != null) {
-			tvTitle.setText(cal.get(Calendar.YEAR)
-					+ getString(R.string.year));
+			tvTitle.setText(cal.get(Calendar.YEAR) + getString(R.string.year));
 		}
 	}
 }

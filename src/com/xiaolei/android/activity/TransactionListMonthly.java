@@ -8,8 +8,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.xiaolei.android.BizTracker.MonthlyTransactionListPagerAdapter;
-import com.xiaolei.android.BizTracker.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +16,12 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.xiaolei.android.BizTracker.MonthlyTransactionListAdapter;
+import com.xiaolei.android.BizTracker.MonthlyTransactionListPagerAdapter;
+import com.xiaolei.android.BizTracker.R;
 
 /**
  * @author xiaolei
@@ -30,6 +33,8 @@ public class TransactionListMonthly extends Activity implements
 	private static final int REQUEST_CODE = TransactionListMonthly.class
 			.getName().hashCode();
 	private Date month;
+	@SuppressWarnings("unused")
+	private int currentMonth = Calendar.JANUARY;
 	private Date startDayOfYear;
 	private MonthlyTransactionListPagerAdapter pagerAdapter;
 	private int currentPosition = 0;
@@ -79,13 +84,22 @@ public class TransactionListMonthly extends Activity implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(startDayOfYear);
-		cal.add(Calendar.DAY_OF_MONTH, position);
-
-		Intent intent = new Intent(this, PagerDailyTransactionList.class);
-		intent.putExtra(PagerDailyTransactionList.KEY_DATE, cal.getTime());
-		this.startActivityForResult(intent, TransactionListMonthly.REQUEST_CODE);
+		ListView lv = (ListView) arg0;
+		if (lv != null) {
+			MonthlyTransactionListAdapter adpt = (MonthlyTransactionListAdapter) lv
+					.getAdapter();
+			if (adpt != null) {
+				Date selectedDate = (Date) adpt.getItem(position);
+				if (selectedDate != null) {
+					Intent intent = new Intent(this,
+							PagerDailyTransactionList.class);
+					intent.putExtra(PagerDailyTransactionList.KEY_DATE,
+							selectedDate);
+					this.startActivityForResult(intent,
+							TransactionListMonthly.REQUEST_CODE);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -121,6 +135,7 @@ public class TransactionListMonthly extends Activity implements
 		cal.setTime(startDayOfYear);
 		cal.add(Calendar.MONTH, position);
 
+		currentMonth = cal.get(Calendar.MONTH);
 		refreshTitle(cal.getTime());
 	}
 }
