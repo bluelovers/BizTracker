@@ -9,4 +9,5 @@ public final class PreferenceKeys {
 	public static final String Feedback = "FEEDBACK";
 	public static final String LocateInMarket = "LOCATE_IN_MARKET";
 	public static final String ExchangeRate = "EXCHANGE_RATE";
+	public static final String ActiveUserId ="active-user-id";
 }

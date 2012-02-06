@@ -8,6 +8,7 @@ import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
@@ -16,7 +17,6 @@ import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.BizLogSchema;
 import com.xiaolei.android.entity.Parameter;
-import com.xiaolei.android.entity.ParameterKeys;
 import com.xiaolei.android.entity.ParameterSchema;
 import com.xiaolei.android.entity.PhotoSchema;
 import com.xiaolei.android.entity.Project;
@@ -25,6 +25,8 @@ import com.xiaolei.android.entity.Stuff;
 import com.xiaolei.android.entity.StuffSchema;
 import com.xiaolei.android.entity.TransactionPhoto;
 import com.xiaolei.android.entity.TransactionProjectRelationSchema;
+import com.xiaolei.android.preference.PreferenceHelper;
+import com.xiaolei.android.preference.PreferenceKeys;
 
 /**
  * @author xiaolei
@@ -36,9 +38,18 @@ public class DataService {
 	private SQLiteDatabase db;
 	private static DataService instance;
 	private static Boolean isOpened = false;
+	private Context context;
 
 	private DataService(Context context) {
-		dbHelper = new DatabaseHelper(context);
+		this.context = context;
+
+		PreferenceHelper.createActiveUserRelatedPreferencesIfNeeds(context);
+		String activeUserId = PreferenceHelper.getActiveUserId(context);
+		
+		String activeUserDbFileName = PreferenceHelper.getUserDatabaseFileName(
+				context, activeUserId);
+
+		dbHelper = new DatabaseHelper(context, activeUserDbFileName);
 	}
 
 	public static DataService GetInstance(Context context) {
@@ -841,10 +852,11 @@ public class DataService {
 
 	public void updateEmptyCurrencyCodeToDefaultCurrencyCode() {
 		String defaultCurrencyCode = "";
-		Parameter param = this
-				.getParameterByKey(ParameterKeys.DefaultCurrencyCode);
-		if (param != null && !param.isEmpty()) {
-			defaultCurrencyCode = param.getValue();
+		SharedPreferences prefs = PreferenceHelper
+				.getActiveUserSharedPreferences(context);
+		if (prefs != null) {
+			defaultCurrencyCode = prefs.getString(
+					PreferenceKeys.DefaultCurrencyCode, "");
 		}
 
 		if (!TextUtils.isEmpty(defaultCurrencyCode)) {
@@ -857,10 +869,11 @@ public class DataService {
 
 	public String getDefaultCurrencyCode() {
 		String defaultCurrencyCode = "";
-		Parameter param = this
-				.getParameterByKey(ParameterKeys.DefaultCurrencyCode);
-		if (param != null && param.isEmpty() == false) {
-			defaultCurrencyCode = param.getValue();
+		SharedPreferences prefs = PreferenceHelper
+				.getActiveUserSharedPreferences(context);
+		if (prefs != null) {
+			defaultCurrencyCode = prefs.getString(
+					PreferenceKeys.DefaultCurrencyCode, "");
 		}
 
 		return defaultCurrencyCode != null ? defaultCurrencyCode : "";

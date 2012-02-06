@@ -16,7 +16,9 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.SharedPreferences.Editor;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
@@ -57,11 +59,9 @@ import com.xiaolei.android.common.BaseActivity;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
-import com.xiaolei.android.entity.Parameter;
-import com.xiaolei.android.entity.ParameterKeys;
-import com.xiaolei.android.entity.ParameterUtils;
-import com.xiaolei.android.entity.Parameters;
 import com.xiaolei.android.entity.Stuff;
+import com.xiaolei.android.preference.PreferenceHelper;
+import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
 
 public class BizTracker extends BaseActivity implements OnClickListener,
@@ -205,18 +205,20 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		if (btnDeleteStuff != null) {
 			btnDeleteStuff.setOnClickListener(this);
 		}
+		
+		PreferenceHelper.createActiveUserRelatedPreferencesIfNeeds(this);
+		PreferenceHelper.migrateOldPreferencesIfNeed(this);
 
 		this.defaultCurrencyCode = DataService.GetInstance(this)
 				.getDefaultCurrencyCode();
 		if (tvDefaultCurrencyCode != null) {
 			tvDefaultCurrencyCode.setText(defaultCurrencyCode);
 		}
-
-		Parameter paramPassword = DataService.GetInstance(context)
-				.getParameterByKey(Parameters.Password);
-
-		if (paramPassword != null) {
-			String password = paramPassword.getValue();
+		
+		SharedPreferences prefs = PreferenceHelper
+				.getActiveUserSharedPreferences(this);
+		if (prefs != null) {
+			String password = prefs.getString(PreferenceKeys.Password, "");
 			if (password != null && password.length() > 0) {
 				showInputPasswordDialog();
 			}
@@ -259,8 +261,13 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 		float streamVolumeMax = audioManager
 				.getStreamMaxVolume(AudioManager.STREAM_RING);
-		int streamVolumeCurrent = ParameterUtils.getIntParameterValue(context,
-				Parameter.VOLUME, (int) streamVolumeMax);
+
+		int streamVolumeCurrent = 1;
+		SharedPreferences prefs = PreferenceHelper
+				.getActiveUserSharedPreferences(this);
+		if (prefs != null) {
+			streamVolumeCurrent = prefs.getInt(PreferenceKeys.Volume, 1);
+		}
 
 		volume = streamVolumeCurrent / streamVolumeMax;
 	}
@@ -274,10 +281,11 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		saveDefaultCurrencyCodeToDB = saveToDB;
 		String value = "-1";
 		int selectedItemIndex = -1;
-		Parameter param = DataService.GetInstance(this).getParameterByKey(
-				ParameterKeys.DefaultCurrencyCode);
-		if (param != null) {
-			value = param.getValue();
+
+		SharedPreferences prefs = PreferenceHelper
+				.getActiveUserSharedPreferences(this);
+		if (prefs != null) {
+			value = prefs.getString(PreferenceKeys.DefaultCurrencyCode, "");
 		}
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -299,11 +307,16 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 						tvDefaultCurrencyCode.setText(defaultCurrencyCode);
 
 						if (saveDefaultCurrencyCodeToDB) {
-							Parameter param = new Parameter();
-							param.setKey(ParameterKeys.DefaultCurrencyCode);
-							param.setValue(defaultCurrencyCode);
-							DataService.GetInstance(context).saveParameter(
-									param);
+							SharedPreferences prefs = PreferenceHelper
+									.getActiveUserSharedPreferences(context);
+							if (prefs != null) {
+								Editor editor = prefs.edit();
+								editor.putString(
+										PreferenceKeys.DefaultCurrencyCode,
+										defaultCurrencyCode);
+								editor.commit();
+							}
+
 							DataService
 									.GetInstance(context)
 									.updateEmptyCurrencyCodeToDefaultCurrencyCode();
@@ -1105,12 +1118,12 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 					}
 				});
 				String password = txtPassword.getText().toString();
-				String encryptedPassword = Utility.toMD5String(password);
+				String encryptedPassword = Utility.encrypt(password);
 
-				Parameter paramPassword = DataService.GetInstance(context)
-						.getParameterByKey("password");
-				if (paramPassword != null) {
-					String value = paramPassword.getValue();
+				SharedPreferences prefs = PreferenceHelper
+						.getActiveUserSharedPreferences(context);
+				if (prefs != null) {
+					String value = prefs.getString(PreferenceKeys.Password, "");
 					if (!encryptedPassword.equals(value)) {
 						EditText txtPwd = (EditText) inputPasswordDlg
 								.findViewById(R.id.editTextPassword);

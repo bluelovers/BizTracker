@@ -6,7 +6,6 @@ package com.xiaolei.android.service;
 import java.util.ArrayList;
 
 import com.xiaolei.android.entity.CurrencySchema;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,11 +17,11 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-	private static final String databaseName = "biz_tracker_data.db";
+	public static final String databaseName = "biz_tracker_data.db";
 	private static final int databaseVersion = 7;
 
-	public DatabaseHelper(Context context) {
-		super(context, databaseName, null, databaseVersion);
+	public DatabaseHelper(Context context, String databaseFileName) {
+		super(context, databaseFileName, null, databaseVersion);
 	}
 
 	@Override

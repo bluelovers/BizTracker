@@ -1,22 +1,17 @@
 package com.xiaolei.android.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.Window;
 import android.widget.Toast;
 
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
-import com.xiaolei.android.entity.Parameter;
-import com.xiaolei.android.entity.ParameterUtils;
+import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 
 public class Settings extends PreferenceActivity implements
@@ -31,8 +26,16 @@ public class Settings extends PreferenceActivity implements
 		super.onCreate(savedInstanceState);
 
 		this.setContentView(R.layout.config);
+
+		String activeUserConfigFileName = PreferenceHelper
+				.getActiveUserConfigFileName(this);
+		PreferenceManager pm = this.getPreferenceManager();
+		if(pm != null){
+			pm.setSharedPreferencesName(activeUserConfigFileName);
+		}
+
 		this.addPreferencesFromResource(R.xml.config);
-	
+
 		init();
 	}
 
@@ -49,57 +52,8 @@ public class Settings extends PreferenceActivity implements
 		if (pref != null) {
 			pref.setOnPreferenceClickListener(this);
 		}
-		
-		migrateOldPreferences();
-	}
 
-	/**
-	 * Migrate the old parameter values from sqlite DB to SharedPreference.
-	 */
-	private void migrateOldPreferences() {
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		if (pref != null) {
-			if (pref.getBoolean(PreferenceKeys.IsMigrated, false) == false) {
-				try {
-					// Migrate volume value
-					int volume = ParameterUtils.getIntParameterValue(this,
-							Parameter.VOLUME, -1);
-					if (volume != -1) {
-						Editor editor = pref.edit();
-						if (editor != null) {
-							editor.putInt(PreferenceKeys.Volume, volume);
-							editor.commit();
-						}
-					}
-
-					// Migrate default currency code
-					String defaultCurrencyCode = ParameterUtils
-							.getParameterValue(this,
-									PreferenceKeys.DefaultCurrencyCode, "");
-					if (!TextUtils.isEmpty(defaultCurrencyCode)) {
-						Editor editor = pref.edit();
-						if (editor != null) {
-							editor.putString(
-									PreferenceKeys.DefaultCurrencyCode,
-									defaultCurrencyCode);
-							editor.commit();
-						}
-					}
-
-					// Do not migrate the password, because the encrypt method
-					// is changed.
-				} catch (Exception ex) {
-					Log.e("BizTracker", ex.getMessage());
-				} finally {
-					Editor editor = pref.edit();
-					if (editor != null) {
-						editor.putBoolean(PreferenceKeys.IsMigrated, true);
-						editor.commit();
-					}
-				}
-			}
-		}
+		PreferenceHelper.migrateOldPreferencesIfNeed(this);
 	}
 
 	@Override

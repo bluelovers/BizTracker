@@ -12,6 +12,7 @@ import com.xiaolei.android.service.DataService;
  * @author xiaolei
  * 
  */
+
 public class ParameterUtils {
 	public static int getIntParameterValue(Context context, String key,
 			int defaultValue) {
