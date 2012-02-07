@@ -1,4 +1,4 @@
-package com.xiaolei.android.activity;
+package com.xiaolei.android.ui;
 
 import android.content.Intent;
 import android.os.Bundle;

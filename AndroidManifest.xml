@@ -25,37 +25,37 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.xiaolei.android.activity.FunctionTypes" >
+        <activity android:name="com.xiaolei.android.ui.FunctionTypes" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.TransactionListDaily" >
+        <activity android:name="com.xiaolei.android.ui.TransactionListDaily" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.TransactionListWeekly" >
+        <activity android:name="com.xiaolei.android.ui.TransactionListWeekly" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.TransactionListMonthly" >
+        <activity android:name="com.xiaolei.android.ui.TransactionListMonthly" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.TransactionListDaily" >
+        <activity android:name="com.xiaolei.android.ui.TransactionListDaily" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.TransactionListYearly" >
+        <activity android:name="com.xiaolei.android.ui.TransactionListYearly" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.Config" >
+        <activity android:name="com.xiaolei.android.ui.Config" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.CurrencySettings" >
+        <activity android:name="com.xiaolei.android.ui.CurrencySettings" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.ProjectManager" >
+        <activity android:name="com.xiaolei.android.ui.ProjectManager" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.PagerDailyTransactionList" >
+        <activity android:name="com.xiaolei.android.ui.PagerDailyTransactionList" >
         </activity>
         <activity
-            android:name="com.xiaolei.android.activity.TransactionSearchResult"
+            android:name="com.xiaolei.android.ui.TransactionSearchResult"
             android:windowSoftInputMode="stateVisible" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.PhotoViewer" >
+        <activity android:name="com.xiaolei.android.ui.PhotoViewer" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.ControlPanel" >
+        <activity android:name="com.xiaolei.android.ui.ControlPanel" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.TransactionDetails" >
+        <activity android:name="com.xiaolei.android.ui.TransactionDetails" >
         </activity>
-        <activity android:name="com.xiaolei.android.activity.Settings" >
+        <activity android:name="com.xiaolei.android.ui.Settings" >
         </activity>
     </application>
 

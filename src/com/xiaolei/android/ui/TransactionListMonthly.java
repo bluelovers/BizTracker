@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.xiaolei.android.activity;
+package com.xiaolei.android.ui;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

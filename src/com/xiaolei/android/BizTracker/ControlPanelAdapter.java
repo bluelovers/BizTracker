@@ -14,10 +14,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.xiaolei.android.activity.FunctionTypes;
-import com.xiaolei.android.activity.ProjectManager;
-import com.xiaolei.android.activity.TransactionSearchResult;
 import com.xiaolei.android.entity.ControlPanelItem;
+import com.xiaolei.android.ui.FunctionTypes;
+import com.xiaolei.android.ui.ProjectManager;
+import com.xiaolei.android.ui.TransactionSearchResult;
 
 /**
  * @author xiaolei
@@ -56,7 +56,7 @@ public class ControlPanelAdapter extends BaseAdapter {
 		itemConfig.setName(context.getString(R.string.config));
 		itemConfig.setIconResourceId(R.drawable.config);
 		itemConfig.setIntent(new Intent(context,
-				com.xiaolei.android.activity.Settings.class));
+				com.xiaolei.android.ui.Settings.class));
 
 		itemsSource.add(itemViewHistory);
 		itemsSource.add(itemProject);
