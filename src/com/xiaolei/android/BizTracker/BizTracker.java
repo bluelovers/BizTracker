@@ -1152,6 +1152,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			}
 		});
 
+		//Utility.requestInputMethod(inputPasswordDlg);
 		inputPasswordDlg.show();
 		inputPasswordDlg.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
 				R.drawable.lock);

@@ -114,6 +114,8 @@ public class ExchangeRateListFragment extends Fragment implements
 		if (currencyName.equalsIgnoreCase("US Dollar (USD)")) {
 			txtExchangeRate.setEnabled(false);
 		}
+		
+		Utility.requestInputMethod(dialog);
 	}
 
 	private void fillDataAsync() {

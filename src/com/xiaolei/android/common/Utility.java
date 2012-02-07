@@ -19,6 +19,7 @@ import org.xmlpull.v1.XmlSerializer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnShowListener;
@@ -43,6 +44,8 @@ import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.xiaolei.android.BizTracker.BizTracker;
@@ -764,12 +767,25 @@ public final class Utility {
 			return "";
 		}
 		String[] projection = { MediaStore.Images.Media.DATA };
-		
-		Cursor cursor = activity.managedQuery(photoUri, projection, null, null, null);
+
+		Cursor cursor = activity.managedQuery(photoUri, projection, null, null,
+				null);
 		int column_index = cursor
 				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 		cursor.moveToFirst();
 		return cursor.getString(column_index);
+	}
+
+	/**
+	 * Sets the required flags on the dialog window to enable input method
+	 * window to show up.
+	 */
+	public static void requestInputMethod(Dialog dialog) {
+		try {
+			Window window = dialog.getWindow();
+			window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		} catch (Exception ex) {
+		}
 	}
 
 	/*
