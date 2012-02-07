@@ -47,6 +47,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.xiaolei.android.BizTracker.BizTracker;
 import com.xiaolei.android.BizTracker.R;
@@ -786,6 +787,26 @@ public final class Utility {
 			window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		} catch (Exception ex) {
 		}
+	}
+
+	public static String getDefaultPhotoFolderPath(Context context) {
+		String result = Environment.DIRECTORY_PICTURES;
+		String state = Environment.getExternalStorageState();
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+			result = Environment.getExternalStorageDirectory() + "/"
+					+ "BizTracker/photo";
+			File folder = new File(result);
+			if (!folder.exists()) {
+				boolean photoPathExists = folder.mkdirs();
+				if (photoPathExists == false) {
+					Toast.makeText(
+							context,
+							context.getString(R.string.create_photo_folder_failed),
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+		}
+		return result;
 	}
 
 	/*
