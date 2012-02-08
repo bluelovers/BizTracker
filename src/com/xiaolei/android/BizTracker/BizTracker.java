@@ -134,7 +134,10 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			}
 		}
 
+		PreferenceHelper.createActiveUserRelatedPreferencesIfNeeds(this);
 		service = DataService.GetInstance(this);
+		PreferenceHelper.migrateOldPreferencesIfNeed(this);
+		
 		Button buttonNew = (Button) findViewById(R.id.buttonNew);
 		if (buttonNew != null) {
 			buttonNew.setOnClickListener(this);
@@ -205,9 +208,6 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		if (btnDeleteStuff != null) {
 			btnDeleteStuff.setOnClickListener(this);
 		}
-		
-		PreferenceHelper.createActiveUserRelatedPreferencesIfNeeds(this);
-		PreferenceHelper.migrateOldPreferencesIfNeed(this);
 
 		this.defaultCurrencyCode = DataService.GetInstance(this)
 				.getDefaultCurrencyCode();

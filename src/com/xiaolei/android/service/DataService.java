@@ -43,9 +43,7 @@ public class DataService {
 	private DataService(Context context) {
 		this.context = context;
 
-		PreferenceHelper.createActiveUserRelatedPreferencesIfNeeds(context);
 		String activeUserId = PreferenceHelper.getActiveUserId(context);
-		
 		String activeUserDbFileName = PreferenceHelper.getUserDatabaseFileName(
 				context, activeUserId);
 
