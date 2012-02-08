@@ -1,5 +1,7 @@
 package com.xiaolei.android.BizTracker;
 
+import java.util.Date;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xiaolei.android.common.Utility;
+import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.BizLogSchema;
 
 public class DayLogDataAdapter extends CursorAdapter {
@@ -49,6 +52,16 @@ public class DayLogDataAdapter extends CursorAdapter {
 		String starString = cursor.getString(cursor
 				.getColumnIndex(BizLogSchema.Star));
 		Boolean star = Boolean.parseBoolean(starString);
+		
+		BizLog transactionInfo = new BizLog();
+		transactionInfo.setId(id);
+		transactionInfo.setStuffName(stuffName);
+		transactionInfo.setCost(cost);
+		transactionInfo.setComment(comment);
+		transactionInfo.setLastUpdateTime(Utility.parseDate(value, new Date()));
+		transactionInfo.setCurrencyCode(currencyCode);
+		transactionInfo.setStar(star);
+		view.setTag(transactionInfo);
 
 		TextView tvStuffName = (TextView) view
 				.findViewById(R.id.textViewBizItemStuffName);

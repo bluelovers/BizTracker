@@ -814,6 +814,22 @@ public class DataService {
 		db.execSQL(sql, new String[] { String.valueOf(bizLogId) });
 	}
 
+	public void reverseStar(long transactionId) {
+		Cursor cursor = db.rawQuery("select star from BizLog where _id=?",
+				new String[] { String.valueOf(transactionId) });
+		if (cursor.moveToFirst()) {
+			String star = cursor.getString(cursor.getColumnIndex("Star"));
+			if (star == "true") {
+				star = "false";
+			} else {
+				star = "true";
+			}
+			String sql = "Update BizLog set Star = ? where _id = ?";
+			db.execSQL(sql,
+					new String[] { star, String.valueOf(transactionId) });
+		}
+	}
+
 	public Cursor getStarredBizLog() {
 		String sql = "SELECT s.Name as StuffName, bl.* FROM BizLog as bl left join Stuff s on bl.StuffId = s._Id where Star = 'true' order by bl.LastUpdateTime desc";
 
