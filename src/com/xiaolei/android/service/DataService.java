@@ -819,7 +819,10 @@ public class DataService {
 				new String[] { String.valueOf(transactionId) });
 		if (cursor.moveToFirst()) {
 			String star = cursor.getString(cursor.getColumnIndex("Star"));
-			if (star == "true") {
+			cursor.close();
+			cursor = null;
+
+			if ("true".equals(star)) {
 				star = "false";
 			} else {
 				star = "true";
