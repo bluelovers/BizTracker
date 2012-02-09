@@ -58,7 +58,7 @@ public class FunctionTypes extends Activity implements
 	public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3) {
 		switch (index) {
 		case 0:
-			Intent intent = new Intent(this, PagerDailyTransactionList.class);
+			Intent intent = new Intent(this, DailyTransactionList.class);
 			intent.putExtra("date", new Date());
 			this.startActivityForResult(intent, 0);
 
@@ -149,10 +149,10 @@ public class FunctionTypes extends Activity implements
 								datePicker.getDayOfMonth());
 
 						Date date = cal.getTime();
-						Intent intent = new Intent(context, PagerDailyTransactionList.class);
-						intent.putExtra(PagerDailyTransactionList.KEY_DATE, date);
+						Intent intent = new Intent(context, DailyTransactionList.class);
+						intent.putExtra(DailyTransactionList.KEY_DATE, date);
 						context.startActivityForResult(intent,
-								PagerDailyTransactionList.REQUEST_CODE);
+								DailyTransactionList.REQUEST_CODE);
 
 						dialog.dismiss();
 					}

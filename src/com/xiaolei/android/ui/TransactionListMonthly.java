@@ -92,8 +92,8 @@ public class TransactionListMonthly extends Activity implements
 				Date selectedDate = (Date) adpt.getItem(position);
 				if (selectedDate != null) {
 					Intent intent = new Intent(this,
-							PagerDailyTransactionList.class);
-					intent.putExtra(PagerDailyTransactionList.KEY_DATE,
+							DailyTransactionList.class);
+					intent.putExtra(DailyTransactionList.KEY_DATE,
 							selectedDate);
 					this.startActivityForResult(intent,
 							TransactionListMonthly.REQUEST_CODE);

@@ -55,16 +55,16 @@ public class TransactionListWeekly extends Activity implements OnItemClickListen
 			long arg3) {
 		Date date = (Date) lv.getItemAtPosition(position);
 		//Intent intent = new Intent(this, DayLog.class);
-		Intent intent = new Intent(this, PagerDailyTransactionList.class);
-		intent.putExtra(PagerDailyTransactionList.KEY_DATE, date);
-		this.startActivityForResult(intent, PagerDailyTransactionList.REQUEST_CODE);
+		Intent intent = new Intent(this, DailyTransactionList.class);
+		intent.putExtra(DailyTransactionList.KEY_DATE, date);
+		this.startActivityForResult(intent, DailyTransactionList.REQUEST_CODE);
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == PagerDailyTransactionList.REQUEST_CODE && resultCode == RESULT_OK) {
+		if (requestCode == DailyTransactionList.REQUEST_CODE && resultCode == RESULT_OK) {
 			setResult(RESULT_OK, new Intent());
 			fillData();
 		}

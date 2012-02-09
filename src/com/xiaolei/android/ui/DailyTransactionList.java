@@ -28,7 +28,7 @@ import com.xiaolei.android.listener.OnNotifyDataChangedListener;
  * @author xiaolei
  * 
  */
-public class PagerDailyTransactionList extends FragmentActivity implements
+public class DailyTransactionList extends FragmentActivity implements
 		OnPageChangeListener, OnClickListener, OnNotifyDataChangedListener {
 
 	private Date date = new Date();
@@ -156,7 +156,7 @@ public class PagerDailyTransactionList extends FragmentActivity implements
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
 			case BizTracker.REQUEST_CODE:
-			case PagerDailyTransactionList.REQUEST_CODE:
+			case DailyTransactionList.REQUEST_CODE:
 				if (adapter != null) {
 					adapter.notifyDataSetChanged();
 				}
