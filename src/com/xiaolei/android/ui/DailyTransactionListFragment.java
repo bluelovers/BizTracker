@@ -26,7 +26,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
-import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -39,6 +38,7 @@ import com.xiaolei.android.BizTracker.Helper;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
+import com.xiaolei.android.listener.OnNotifyDataChangedListener;
 import com.xiaolei.android.service.DataService;
 
 /**
@@ -52,10 +52,18 @@ public class DailyTransactionListFragment extends Fragment implements
 	private ViewType viewType = ViewType.Unknown;
 	private String searchKeyword = "";
 	private Date date = new Date();
+	private OnNotifyDataChangedListener onNotifyDataChangedListener;
+	private Cursor mCursor = null;
 
-	public DailyTransactionListFragment() {
-		super();
-		context = this;
+	public void setOnNotifyDataChangedListener(
+			OnNotifyDataChangedListener listener) {
+		onNotifyDataChangedListener = listener;
+	}
+
+	public void notifyDataChanged() {
+		if (onNotifyDataChangedListener != null) {
+			onNotifyDataChangedListener.onNotifyDataChanged(this);
+		}
 	}
 
 	public void showTransactionListByDate(Date date) {
@@ -85,7 +93,8 @@ public class DailyTransactionListFragment extends Fragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View result = inflater.inflate(
-				R.layout.daily_transaction_list_fragment, container);
+				R.layout.daily_transaction_list_fragment, container, false);
+		context = this;
 		if (result != null) {
 			ListView lv = (ListView) result
 					.findViewById(R.id.listViewBizLogByDay);
@@ -106,20 +115,11 @@ public class DailyTransactionListFragment extends Fragment implements
 
 	@Override
 	public void onDestroyView() {
-		if (getView() != null) {
-			ListView lv = (ListView) getView().findViewById(
-					R.id.listViewBizLogByDay);
-			if (lv != null) {
-				CursorAdapter adpt = (CursorAdapter) lv.getAdapter();
-				if (adpt != null) {
-					Cursor cursor = adpt.getCursor();
-					if (cursor != null && !cursor.isClosed()) {
-						cursor.close();
-						cursor = null;
-					}
-				}
-			}
+		if (mCursor != null && !mCursor.isClosed()) {
+			mCursor.close();
+			mCursor = null;
 		}
+
 		super.onDestroyView();
 
 	}
@@ -137,6 +137,7 @@ public class DailyTransactionListFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(Cursor result) {
+				mCursor = result;
 				if (result.getCount() > 0) {
 					ListView lv = (ListView) getView().findViewById(
 							R.id.listViewBizLogByDay);
@@ -185,6 +186,7 @@ public class DailyTransactionListFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(Cursor result) {
+				mCursor = result;
 				if (result.getCount() > 0) {
 					ListView lv = (ListView) getView().findViewById(
 							R.id.listViewBizLogByDay);
@@ -236,6 +238,7 @@ public class DailyTransactionListFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(Cursor result) {
+				mCursor = result;
 				if (result != null) {
 					if (result.getCount() > 0) {
 						ListView lv = (ListView) getView().findViewById(
@@ -246,7 +249,7 @@ public class DailyTransactionListFragment extends Fragment implements
 
 							if (listAdapter == null) {
 								listAdapter = new DayLogDataAdapter(
-										getActivity(), result, false, context);
+										getActivity(), result, true, context);
 								lv.setAdapter(listAdapter);
 							} else {
 								listAdapter.changeCursor(result);
@@ -270,7 +273,7 @@ public class DailyTransactionListFragment extends Fragment implements
 				}
 			}
 		};
-		task.execute();
+		task.execute(date);
 	}
 
 	@Override
@@ -341,6 +344,8 @@ public class DailyTransactionListFragment extends Fragment implements
 		default:
 			break;
 		}
+
+		notifyDataChanged();
 	}
 
 	private void showItemOptionMenu(final BizLog transactionInfo) {

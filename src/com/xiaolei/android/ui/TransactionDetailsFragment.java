@@ -71,7 +71,7 @@ public class TransactionDetailsFragment extends Fragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View result = inflater.inflate(R.layout.transaction_details_fragment,
-				container);
+				container, false);
 		if (result != null) {
 			RelativeLayout relativeLayoutNoPhoto = (RelativeLayout) result
 					.findViewById(R.id.relativeLayoutNoPhoto);
@@ -175,6 +175,7 @@ public class TransactionDetailsFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(Cursor result) {
+				cursor = result;
 				showPhotoData(result);
 				ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
 						R.id.viewFlipperTransactionPhoto);

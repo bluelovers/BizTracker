@@ -58,7 +58,6 @@ public class FunctionTypes extends Activity implements
 	public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3) {
 		switch (index) {
 		case 0:
-			// Intent intent = new Intent(this, DayLog.class);
 			Intent intent = new Intent(this, PagerDailyTransactionList.class);
 			intent.putExtra("date", new Date());
 			this.startActivityForResult(intent, 0);
