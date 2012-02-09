@@ -27,7 +27,7 @@
         </activity>
         <activity android:name="com.xiaolei.android.ui.FunctionTypes" >
         </activity>
-        <activity android:name="com.xiaolei.android.ui.TransactionListDaily" >
+        <activity android:name="com.xiaolei.android.ui.TransactionList" >
         </activity>
         <activity android:name="com.xiaolei.android.ui.TransactionListWeekly" >
         </activity>

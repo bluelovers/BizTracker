@@ -92,10 +92,10 @@ public class FunctionTypes extends Activity implements
 	}
 
 	private void showStarredBizLog() {
-		Intent intent = new Intent(this, TransactionListDaily.class);
-		intent.putExtra(TransactionListDaily.KEY_TITLE, getString(R.string.starred_biz_log));
-		intent.putExtra(TransactionListDaily.KEY_SHOW_FULL_DATE, true);
-		intent.putExtra(TransactionListDaily.KEY_SHOW_STARRED_RECORDS, true);
+		Intent intent = new Intent(this, TransactionList.class);
+		intent.putExtra(TransactionList.KEY_TITLE, getString(R.string.starred_biz_log));
+		intent.putExtra(TransactionList.KEY_SHOW_FULL_DATE, true);
+		intent.putExtra(TransactionList.KEY_SHOW_STARRED_RECORDS, true);
 		this.startActivityForResult(intent, 0);
 	}
 
@@ -189,7 +189,7 @@ public class FunctionTypes extends Activity implements
 
 			String searchKeyword = textView.getText().toString();
 
-			Intent intent = new Intent(this, TransactionListDaily.class);
+			Intent intent = new Intent(this, TransactionList.class);
 			intent.putExtra("title", searchKeyword);
 			intent.putExtra("searchKeyword", searchKeyword);
 			this.startActivityForResult(intent, 0);

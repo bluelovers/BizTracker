@@ -18,9 +18,9 @@ import com.xiaolei.android.common.Utility;
  * @author xiaolei
  * 
  */
-public class TransactionListDaily extends FragmentActivity {
+public class TransactionList extends FragmentActivity {
 
-	private TransactionListDaily context;
+	private TransactionList context;
 	private Date date;
 	private String searchKeyword = "";
 	private String title = "";

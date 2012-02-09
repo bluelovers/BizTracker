@@ -67,17 +67,23 @@ public class DailyTransactionListFragment extends Fragment implements
 	}
 
 	public void showTransactionListByDate(Date date) {
+		super.setHasOptionsMenu(true);
 		this.date = date;
 		viewType = ViewType.DailyTransactionList;
+		
 		fillDataAsync(date);
 	}
 
 	public void showFavouriteTransactionList() {
+		super.setHasOptionsMenu(false);
+		
 		viewType = ViewType.FavouriteTransactionList;
 		fillFavouriteTransactionListAsync();
 	}
 
 	public void search(String keyword) {
+		super.setHasOptionsMenu(false);
+		
 		searchKeyword = keyword;
 		viewType = ViewType.SearchTransactionList;
 		searchAsync(keyword);
@@ -167,6 +173,10 @@ public class DailyTransactionListFragment extends Fragment implements
 								.findViewById(R.id.viewSwitcherDayBizLog);
 						viewSwitcher.setDisplayedChild(1);
 					}
+				}else{
+					ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
+							.findViewById(R.id.viewSwitcherDayBizLog);
+					viewSwitcher.setDisplayedChild(1);
 				}
 			}
 		};
@@ -249,7 +259,7 @@ public class DailyTransactionListFragment extends Fragment implements
 
 							if (listAdapter == null) {
 								listAdapter = new DayLogDataAdapter(
-										getActivity(), result, true, context);
+										getActivity(), result, false, context);
 								lv.setAdapter(listAdapter);
 							} else {
 								listAdapter.changeCursor(result);

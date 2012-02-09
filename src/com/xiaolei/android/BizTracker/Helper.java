@@ -87,6 +87,7 @@ public final class Helper {
 				index++;
 			} while (cursor.moveToNext());
 		}
+		cursor.close();
 
 		CharSequence[] items = new CharSequence[0];
 		builder.setSingleChoiceItems(strings.toArray(items), selectedItemIndex,
@@ -108,7 +109,7 @@ public final class Helper {
 
 			@Override
 			public void onCancel(DialogInterface dialog) {
-				cursor.close();
+				
 			}});
 		builder.show();
 	}
