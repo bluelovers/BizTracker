@@ -3,7 +3,6 @@
  */
 package com.xiaolei.android.ui;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import android.app.Activity;
@@ -16,9 +15,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -32,7 +28,6 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import com.xiaolei.android.BizTracker.BizTracker;
 import com.xiaolei.android.BizTracker.DayLogDataAdapter;
 import com.xiaolei.android.BizTracker.Helper;
 import com.xiaolei.android.BizTracker.R;
@@ -70,20 +65,20 @@ public class DailyTransactionListFragment extends Fragment implements
 		super.setHasOptionsMenu(true);
 		this.date = date;
 		viewType = ViewType.DailyTransactionList;
-		
+
 		fillDataAsync(date);
 	}
 
 	public void showFavouriteTransactionList() {
 		super.setHasOptionsMenu(false);
-		
+
 		viewType = ViewType.FavouriteTransactionList;
 		fillFavouriteTransactionListAsync();
 	}
 
 	public void search(String keyword) {
 		super.setHasOptionsMenu(false);
-		
+
 		searchKeyword = keyword;
 		viewType = ViewType.SearchTransactionList;
 		searchAsync(keyword);
@@ -173,7 +168,7 @@ public class DailyTransactionListFragment extends Fragment implements
 								.findViewById(R.id.viewSwitcherDayBizLog);
 						viewSwitcher.setDisplayedChild(1);
 					}
-				}else{
+				} else {
 					ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
 							.findViewById(R.id.viewSwitcherDayBizLog);
 					viewSwitcher.setDisplayedChild(1);
@@ -251,34 +246,39 @@ public class DailyTransactionListFragment extends Fragment implements
 				mCursor = result;
 				if (result != null) {
 					if (result.getCount() > 0) {
-						ListView lv = (ListView) getView().findViewById(
-								R.id.listViewBizLogByDay);
-						if (lv != null) {
-							DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv
-									.getAdapter();
+						if (getView() != null) {
+							ListView lv = (ListView) getView().findViewById(
+									R.id.listViewBizLogByDay);
+							if (lv != null) {
+								DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv
+										.getAdapter();
 
-							if (listAdapter == null) {
-								listAdapter = new DayLogDataAdapter(
-										getActivity(), result, false, context);
-								lv.setAdapter(listAdapter);
-							} else {
-								listAdapter.changeCursor(result);
+								if (listAdapter == null) {
+									listAdapter = new DayLogDataAdapter(
+											getActivity(), result, false,
+											context);
+									lv.setAdapter(listAdapter);
+								} else {
+									listAdapter.changeCursor(result);
+								}
 							}
-						}
 
-						ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
-								.findViewById(R.id.viewSwitcherDayBizLog);
-						if (viewSwitcher.getDisplayedChild() != 0) {
-							viewSwitcher.showNext();
-						}
+							ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
+									.findViewById(R.id.viewSwitcherDayBizLog);
+							if (viewSwitcher.getDisplayedChild() != 0) {
+								viewSwitcher.showNext();
+							}
 
-						ViewSwitcher viewSwitcherContent = (ViewSwitcher) getView()
-								.findViewById(R.id.viewSwitcherContent);
-						viewSwitcherContent.setDisplayedChild(1);
+							ViewSwitcher viewSwitcherContent = (ViewSwitcher) getView()
+									.findViewById(R.id.viewSwitcherContent);
+							viewSwitcherContent.setDisplayedChild(1);
+						}
 					} else {
-						ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
-								.findViewById(R.id.viewSwitcherDayBizLog);
-						viewSwitcher.setDisplayedChild(1);
+						if (getView() != null) {
+							ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
+									.findViewById(R.id.viewSwitcherDayBizLog);
+							viewSwitcher.setDisplayedChild(1);
+						}
 					}
 				}
 			}
@@ -341,6 +341,11 @@ public class DailyTransactionListFragment extends Fragment implements
 	}
 
 	public void reload() {
+		if (mCursor != null && !mCursor.isClosed()) {
+			mCursor.close();
+			mCursor = null;
+		}
+
 		switch (viewType) {
 		case DailyTransactionList:
 			this.fillDataAsync(date);
@@ -595,84 +600,6 @@ public class DailyTransactionListFragment extends Fragment implements
 						dialog.dismiss();
 					}
 				});
-	}
-
-	public boolean onCreateOptionsMenu(Menu menu) {
-		if (viewType != ViewType.DailyTransactionList) {
-			return true;
-		}
-
-		MenuInflater inflater = getActivity().getMenuInflater();
-		inflater.inflate(R.menu.menu_for_biz_log, menu);
-
-		Date now = new Date();
-		if (date != null && date.after(now)) {
-			MenuItem item = menu.getItem(0);
-			item.setEnabled(false);
-		} else {
-			MenuItem item = menu.getItem(0);
-			item.setEnabled(true);
-		}
-
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.itemAppendLog:
-			Intent intent = new Intent(getActivity(), BizTracker.class);
-
-			// Use current time
-			if (date != null) {
-				Date now = new Date();
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(date);
-				cal.set(Calendar.HOUR_OF_DAY, now.getHours());
-				cal.set(Calendar.MINUTE, now.getMinutes());
-				cal.set(Calendar.SECOND, now.getSeconds());
-				date = cal.getTime();
-			}
-
-			intent.putExtra("UpdateDate", date);
-			startActivityForResult(intent, 0);
-
-			return true;
-		case R.id.itemRemoveTodayLog:
-			Utility.showConfirmDialog(getActivity(),
-					getString(R.string.reset_today_cost),
-					getString(R.string.confirm_reset_today_cost),
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							deleteTodayCostHistoryAsync();
-						}
-					});
-
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
-
-	private void deleteTodayCostHistoryAsync() {
-		AsyncTask<Boolean, Void, Boolean> task = new AsyncTask<Boolean, Void, Boolean>() {
-
-			@Override
-			protected Boolean doInBackground(Boolean... params) {
-				DataService.GetInstance(getActivity()).resetHistoryByDate(date);
-				return true;
-			}
-
-			@Override
-			protected void onPostExecute(Boolean result) {
-				if (result) {
-					getActivity().setResult(Activity.RESULT_OK);
-					reload();
-				}
-			}
-		};
-		task.execute();
 	}
 
 	public enum ViewType {
