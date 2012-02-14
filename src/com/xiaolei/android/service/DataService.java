@@ -636,6 +636,29 @@ public class DataService {
 		return cursor;
 	}
 
+	public Cursor getTransactionListByDateRange(Date startDate, Date endDate) {
+		Cursor result = null;
+		if (startDate == null || endDate == null) {
+			return result;
+		}
+
+		String sql = "SELECT s.Name as StuffName, bl.* FROM BizLog as bl left join Stuff s on bl.StuffId = s._Id where bl.LastUpdateTime between ? and ? order by bl.LastUpdateTime desc";
+
+		startDate.setHours(0);
+		startDate.setMinutes(0);
+		startDate.setSeconds(0);
+
+		endDate.setHours(0);
+		endDate.setMinutes(0);
+		endDate.setSeconds(0);
+
+		result = db.rawQuery(sql,
+				new String[] { Utility.getSqliteDateTimeString(startDate),
+						Utility.getSqliteDateTimeString(endDate) });
+
+		return result;
+	}
+
 	public Cursor getBizLogByProjectId(long projectId) {
 		String sql = "SELECT s.Name as StuffName, bl.* FROM BizLog as bl left join Stuff s on bl.StuffId = s._Id"
 				+ " where bl._id in (Select TransactionId from TransactionProjectRelation where ProjectId = ?) order by bl.LastUpdateTime desc";

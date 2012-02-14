@@ -47,6 +47,8 @@ public class DailyTransactionListFragment extends Fragment implements
 	private ViewType viewType = ViewType.Unknown;
 	private String searchKeyword = "";
 	private Date date = new Date();
+	private Date startDate;
+	private Date endDate;
 	private OnNotifyDataChangedListener onNotifyDataChangedListener;
 	private Cursor mCursor = null;
 
@@ -74,6 +76,36 @@ public class DailyTransactionListFragment extends Fragment implements
 
 		viewType = ViewType.FavouriteTransactionList;
 		fillFavouriteTransactionListAsync();
+	}
+
+	public void showDateRangeTransactionList(Date startDate, Date endDate) {
+		super.setHasOptionsMenu(false);
+
+		this.startDate = startDate;
+		this.endDate = endDate;
+		viewType = ViewType.DateRangeTransactionList;
+
+		AsyncTask<Date, Void, Cursor> task = new AsyncTask<Date, Void, Cursor>() {
+
+			@Override
+			protected Cursor doInBackground(Date... dates) {
+				Cursor result = null;
+				if (dates != null && dates.length == 2) {
+					Date startDate = dates[0];
+					Date endDate = dates[1];
+					result = DataService.GetInstance(getActivity())
+							.getTransactionListByDateRange(startDate, endDate);
+				}
+
+				return result;
+			}
+
+			@Override
+			protected void onPostExecute(Cursor result) {
+				showData(result);
+			}
+		};
+		task.execute(this.startDate, this.endDate);
 	}
 
 	public void search(String keyword) {
@@ -108,6 +140,56 @@ public class DailyTransactionListFragment extends Fragment implements
 		return result;
 	}
 
+	private void showData(Cursor result) {
+		if (mCursor != null && !mCursor.isClosed()) {
+			mCursor.close();
+			mCursor = null;
+		}
+		mCursor = result;
+		if (result != null) {
+			if (result.getCount() > 0) {
+				if (getView() != null) {
+					ListView lv = (ListView) getView().findViewById(
+							R.id.listViewBizLogByDay);
+					if (lv != null) {
+						DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv
+								.getAdapter();
+
+						if (listAdapter == null) {
+							listAdapter = new DayLogDataAdapter(getActivity(),
+									result, false, context);
+							lv.setAdapter(listAdapter);
+						} else {
+							listAdapter.changeCursor(result);
+						}
+					}
+
+					ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
+							.findViewById(R.id.viewSwitcherDayBizLog);
+					if (viewSwitcher.getDisplayedChild() != 0) {
+						viewSwitcher.showNext();
+					}
+
+					ViewSwitcher viewSwitcherContent = (ViewSwitcher) getView()
+							.findViewById(R.id.viewSwitcherContent);
+					viewSwitcherContent.setDisplayedChild(1);
+				}
+			} else {
+				if (getView() != null) {
+					ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
+							.findViewById(R.id.viewSwitcherDayBizLog);
+					viewSwitcher.setDisplayedChild(1);
+				}
+			}
+		} else {
+			if (getView() != null) {
+				ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
+						.findViewById(R.id.viewSwitcherDayBizLog);
+				viewSwitcher.setDisplayedChild(1);
+			}
+		}
+	}
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -125,7 +207,7 @@ public class DailyTransactionListFragment extends Fragment implements
 
 	}
 
-	public void fillFavouriteTransactionListAsync() {
+	private void fillFavouriteTransactionListAsync() {
 		AsyncTask<Boolean, Void, Cursor> task = new AsyncTask<Boolean, Void, Cursor>() {
 
 			@Override
@@ -138,41 +220,7 @@ public class DailyTransactionListFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(Cursor result) {
-				mCursor = result;
-				if (result.getCount() > 0) {
-					ListView lv = (ListView) getView().findViewById(
-							R.id.listViewBizLogByDay);
-					if (lv != null) {
-						DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv
-								.getAdapter();
-
-						if (listAdapter == null) {
-							listAdapter = new DayLogDataAdapter(getActivity(),
-									result, true, context);
-							lv.setAdapter(listAdapter);
-						} else {
-							listAdapter.changeCursor(result);
-						}
-
-						ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
-								.findViewById(R.id.viewSwitcherDayBizLog);
-						if (viewSwitcher.getDisplayedChild() != 0) {
-							viewSwitcher.showNext();
-						}
-
-						ViewSwitcher viewSwitcherContent = (ViewSwitcher) getView()
-								.findViewById(R.id.viewSwitcherContent);
-						viewSwitcherContent.setDisplayedChild(1);
-					} else {
-						ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
-								.findViewById(R.id.viewSwitcherDayBizLog);
-						viewSwitcher.setDisplayedChild(1);
-					}
-				} else {
-					ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
-							.findViewById(R.id.viewSwitcherDayBizLog);
-					viewSwitcher.setDisplayedChild(1);
-				}
+				showData(result);
 			}
 		};
 		task.execute();
@@ -191,37 +239,7 @@ public class DailyTransactionListFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(Cursor result) {
-				mCursor = result;
-				if (result.getCount() > 0) {
-					ListView lv = (ListView) getView().findViewById(
-							R.id.listViewBizLogByDay);
-					if (lv != null) {
-						DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv
-								.getAdapter();
-
-						if (listAdapter == null) {
-							listAdapter = new DayLogDataAdapter(getActivity(),
-									result, true, context);
-							lv.setAdapter(listAdapter);
-						} else {
-							listAdapter.changeCursor(result);
-						}
-
-						ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
-								.findViewById(R.id.viewSwitcherDayBizLog);
-						if (viewSwitcher.getDisplayedChild() != 0) {
-							viewSwitcher.showNext();
-						}
-
-						ViewSwitcher viewSwitcherContent = (ViewSwitcher) getView()
-								.findViewById(R.id.viewSwitcherContent);
-						viewSwitcherContent.setDisplayedChild(1);
-					} else {
-						ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
-								.findViewById(R.id.viewSwitcherDayBizLog);
-						viewSwitcher.setDisplayedChild(1);
-					}
-				}
+				showData(result);
 			}
 		};
 		task.execute(keyword);
@@ -243,44 +261,7 @@ public class DailyTransactionListFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(Cursor result) {
-				mCursor = result;
-				if (result != null) {
-					if (result.getCount() > 0) {
-						if (getView() != null) {
-							ListView lv = (ListView) getView().findViewById(
-									R.id.listViewBizLogByDay);
-							if (lv != null) {
-								DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv
-										.getAdapter();
-
-								if (listAdapter == null) {
-									listAdapter = new DayLogDataAdapter(
-											getActivity(), result, false,
-											context);
-									lv.setAdapter(listAdapter);
-								} else {
-									listAdapter.changeCursor(result);
-								}
-							}
-
-							ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
-									.findViewById(R.id.viewSwitcherDayBizLog);
-							if (viewSwitcher.getDisplayedChild() != 0) {
-								viewSwitcher.showNext();
-							}
-
-							ViewSwitcher viewSwitcherContent = (ViewSwitcher) getView()
-									.findViewById(R.id.viewSwitcherContent);
-							viewSwitcherContent.setDisplayedChild(1);
-						}
-					} else {
-						if (getView() != null) {
-							ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
-									.findViewById(R.id.viewSwitcherDayBizLog);
-							viewSwitcher.setDisplayedChild(1);
-						}
-					}
-				}
+				showData(result);
 			}
 		};
 		task.execute(date);
@@ -355,6 +336,9 @@ public class DailyTransactionListFragment extends Fragment implements
 			break;
 		case FavouriteTransactionList:
 			this.showFavouriteTransactionList();
+			break;
+		case DateRangeTransactionList:
+			this.showDateRangeTransactionList(startDate, endDate);
 			break;
 		default:
 			break;
@@ -603,6 +587,6 @@ public class DailyTransactionListFragment extends Fragment implements
 	}
 
 	public enum ViewType {
-		Unknown, DailyTransactionList, SearchTransactionList, FavouriteTransactionList
+		Unknown, DailyTransactionList, SearchTransactionList, FavouriteTransactionList, DateRangeTransactionList
 	}
 }

@@ -28,11 +28,17 @@ public class TransactionList extends FragmentActivity {
 	private boolean showFullDateTime = false;
 	private boolean getStarredBizLog = false;
 
+	private Date startDate;
+	private Date endDate;
+
 	public static final String KEY_DATE = "date";
 	public static final String KEY_SHOW_FULL_DATE = "showFullDateTime";
 	public static final String KEY_SEARCH_KEYWORD = "searchKeyword";
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_SHOW_STARRED_RECORDS = "getStarredBizLog";
+
+	public static final String KEY_START_DATE = "StartDate";
+	public static final String KEY_END_DATE = "EndDate";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -52,6 +58,14 @@ public class TransactionList extends FragmentActivity {
 				if (extras != null) {
 					if (extras.containsKey(KEY_DATE)) {
 						date = (Date) extras.get(KEY_DATE);
+					}
+
+					if (extras.containsKey(KEY_START_DATE)) {
+						date = (Date) extras.get(KEY_START_DATE);
+					}
+
+					if (extras.containsKey(KEY_END_DATE)) {
+						date = (Date) extras.get(KEY_END_DATE);
 					}
 
 					if (extras.containsKey(KEY_SHOW_FULL_DATE)) {
@@ -98,6 +112,8 @@ public class TransactionList extends FragmentActivity {
 					fragment.search(searchKeyword);
 				} else if (getStarredBizLog) {
 					fragment.showFavouriteTransactionList();
+				} else if (startDate != null && endDate != null) {
+					fragment.showDateRangeTransactionList(startDate, endDate);
 				} else {
 					fragment.showTransactionListByDate(date);
 				}
