@@ -603,7 +603,7 @@ public final class Utility {
 		return alertDialog;
 	}
 
-	public static Boolean DateEquals(Date date1, Date date2) {
+	public static boolean dateEquals(Date date1, Date date2) {
 		if (date1 == null || date2 == null) {
 			return false;
 		}

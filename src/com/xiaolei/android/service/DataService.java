@@ -648,9 +648,9 @@ public class DataService {
 		startDate.setMinutes(0);
 		startDate.setSeconds(0);
 
-		endDate.setHours(0);
-		endDate.setMinutes(0);
-		endDate.setSeconds(0);
+		endDate.setHours(23);
+		endDate.setMinutes(59);
+		endDate.setSeconds(59);
 
 		result = db.rawQuery(sql,
 				new String[] { Utility.getSqliteDateTimeString(startDate),

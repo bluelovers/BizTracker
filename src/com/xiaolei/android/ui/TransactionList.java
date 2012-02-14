@@ -39,6 +39,7 @@ public class TransactionList extends FragmentActivity {
 
 	public static final String KEY_START_DATE = "StartDate";
 	public static final String KEY_END_DATE = "EndDate";
+	protected static final int REQUEST_CODE = 1223;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -61,11 +62,11 @@ public class TransactionList extends FragmentActivity {
 					}
 
 					if (extras.containsKey(KEY_START_DATE)) {
-						date = (Date) extras.get(KEY_START_DATE);
+						startDate = (Date) extras.get(KEY_START_DATE);
 					}
 
 					if (extras.containsKey(KEY_END_DATE)) {
-						date = (Date) extras.get(KEY_END_DATE);
+						endDate = (Date) extras.get(KEY_END_DATE);
 					}
 
 					if (extras.containsKey(KEY_SHOW_FULL_DATE)) {

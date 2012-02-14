@@ -156,8 +156,14 @@ public class DailyTransactionListFragment extends Fragment implements
 								.getAdapter();
 
 						if (listAdapter == null) {
+							boolean showFullDate = false;
+							if (this.viewType == ViewType.SearchTransactionList
+									|| this.viewType == ViewType.DateRangeTransactionList) {
+								showFullDate = true;
+							}
+
 							listAdapter = new DayLogDataAdapter(getActivity(),
-									result, false, context);
+									result, showFullDate, context);
 							lv.setAdapter(listAdapter);
 						} else {
 							listAdapter.changeCursor(result);

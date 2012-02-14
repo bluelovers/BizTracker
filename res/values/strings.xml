@@ -155,5 +155,9 @@
     <string name="sound">Sound</string>
     <string name="volume">Volume</string>
     <string name="volume_description">Change the volume of the button click</string>
+    <string name="search_by_date_range">By date range</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="choose_date_range">Choose date range</string>
 
 </resources>
