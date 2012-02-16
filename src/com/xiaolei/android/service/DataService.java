@@ -1122,6 +1122,10 @@ public class DataService {
 				String star = cursor.getString(cursor
 						.getColumnIndex(BizLogSchema.Star));
 				result.setStar("true".equals(star));
+				result.setLocation(cursor.getString(cursor
+						.getColumnIndex(BizLogSchema.Location)));
+				result.setLocationName(cursor.getString(cursor
+						.getColumnIndex(BizLogSchema.LocationName)));
 			}
 			cursor.close();
 			cursor = null;

@@ -18,6 +18,8 @@ public class BizLog {
 	private Boolean Star;
 	private String Comment;
 	private String stuffName;
+	private String locationName;
+	private String location;
 
 	/**
 	 * @param id
@@ -137,4 +139,22 @@ public class BizLog {
 	public String getStuffName() {
 		return stuffName;
 	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+
 }

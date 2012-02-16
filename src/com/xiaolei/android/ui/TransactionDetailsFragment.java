@@ -213,6 +213,8 @@ public class TransactionDetailsFragment extends Fragment implements
 				.findViewById(R.id.textViewTransactionCost);
 		TextView tvTransactionComment = (TextView) container
 				.findViewById(R.id.textViewTransactionComment);
+		TextView tvLocation = (TextView) container
+				.findViewById(R.id.textViewLocation);
 
 		// ImageView ivStar = (ImageView) findViewById(R.id.imageViewTDStar);
 
@@ -236,6 +238,10 @@ public class TransactionDetailsFragment extends Fragment implements
 		}
 		if (tvTransactionComment != null) {
 			tvTransactionComment.setText(log.getComment());
+		}
+		
+		if(tvLocation != null){
+			tvLocation.setText(log.getLocationName());
 		}
 	}
 
