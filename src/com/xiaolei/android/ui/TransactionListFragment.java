@@ -40,9 +40,9 @@ import com.xiaolei.android.service.DataService;
  * @author xiaolei
  * 
  */
-public class DailyTransactionListFragment extends Fragment implements
+public class TransactionListFragment extends Fragment implements
 		OnClickListener, OnItemClickListener, OnItemLongClickListener {
-	private DailyTransactionListFragment context;
+	private TransactionListFragment context;
 	public static final int REQUEST_CODE = 1118;
 	private ViewType viewType = ViewType.Unknown;
 	private String searchKeyword = "";
@@ -126,7 +126,7 @@ public class DailyTransactionListFragment extends Fragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View result = inflater.inflate(
-				R.layout.daily_transaction_list_fragment, container, false);
+				R.layout.transaction_list_fragment, container, false);
 		context = this;
 		if (result != null) {
 			ListView lv = (ListView) result

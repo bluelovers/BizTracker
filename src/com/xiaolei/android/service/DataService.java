@@ -738,6 +738,45 @@ public class DataService {
 		return cursor;
 	}
 
+	public enum TransactionType {
+		Unknown, Income, Expense
+	}
+
+	public enum ComparationType {
+		Unknown, Minimum, Maximum
+	}
+
+	public Cursor getTransaction(Date startDate, Date endDate,
+			TransactionType transactionType, ComparationType comparationType) {
+		Cursor result = null;
+		String sql = "";
+
+		String defaultCurrencyCode = this.getDefaultCurrencyCode();
+		double defaultCurrencyUSDExchangeRate = this
+				.getUSDExchangeRate(defaultCurrencyCode);
+
+		if (!TextUtils.isEmpty(defaultCurrencyCode)
+				&& defaultCurrencyUSDExchangeRate > 0) {
+			sql = "SELECT * from ("
+					+ String.format(
+							"SELECT bl.*, case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else (bl.Cost / c.USDExchangeRate) * %s end as CostOfDefaultCurrency from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost "
+									+ (transactionType == TransactionType.Income ? ">"
+											: "<")
+									+ " 0 and bl.LastUpdateTime between ? and ?",
+							defaultCurrencyCode, String
+									.valueOf(defaultCurrencyUSDExchangeRate))
+					+ ") order by CostOfDefaultCurrency "
+					+ (comparationType == ComparationType.Minimum ? "asc"
+							: "desc") + " limit 1";
+		}
+
+		String sd = Utility.getSqliteDateTimeString(startDate);
+		String ed = Utility.getSqliteDateTimeString(endDate);
+		result = db.rawQuery(sql, new String[] { sd, ed });
+		
+		return result;
+	}
+
 	public double getTotalPay(Date startDate, Date endDate) {
 		double result = 0;
 

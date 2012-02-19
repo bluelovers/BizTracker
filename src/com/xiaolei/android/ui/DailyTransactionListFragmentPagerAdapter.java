@@ -65,7 +65,7 @@ public class DailyTransactionListFragmentPagerAdapter extends
 	 */
 	@Override
 	public Fragment getItem(int position) {
-		DailyTransactionListFragment result = new DailyTransactionListFragment();
+		TransactionListFragment result = new TransactionListFragment();
 		Date date = Utility.addDays(mDate, position);
 		result.setOnNotifyDataChangedListener(this);
 

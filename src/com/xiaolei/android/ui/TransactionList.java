@@ -106,7 +106,7 @@ public class TransactionList extends FragmentActivity {
 
 		FragmentManager fragMan = this.getSupportFragmentManager();
 		if (fragMan != null) {
-			DailyTransactionListFragment fragment = (DailyTransactionListFragment) fragMan
+			TransactionListFragment fragment = (TransactionListFragment) fragMan
 					.findFragmentById(R.id.fragmentDailyTransactionList);
 			if (fragment != null) {
 				if (!TextUtils.isEmpty(searchKeyword)) {

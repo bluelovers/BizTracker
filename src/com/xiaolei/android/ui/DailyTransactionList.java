@@ -241,7 +241,7 @@ public class DailyTransactionList extends FragmentActivity implements
 
 	private void reload() {
 		if (adapter != null) {
-			DailyTransactionListFragment fragment = (DailyTransactionListFragment) adapter
+			TransactionListFragment fragment = (TransactionListFragment) adapter
 					.getFragmentAtPosition(currentPosition);
 			if (fragment != null) {
 				fragment.reload();
