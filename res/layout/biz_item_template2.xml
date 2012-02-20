@@ -100,6 +100,17 @@
                 android:gravity="right|center"
                 android:text="USD" >
             </TextView>
+
+            <CheckBox
+                android:id="@+id/checkBoxChecked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginLeft="5dip"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
 

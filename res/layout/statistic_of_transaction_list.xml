@@ -1,100 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tableLayoutStatistic"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="10dip" >
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewFlipperStatistic"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/lightGray"
+    android:inAnimation="@anim/bottom_in"
+    android:measureAllChildren="false"
+    android:outAnimation="@anim/fade_out"
+    android:padding="5dip" >
 
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Total" />
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:orientation="vertical" >
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" >
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/textViewTotalIncome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
-
-            <TextView
-                android:id="@+id/textViewTotalExpense"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:layout_marginLeft="3dip"
+                android:text="Computing..." />
         </LinearLayout>
-    </TableRow>
+    </RelativeLayout>
 
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dip" >
+        android:orientation="vertical"
+        android:paddingBottom="5dip"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="5dip" >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Minimum" />
+            android:layout_marginBottom="1dip"
+            android:text="Total"
+            android:textColor="@color/lightBlue" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:background="@color/lightBlue" />
+
+        <TableLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:orientation="vertical" >
+            android:paddingTop="5dip" >
 
-            <TextView
-                android:id="@+id/textViewMinIncomeCost"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
+            <TableRow
+                android:id="@+id/tableRow1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
 
-            <TextView
-                android:id="@+id/textViewMaxIncomeCost"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-        </LinearLayout>
-    </TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Income: " />
 
-    <TableRow
-        android:id="@+id/tableRow3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dip" >
+                <TextView
+                    android:id="@+id/textViewTotalIncome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:gravity="right"
+                    android:text="0 CNY"
+                    android:textColor="@color/lightGreen" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Expense: " />
+
+                <TextView
+                    android:id="@+id/textViewTotalExpense"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:gravity="right"
+                    android:text="0 CNY"
+                    android:textColor="@color/lightRed" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
 
         <TextView
+            android:id="@+id/textViewStatisticEmpty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Maximum" />
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:text="@string/no_day_biz_log"
+            android:textAppearance="?android:attr/textAppearanceMedium" >
+        </TextView>
+    </RelativeLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textViewMinIncomeExpense"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-
-            <TextView
-                android:id="@+id/textViewMaxIncomeExpense"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-        </LinearLayout>
-    </TableRow>
-
-</TableLayout>
+</ViewFlipper>

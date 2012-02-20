@@ -773,7 +773,41 @@ public class DataService {
 		String sd = Utility.getSqliteDateTimeString(startDate);
 		String ed = Utility.getSqliteDateTimeString(endDate);
 		result = db.rawQuery(sql, new String[] { sd, ed });
-		
+
+		return result;
+	}
+
+	public double getTotalMoneyOfFavouriteTransactions(
+			TransactionType transactionType) {
+		double result = 0;
+		if (transactionType == TransactionType.Unknown) {
+			return result;
+		}
+
+		String sql = "";
+		String defaultCurrencyCode = this.getDefaultCurrencyCode();
+		double defaultCurrencyUSDExchangeRate = this
+				.getUSDExchangeRate(defaultCurrencyCode);
+
+		if (!TextUtils.isEmpty(defaultCurrencyCode)
+				&& defaultCurrencyUSDExchangeRate > 0) {
+			sql = String
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else (bl.Cost / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost "
+							+ (transactionType == TransactionType.Income ? ">"
+									: "<") + " 0 and Star = 'true'",
+							defaultCurrencyCode,
+							String.valueOf(defaultCurrencyUSDExchangeRate));
+		}
+
+		Cursor cursor = db.rawQuery(sql, null);
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				result = cursor.getDouble(0);
+			}
+			cursor.close();
+			cursor = null;
+		}
+
 		return result;
 	}
 
@@ -824,6 +858,9 @@ public class DataService {
 
 	public double getTotalEarn(Date startDate, Date endDate) {
 		double result = 0;
+		if (startDate == null || endDate == null) {
+			return result;
+		}
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(startDate);

@@ -25,7 +25,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
 import com.xiaolei.android.BizTracker.DayLogDataAdapter;
@@ -35,6 +37,7 @@ import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.listener.OnNotifyDataChangedListener;
 import com.xiaolei.android.service.DataService;
+import com.xiaolei.android.service.DataService.TransactionType;
 
 /**
  * @author xiaolei
@@ -51,6 +54,8 @@ public class TransactionListFragment extends Fragment implements
 	private Date endDate;
 	private OnNotifyDataChangedListener onNotifyDataChangedListener;
 	private Cursor mCursor = null;
+
+	private boolean statisticInfoPanelVisible = false;
 
 	public void setOnNotifyDataChangedListener(
 			OnNotifyDataChangedListener listener) {
@@ -69,6 +74,7 @@ public class TransactionListFragment extends Fragment implements
 		viewType = ViewType.DailyTransactionList;
 
 		fillDataAsync(date);
+		showStatisticInformationAsync();
 	}
 
 	public void showFavouriteTransactionList() {
@@ -76,14 +82,20 @@ public class TransactionListFragment extends Fragment implements
 
 		viewType = ViewType.FavouriteTransactionList;
 		fillFavouriteTransactionListAsync();
+		showStatisticInformationAsync();
 	}
 
 	public void showDateRangeTransactionList(Date startDate, Date endDate) {
 		super.setHasOptionsMenu(false);
+		viewType = ViewType.DateRangeTransactionList;
 
+		showDataRangeTransactionListAsync(startDate, endDate);
+		showStatisticInformationAsync();
+	}
+
+	private void showDataRangeTransactionListAsync(Date startDate, Date endDate) {
 		this.startDate = startDate;
 		this.endDate = endDate;
-		viewType = ViewType.DateRangeTransactionList;
 
 		AsyncTask<Date, Void, Cursor> task = new AsyncTask<Date, Void, Cursor>() {
 
@@ -125,8 +137,8 @@ public class TransactionListFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View result = inflater.inflate(
-				R.layout.transaction_list_fragment, container, false);
+		View result = inflater.inflate(R.layout.transaction_list_fragment,
+				container, false);
 		context = this;
 		if (result != null) {
 			ListView lv = (ListView) result
@@ -163,7 +175,8 @@ public class TransactionListFragment extends Fragment implements
 							}
 
 							listAdapter = new DayLogDataAdapter(getActivity(),
-									result, showFullDate, context);
+									result, showFullDate,
+									statisticInfoPanelVisible, context);
 							lv.setAdapter(listAdapter);
 						} else {
 							listAdapter.changeCursor(result);
@@ -194,6 +207,121 @@ public class TransactionListFragment extends Fragment implements
 				viewSwitcher.setDisplayedChild(1);
 			}
 		}
+	}
+
+	private class StatisticInfo {
+		private double totalIncome = 0d;
+		private double totalExpense = 0d;
+		private String defaultCurrencyCode = "";
+
+		public double getTotalIncome() {
+			return totalIncome;
+		}
+
+		public void setTotalIncome(double totalIncome) {
+			this.totalIncome = totalIncome;
+		}
+
+		public double getTotalExpense() {
+			return totalExpense;
+		}
+
+		public void setTotalExpense(double totalExpense) {
+			this.totalExpense = totalExpense;
+		}
+
+		public String getDefaultCurrencyCode() {
+			return defaultCurrencyCode;
+		}
+
+		public void setDefaultCurrencyCode(String defaultCurrencyCode) {
+			this.defaultCurrencyCode = defaultCurrencyCode;
+		}
+	}
+
+	public void showStatisticInformationAsync() {
+		if (getView() != null) {
+			ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
+					R.id.viewFlipperStatistic);
+			if (viewFlipper != null) {
+				viewFlipper.setDisplayedChild(0);
+			}
+		}
+
+		AsyncTask<Void, Void, StatisticInfo> task = new AsyncTask<Void, Void, StatisticInfo>() {
+
+			@Override
+			protected StatisticInfo doInBackground(Void... params) {
+				String defaultCurrencyCode = DataService.GetInstance(
+						getActivity()).getDefaultCurrencyCode();
+				StatisticInfo result = new StatisticInfo();
+				result.setDefaultCurrencyCode(defaultCurrencyCode);
+				double totalIncome = 0d;
+				double totalExpense = 0d;
+
+				switch (viewType) {
+				case DailyTransactionList:
+					totalIncome = DataService.GetInstance(getActivity())
+							.getTotalEarn(date, date);
+					totalExpense = DataService.GetInstance(getActivity())
+							.getTotalPay(date, date);
+					break;
+				case SearchTransactionList:
+
+					break;
+				case FavouriteTransactionList:
+					totalIncome = DataService.GetInstance(getActivity())
+							.getTotalMoneyOfFavouriteTransactions(
+									TransactionType.Income);
+					totalExpense = DataService.GetInstance(getActivity())
+							.getTotalMoneyOfFavouriteTransactions(
+									TransactionType.Expense);
+					break;
+				case DateRangeTransactionList:
+					totalIncome = DataService.GetInstance(getActivity())
+							.getTotalEarn(startDate, endDate);
+					totalExpense = DataService.GetInstance(getActivity())
+							.getTotalPay(startDate, endDate);
+					break;
+				default:
+					break;
+				}
+
+				result.setTotalIncome(totalIncome);
+				result.setTotalExpense(totalExpense);
+
+				return result;
+			}
+
+			@Override
+			protected void onPostExecute(StatisticInfo result) {
+				if (result != null && getView() != null) {
+					ViewFlipper viewFlipper = (ViewFlipper) getView()
+							.findViewById(R.id.viewFlipperStatistic);
+					if (viewFlipper != null) {
+						TextView tvTotalIncome = (TextView) getView()
+								.findViewById(R.id.textViewTotalIncome);
+						TextView tvTotalExpense = (TextView) getView()
+								.findViewById(R.id.textViewTotalExpense);
+
+						if (tvTotalIncome != null) {
+							tvTotalIncome.setText(Utility.formatCurrency(
+									result.getTotalIncome(),
+									result.getDefaultCurrencyCode(), true));
+						}
+						if (tvTotalExpense != null) {
+							tvTotalExpense.setText(Utility.formatCurrency(
+									result.getTotalExpense(),
+									result.getDefaultCurrencyCode(), true));
+						}
+
+						viewFlipper.setDisplayedChild(1);
+					}
+				}
+			}
+
+		};
+		task.execute();
 	}
 
 	@Override
@@ -350,6 +478,7 @@ public class TransactionListFragment extends Fragment implements
 			break;
 		}
 
+		showStatisticInformationAsync();
 		notifyDataChanged();
 	}
 
@@ -590,6 +719,14 @@ public class TransactionListFragment extends Fragment implements
 						dialog.dismiss();
 					}
 				});
+	}
+
+	public boolean isStatisticInfoPanelVisible() {
+		return statisticInfoPanelVisible;
+	}
+
+	public void setStatisticInfoPanelVisible(boolean statisticInfoPanelVisible) {
+		this.statisticInfoPanelVisible = statisticInfoPanelVisible;
 	}
 
 	public enum ViewType {

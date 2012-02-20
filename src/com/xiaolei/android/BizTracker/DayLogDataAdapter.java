@@ -1,13 +1,13 @@
 package com.xiaolei.android.BizTracker;
 
 import java.util.Date;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +20,7 @@ public class DayLogDataAdapter extends CursorAdapter {
 	private LayoutInflater inflater;
 	private Boolean showFullDateTime = false;
 	private View.OnClickListener starOnClickListener;
+	private boolean showCheckBox = false;
 
 	public DayLogDataAdapter(Context context, Cursor c,
 			Boolean showFullDateTime, View.OnClickListener starOnClickListener) {
@@ -27,6 +28,21 @@ public class DayLogDataAdapter extends CursorAdapter {
 		this.showFullDateTime = showFullDateTime;
 		this.starOnClickListener = starOnClickListener;
 		inflater = LayoutInflater.from(context);
+	}
+
+	public DayLogDataAdapter(Context context, Cursor c,
+			Boolean showFullDateTime, boolean showCheckBox,
+			View.OnClickListener starOnClickListener) {
+		super(context, c);
+		this.showFullDateTime = showFullDateTime;
+		this.starOnClickListener = starOnClickListener;
+		inflater = LayoutInflater.from(context);
+		this.showCheckBox = showCheckBox;
+	}
+
+	public void allowMultiCheckable(boolean allow) {
+		showCheckBox = allow;
+		this.notifyDataSetChanged();
 	}
 
 	@Override
@@ -52,7 +68,7 @@ public class DayLogDataAdapter extends CursorAdapter {
 		String starString = cursor.getString(cursor
 				.getColumnIndex(BizLogSchema.Star));
 		Boolean star = Boolean.parseBoolean(starString);
-		
+
 		BizLog transactionInfo = new BizLog();
 		transactionInfo.setId(id);
 		transactionInfo.setStuffName(stuffName);
@@ -74,6 +90,7 @@ public class DayLogDataAdapter extends CursorAdapter {
 		TextView tvTime = (TextView) view
 				.findViewById(R.id.textViewBizItemDate);
 		TextView tvComment = (TextView) view.findViewById(R.id.textViewComment);
+		CheckBox chkBox = (CheckBox) view.findViewById(R.id.checkBoxChecked);
 
 		long[] tag = new long[] { (star == true ? 1 : 0), id };
 		if (star) {
@@ -101,6 +118,10 @@ public class DayLogDataAdapter extends CursorAdapter {
 
 		if (this.starOnClickListener != null) {
 			ivStar.setOnClickListener(starOnClickListener);
+		}
+		if (chkBox != null) {
+			chkBox.setVisibility(showCheckBox ? CheckBox.VISIBLE
+					: CheckBox.GONE);
 		}
 	}
 
