@@ -158,5 +158,12 @@
     <string name="start_date">開始日期</string>
     <string name="end_date">結束日期</string>
     <string name="choose_date_range">選擇日期範圍</string>
+    <string name="computing">正在匯總...</string>
+    <string name="total">匯總</string>
+    <string name="multi_select">多選</string>
+    <string name="multi_select_tip">請勾選交易記錄</string>
+    <string name="show_bottom_statistic_panel">顯示匯總數據</string>
+    <string name="show_bottom_statistic_panel_description">是否在交易列表的底部顯示匯總數據</string>
+    <string name="display">顯示</string>
 
 </resources>

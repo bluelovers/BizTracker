@@ -1,6 +1,8 @@
 package com.xiaolei.android.BizTracker;
 
+import java.util.ArrayList;
 import java.util.Date;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -21,6 +23,7 @@ public class DayLogDataAdapter extends CursorAdapter {
 	private Boolean showFullDateTime = false;
 	private View.OnClickListener starOnClickListener;
 	private boolean showCheckBox = false;
+	private ArrayList<Long> checkedTransactionIds = new ArrayList<Long>();
 
 	public DayLogDataAdapter(Context context, Cursor c,
 			Boolean showFullDateTime, View.OnClickListener starOnClickListener) {
@@ -43,6 +46,14 @@ public class DayLogDataAdapter extends CursorAdapter {
 	public void allowMultiCheckable(boolean allow) {
 		showCheckBox = allow;
 		this.notifyDataSetChanged();
+	}
+	
+	public void setCheckedTransactionIds(ArrayList<Long> transactionIds){
+		if(transactionIds != null){
+			this.checkedTransactionIds = transactionIds;
+		}else{
+			checkedTransactionIds.clear();
+		}
 	}
 
 	@Override
@@ -122,6 +133,10 @@ public class DayLogDataAdapter extends CursorAdapter {
 		if (chkBox != null) {
 			chkBox.setVisibility(showCheckBox ? CheckBox.VISIBLE
 					: CheckBox.GONE);
+			chkBox.setChecked(false);
+			if(checkedTransactionIds.contains(id)){
+				chkBox.setChecked(true);
+			}
 		}
 	}
 

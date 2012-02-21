@@ -7,7 +7,8 @@
     android:inAnimation="@anim/bottom_in"
     android:measureAllChildren="false"
     android:outAnimation="@anim/fade_out"
-    android:padding="5dip" >
+    android:padding="5dip"
+    android:visibility="gone" >
 
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -29,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="3dip"
-                android:text="Computing..." />
+                android:text="@string/computing" />
         </LinearLayout>
     </RelativeLayout>
 
@@ -46,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="1dip"
-            android:text="Total"
+            android:text="@string/total"
             android:textColor="@color/lightBlue" />
 
         <View
@@ -67,7 +68,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Income: " />
+                    android:text="@string/income" />
 
                 <TextView
                     android:id="@+id/textViewTotalIncome"
@@ -75,7 +76,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dip"
                     android:gravity="right"
-                    android:text="0 CNY"
                     android:textColor="@color/lightGreen" />
             </TableRow>
 
@@ -87,7 +87,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Expense: " />
+                    android:text="@string/expense" />
 
                 <TextView
                     android:id="@+id/textViewTotalExpense"
@@ -95,7 +95,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dip"
                     android:gravity="right"
-                    android:text="0 CNY"
                     android:textColor="@color/lightRed" />
             </TableRow>
         </TableLayout>
@@ -111,8 +110,8 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_centerVertical="true"
-            android:text="@string/no_day_biz_log"
-            android:textAppearance="?android:attr/textAppearanceMedium" >
+            android:text="@string/multi_select_tip"
+            android:textAppearance="?android:attr/textAppearanceSmall" >
         </TextView>
     </RelativeLayout>
 

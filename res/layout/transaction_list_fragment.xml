@@ -24,10 +24,11 @@
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:longClickable="true" >
-            </ListView><include
+            </ListView>
+
+            <include
                 android:layout_weight="1"
                 layout="@layout/statistic_of_transaction_list" />
-
         </LinearLayout>
     </ViewSwitcher>
 

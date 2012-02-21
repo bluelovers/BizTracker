@@ -3,6 +3,7 @@
  */
 package com.xiaolei.android.service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -773,6 +774,97 @@ public class DataService {
 		String sd = Utility.getSqliteDateTimeString(startDate);
 		String ed = Utility.getSqliteDateTimeString(endDate);
 		result = db.rawQuery(sql, new String[] { sd, ed });
+
+		return result;
+	}
+
+	/**
+	 * Gets the total money of the matched transaction list with the given
+	 * keyword.
+	 * 
+	 * @param keyword
+	 *            Search keyword
+	 * @param transactionType
+	 * @return
+	 */
+	public double getTotalMoneyOfSearchedTransactions(String keyword,
+			TransactionType transactionType) {
+		double result = 0;
+		if (TextUtils.isEmpty(keyword)
+				|| transactionType == TransactionType.Unknown) {
+			return result;
+		}
+
+		String sql = "";
+		String defaultCurrencyCode = this.getDefaultCurrencyCode();
+		double defaultCurrencyUSDExchangeRate = this
+				.getUSDExchangeRate(defaultCurrencyCode);
+
+		if (!TextUtils.isEmpty(defaultCurrencyCode)
+				&& defaultCurrencyUSDExchangeRate > 0) {
+			sql = String
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else (bl.Cost / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code left join Stuff s on bl.StuffId = s._Id where bl.cost "
+							+ (transactionType == TransactionType.Income ? ">"
+									: "<")
+							+ " 0 and s.Name like ? or bl.Comment like ? ",
+							defaultCurrencyCode, String
+									.valueOf(defaultCurrencyUSDExchangeRate));
+		}
+
+		String searchKeyword = "%" + keyword + "%";
+		Cursor cursor = db.rawQuery(sql, new String[] { searchKeyword,
+				searchKeyword });
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				result = cursor.getDouble(0);
+			}
+			cursor.close();
+			cursor = null;
+		}
+
+		return result;
+	}
+
+	public double getTotalMoneyOfTransactionList(
+			ArrayList<Long> transactionIds, TransactionType transactionType) {
+		double result = 0d;
+		if (transactionIds == null || transactionIds.size() == 0) {
+			return result;
+		}
+
+		StringBuilder text = new StringBuilder();
+		for (Long id : transactionIds) {
+			if (text.length() > 0) {
+				text.append("," + Long.toString(id));
+			} else {
+				text.append(Long.toString(id));
+			}
+		}
+
+		String sql = "";
+		String defaultCurrencyCode = this.getDefaultCurrencyCode();
+		double defaultCurrencyUSDExchangeRate = this
+				.getUSDExchangeRate(defaultCurrencyCode);
+
+		if (!TextUtils.isEmpty(defaultCurrencyCode)
+				&& defaultCurrencyUSDExchangeRate > 0) {
+			sql = String
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else (bl.Cost / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code left join Stuff s on bl.StuffId = s._Id where bl.cost "
+							+ (transactionType == TransactionType.Income ? ">"
+									: "<")
+							+ " 0 and bl._id in ("
+							+ text.toString() + ")", defaultCurrencyCode,
+							String.valueOf(defaultCurrencyUSDExchangeRate));
+		}
+
+		Cursor cursor = db.rawQuery(sql, null);
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				result = cursor.getDouble(0);
+			}
+			cursor.close();
+			cursor = null;
+		}
 
 		return result;
 	}

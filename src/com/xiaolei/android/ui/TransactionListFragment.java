@@ -3,12 +3,14 @@
  */
 package com.xiaolei.android.ui;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -36,6 +39,8 @@ import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.listener.OnNotifyDataChangedListener;
+import com.xiaolei.android.preference.PreferenceHelper;
+import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
 import com.xiaolei.android.service.DataService.TransactionType;
 
@@ -54,8 +59,10 @@ public class TransactionListFragment extends Fragment implements
 	private Date endDate;
 	private OnNotifyDataChangedListener onNotifyDataChangedListener;
 	private Cursor mCursor = null;
+	private boolean showCheckBox = false;
+	private boolean showStatisticPanel = false;
 
-	private boolean statisticInfoPanelVisible = false;
+	private ArrayList<Long> checkedTransactionIds = new ArrayList<Long>();
 
 	public void setOnNotifyDataChangedListener(
 			OnNotifyDataChangedListener listener) {
@@ -125,7 +132,9 @@ public class TransactionListFragment extends Fragment implements
 
 		searchKeyword = keyword;
 		viewType = ViewType.SearchTransactionList;
+
 		searchAsync(keyword);
+		showStatisticInformationAsync();
 	}
 
 	@Override
@@ -158,7 +167,7 @@ public class TransactionListFragment extends Fragment implements
 			mCursor = null;
 		}
 		mCursor = result;
-		if (result != null) {
+		if (result != null && !result.isClosed()) {
 			if (result.getCount() > 0) {
 				if (getView() != null) {
 					ListView lv = (ListView) getView().findViewById(
@@ -175,8 +184,7 @@ public class TransactionListFragment extends Fragment implements
 							}
 
 							listAdapter = new DayLogDataAdapter(getActivity(),
-									result, showFullDate,
-									statisticInfoPanelVisible, context);
+									result, showFullDate, false, context);
 							lv.setAdapter(listAdapter);
 						} else {
 							listAdapter.changeCursor(result);
@@ -240,10 +248,15 @@ public class TransactionListFragment extends Fragment implements
 	}
 
 	public void showStatisticInformationAsync() {
+		if (!showStatisticPanel) {
+			return;
+		}
+
 		if (getView() != null) {
 			ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
 					R.id.viewFlipperStatistic);
 			if (viewFlipper != null) {
+				viewFlipper.setVisibility(ViewFlipper.VISIBLE);
 				viewFlipper.setDisplayedChild(0);
 			}
 		}
@@ -267,7 +280,12 @@ public class TransactionListFragment extends Fragment implements
 							.getTotalPay(date, date);
 					break;
 				case SearchTransactionList:
-
+					totalIncome = DataService.GetInstance(getActivity())
+							.getTotalMoneyOfSearchedTransactions(searchKeyword,
+									TransactionType.Income);
+					totalExpense = DataService.GetInstance(getActivity())
+							.getTotalMoneyOfSearchedTransactions(searchKeyword,
+									TransactionType.Expense);
 					break;
 				case FavouriteTransactionList:
 					totalIncome = DataService.GetInstance(getActivity())
@@ -365,10 +383,10 @@ public class TransactionListFragment extends Fragment implements
 
 			@Override
 			protected Cursor doInBackground(String... params) {
-				Cursor result = DataService.GetInstance(getActivity())
+				Cursor cursor = DataService.GetInstance(getActivity())
 						.searchBizLog(params[0]);
 
-				return result;
+				return cursor;
 			}
 
 			@Override
@@ -446,7 +464,119 @@ public class TransactionListFragment extends Fragment implements
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		showTransactionDetails(id);
+		if (!showCheckBox) {
+			showTransactionDetails(id);
+		} else {
+			CheckBox chkBox = (CheckBox) view
+					.findViewById(R.id.checkBoxChecked);
+			if (chkBox != null) {
+				chkBox.setChecked(!chkBox.isChecked());
+
+				if (chkBox.isChecked()) {
+					if (!checkedTransactionIds.contains(id)) {
+						checkedTransactionIds.add(id);
+					}
+				} else {
+					if (checkedTransactionIds.contains(id)) {
+						checkedTransactionIds.remove(id);
+					}
+				}
+
+				ListView lv = (ListView) getView().findViewById(
+						R.id.listViewBizLogByDay);
+				if (lv != null) {
+					DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv
+							.getAdapter();
+					if (listAdapter != null) {
+						listAdapter
+								.setCheckedTransactionIds(checkedTransactionIds);
+					}
+				}
+
+				calculateStatisticInfoOfCheckItemsAsync();
+			}
+		}
+	}
+
+	private void calculateStatisticInfoOfCheckItemsAsync() {
+		if (!showStatisticPanel) {
+			return;
+		}
+
+		if (checkedTransactionIds.size() == 0) {
+			if (getView() != null) {
+				ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
+						R.id.viewFlipperStatistic);
+				if (viewFlipper != null) {
+					viewFlipper.setDisplayedChild(2);
+				}
+			}
+
+			return;
+		}
+
+		if (getView() != null) {
+			ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
+					R.id.viewFlipperStatistic);
+			if (viewFlipper != null) {
+				viewFlipper.setVisibility(ViewFlipper.VISIBLE);
+				viewFlipper.setDisplayedChild(0);
+			}
+		}
+
+		AsyncTask<Void, Void, StatisticInfo> task = new AsyncTask<Void, Void, StatisticInfo>() {
+
+			@Override
+			protected StatisticInfo doInBackground(Void... params) {
+				String defaultCurrencyCode = DataService.GetInstance(
+						getActivity()).getDefaultCurrencyCode();
+				StatisticInfo result = new StatisticInfo();
+				result.setDefaultCurrencyCode(defaultCurrencyCode);
+				double totalIncome = 0d;
+				double totalExpense = 0d;
+
+				totalIncome = DataService.GetInstance(getActivity())
+						.getTotalMoneyOfTransactionList(checkedTransactionIds,
+								TransactionType.Income);
+				totalExpense = DataService.GetInstance(getActivity())
+						.getTotalMoneyOfTransactionList(checkedTransactionIds,
+								TransactionType.Expense);
+
+				result.setTotalIncome(totalIncome);
+				result.setTotalExpense(totalExpense);
+
+				return result;
+			}
+
+			@Override
+			protected void onPostExecute(StatisticInfo result) {
+				if (result != null && getView() != null) {
+					ViewFlipper viewFlipper = (ViewFlipper) getView()
+							.findViewById(R.id.viewFlipperStatistic);
+					if (viewFlipper != null) {
+						TextView tvTotalIncome = (TextView) getView()
+								.findViewById(R.id.textViewTotalIncome);
+						TextView tvTotalExpense = (TextView) getView()
+								.findViewById(R.id.textViewTotalExpense);
+
+						if (tvTotalIncome != null) {
+							tvTotalIncome.setText(Utility.formatCurrency(
+									result.getTotalIncome(),
+									result.getDefaultCurrencyCode(), true));
+						}
+						if (tvTotalExpense != null) {
+							tvTotalExpense.setText(Utility.formatCurrency(
+									result.getTotalExpense(),
+									result.getDefaultCurrencyCode(), true));
+						}
+
+						viewFlipper.setDisplayedChild(1);
+					}
+				}
+			}
+
+		};
+		task.execute();
 	}
 
 	private void showTransactionDetails(long transactionId) {
@@ -490,7 +620,8 @@ public class TransactionListFragment extends Fragment implements
 				transactionInfo.getStar() == true ? getString(R.string.remove_star)
 						: getString(R.string.make_star),
 				getString(R.string.modify), getString(R.string.delete),
-				getString(R.string.comment), // getString(R.string.location),
+				getString(R.string.comment), getString(R.string.multi_select),
+				// getString(R.string.location),
 				getString(R.string.back) };
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 
@@ -517,8 +648,7 @@ public class TransactionListFragment extends Fragment implements
 
 					break;
 				case 4:
-					// showGPSLocationDialog();
-					dialog.dismiss();
+					showMultiCheckBox(!showCheckBox);
 
 					break;
 				case 5:
@@ -721,15 +851,60 @@ public class TransactionListFragment extends Fragment implements
 				});
 	}
 
-	public boolean isStatisticInfoPanelVisible() {
-		return statisticInfoPanelVisible;
-	}
-
-	public void setStatisticInfoPanelVisible(boolean statisticInfoPanelVisible) {
-		this.statisticInfoPanelVisible = statisticInfoPanelVisible;
-	}
-
 	public enum ViewType {
 		Unknown, DailyTransactionList, SearchTransactionList, FavouriteTransactionList, DateRangeTransactionList
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		showOrHideStatisticPanel();
+		if (showStatisticPanel) {
+			showStatisticInformationAsync();
+		}
+	}
+
+	private void showMultiCheckBox(boolean visible) {
+		this.showCheckBox = visible;
+
+		ListView lv = (ListView) getView().findViewById(
+				R.id.listViewBizLogByDay);
+		if (lv != null) {
+			DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv.getAdapter();
+			if (listAdapter != null) {
+				listAdapter.setCheckedTransactionIds(checkedTransactionIds);
+				listAdapter.allowMultiCheckable(visible);
+			}
+		}
+
+		showOrHideStatisticPanel();
+	}
+
+	private void showOrHideStatisticPanel() {
+		showStatisticPanel = false;
+
+		if (!showCheckBox) {
+			SharedPreferences prefs = PreferenceHelper
+					.getActiveUserSharedPreferences(getActivity());
+			if (prefs != null) {
+				showStatisticPanel = prefs.getBoolean(
+						PreferenceKeys.ShowStatisticPanelInTransactionList,
+						false);
+			}
+		} else {
+			showStatisticPanel = true;
+		}
+
+		if (getView() != null) {
+			ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
+					R.id.viewFlipperStatistic);
+			if (viewFlipper != null) {
+				viewFlipper
+						.setVisibility(showStatisticPanel ? ViewFlipper.VISIBLE
+								: ViewFlipper.GONE);
+				viewFlipper.setDisplayedChild(2);
+			}
+		}
 	}
 }

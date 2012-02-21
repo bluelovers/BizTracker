@@ -34,6 +34,12 @@
             android:summary="@string/go_to_android_market_description"
             android:title="@string/go_to_android_market" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/display" >
+        <CheckBoxPreference
+            android:key="ShowStatisticPanelInTransactionList"
+            android:summary="@string/show_bottom_statistic_panel_description"
+            android:title="@string/show_bottom_statistic_panel" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/about" >
         <com.xiaolei.android.preference.VersionNamePreference android:title="@string/version" />
     </PreferenceCategory>
