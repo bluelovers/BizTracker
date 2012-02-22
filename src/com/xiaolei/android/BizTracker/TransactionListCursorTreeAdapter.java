@@ -181,9 +181,9 @@ public class TransactionListCursorTreeAdapter extends CursorTreeAdapter {
 
 		ivStar.setTag(currentLog);
 		if (currentLog.getStar() == true) {
-			ivStar.setImageResource(R.drawable.star);
+			ivStar.setImageResource(R.drawable.heart_on);
 		} else {
-			ivStar.setImageResource(R.drawable.star_wb);
+			ivStar.setImageResource(R.drawable.heart_off);
 		}
 
 		tvStuffName.setText(currentLog.getStuffName());

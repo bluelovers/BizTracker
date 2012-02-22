@@ -32,7 +32,7 @@
                 android:id="@+id/imageButtonStarIt"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/star_wb" >
+                android:src="@drawable/heart_off" >
             </ImageView>
         </LinearLayout>
 

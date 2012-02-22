@@ -15,7 +15,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.xiaolei.android.BizTracker.DaysOfWeekAdapter;
+import com.xiaolei.android.BizTracker.WeeklyTransactionListAdapter;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
 
@@ -45,7 +45,7 @@ public class TransactionListWeekly extends Activity implements OnItemClickListen
 	private void fillData() {
 		Date startDayOfThisWeek = Utility.getStartDayOfThisWeek();
 		Date endDayOfThisWeek = Utility.addDays(startDayOfThisWeek, 6);
-		DaysOfWeekAdapter listAdapter = new DaysOfWeekAdapter(this,
+		WeeklyTransactionListAdapter listAdapter = new WeeklyTransactionListAdapter(this,
 				startDayOfThisWeek, endDayOfThisWeek);
 		lv.setAdapter(listAdapter);
 	}

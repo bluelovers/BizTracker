@@ -8,5 +8,7 @@
     <color name="lightBlue">#33b5e5</color>
     <color name="darkBlue">#0099cc</color>
     <color name="lightGray">#333333</color>
+    <color name="incomeColor">#99cc00</color>
+    <color name="expenseColor">#ff4444</color>
 
 </resources>

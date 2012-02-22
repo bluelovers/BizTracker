@@ -257,7 +257,14 @@ public class TransactionListFragment extends Fragment implements
 					R.id.viewFlipperStatistic);
 			if (viewFlipper != null) {
 				viewFlipper.setVisibility(ViewFlipper.VISIBLE);
-				viewFlipper.setDisplayedChild(0);
+				/*
+				 * TextView tvTotal = (TextView) getView().findViewById(
+				 * R.id.textViewTotal); if (tvTotal != null) {
+				 * tvTotal.setText(getString(R.string.computing)); }
+				 */
+				if (viewFlipper.getDisplayedChild() != 1) {
+					viewFlipper.setDisplayedChild(0);
+				}
 			}
 		}
 
@@ -520,7 +527,10 @@ public class TransactionListFragment extends Fragment implements
 					R.id.viewFlipperStatistic);
 			if (viewFlipper != null) {
 				viewFlipper.setVisibility(ViewFlipper.VISIBLE);
-				viewFlipper.setDisplayedChild(0);
+
+				if (viewFlipper.getDisplayedChild() != 1) {
+					viewFlipper.setDisplayedChild(0);
+				}
 			}
 		}
 
@@ -570,7 +580,14 @@ public class TransactionListFragment extends Fragment implements
 									result.getDefaultCurrencyCode(), true));
 						}
 
-						viewFlipper.setDisplayedChild(1);
+						TextView tvTotal = (TextView) getView().findViewById(
+								R.id.textViewTotal);
+						if (tvTotal != null) {
+							tvTotal.setText(getString(R.string.total));
+						}
+						if (viewFlipper.getDisplayedChild() != 1) {
+							viewFlipper.setDisplayedChild(1);
+						}
 					}
 				}
 			}
@@ -903,7 +920,27 @@ public class TransactionListFragment extends Fragment implements
 				viewFlipper
 						.setVisibility(showStatisticPanel ? ViewFlipper.VISIBLE
 								: ViewFlipper.GONE);
-				viewFlipper.setDisplayedChild(2);
+				/*
+				 * TextView tvTotal = (TextView) getView().findViewById(
+				 * R.id.textViewTotal); if (tvTotal != null) {
+				 * tvTotal.setText(getString(R.string.computing)); }
+				 */
+
+				if (this.checkedTransactionIds.size() > 0) {
+					if (viewFlipper.getDisplayedChild() != 1) {
+						viewFlipper.setDisplayedChild(1);
+					}
+				} else {
+					if (!showCheckBox) {
+						if (viewFlipper.getDisplayedChild() != 0) {
+							viewFlipper.setDisplayedChild(0);
+						}
+					} else {
+						if (viewFlipper.getDisplayedChild() != 2) {
+							viewFlipper.setDisplayedChild(2);
+						}
+					}
+				}
 			}
 		}
 	}

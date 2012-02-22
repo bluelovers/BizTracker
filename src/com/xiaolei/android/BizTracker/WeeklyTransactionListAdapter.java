@@ -21,14 +21,14 @@ import com.xiaolei.android.service.DataService;
  * @author xiaolei
  * 
  */
-public class DaysOfWeekAdapter extends BaseAdapter {
+public class WeeklyTransactionListAdapter extends BaseAdapter {
 
 	private Date[] items;
 	private LayoutInflater inflater;
 	private Activity context;
 	private String defaultCurrencyCode = "";
 
-	public DaysOfWeekAdapter(Activity context, Date startDate, Date endDate) {
+	public WeeklyTransactionListAdapter(Activity context, Date startDate, Date endDate) {
 		this.context = context;
 
 		ArrayList<Date> dates = new ArrayList<Date>();

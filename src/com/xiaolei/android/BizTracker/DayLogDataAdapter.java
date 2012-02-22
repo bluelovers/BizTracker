@@ -5,7 +5,6 @@ import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,10 +104,10 @@ public class DayLogDataAdapter extends CursorAdapter {
 
 		long[] tag = new long[] { (star == true ? 1 : 0), id };
 		if (star) {
-			ivStar.setImageResource(R.drawable.star);
+			ivStar.setImageResource(R.drawable.heart_on);
 			ivStar.setTag(tag);
 		} else {
-			ivStar.setImageResource(R.drawable.star_wb);
+			ivStar.setImageResource(R.drawable.heart_off);
 			ivStar.setTag(tag);
 		}
 
@@ -117,14 +116,17 @@ public class DayLogDataAdapter extends CursorAdapter {
 		tvComment.setText(comment);
 		tvTime.setText(lastUpdateTime);
 
+		int incomeColor = context.getResources().getColor(R.color.incomeColor);
+		int expenseColor = context.getResources().getColor(R.color.expenseColor);
+		
 		if (cost > 0) {
 			tvCost.setText(Utility.formatCurrency(cost, currencyCode, false));
-			tvCost.setTextColor(Color.parseColor("#99CC00"));
-			tvCurrencyCode.setTextColor(Color.parseColor("#99CC00"));
+			tvCost.setTextColor(incomeColor);
+			tvCurrencyCode.setTextColor(incomeColor);
 		} else {
 			tvCost.setText(Utility.formatCurrency(cost, currencyCode, false));
-			tvCost.setTextColor(Color.parseColor("#ff6600"));
-			tvCurrencyCode.setTextColor(Color.parseColor("#ff6600"));
+			tvCost.setTextColor(expenseColor);
+			tvCurrencyCode.setTextColor(expenseColor);
 		}
 
 		if (this.starOnClickListener != null) {

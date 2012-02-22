@@ -1,22 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="70dip" android:gravity="center_vertical">
-	<ImageView android:layout_height="wrap_content" android:src="@drawable/star_wb"
-		android:layout_marginTop="5dip" android:layout_marginRight="5dip"
-		android:id="@+id/imageButtonStarIt" android:background="@android:color/transparent"
-		android:layout_width="wrap_content" android:layout_alignParentLeft="true"></ImageView>
-	<TextView android:textAppearance="?android:attr/textAppearanceLarge"
-		android:gravity="center_vertical" android:id="@+id/textViewBizItemStuffName"
-		android:layout_height="wrap_content" android:text="TextView"
-		android:layout_width="wrap_content" android:layout_toRightOf="@+id/imageButtonStarIt"></TextView>
-	<TextView android:textAppearance="?android:attr/textAppearanceSmall"
-		android:gravity="center_vertical" android:id="@+id/textViewBizItemDate"
-		android:layout_height="wrap_content" android:text="TextView"
-		android:layout_width="fill_parent" android:layout_below="@+id/textViewBizItemStuffName"
-		android:layout_alignLeft="@+id/textViewBizItemStuffName"></TextView>
-	<TextView android:textAppearance="?android:attr/textAppearanceLarge"
-		android:id="@+id/textViewBizItemCost" android:layout_height="fill_parent"
-		android:text="-22.0" android:layout_width="wrap_content"
-		android:gravity="center" android:layout_alignParentRight="true"></TextView>
+    android:layout_width="fill_parent"
+    android:layout_height="70dip"
+    android:gravity="center_vertical"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/imageButtonStarIt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dip"
+        android:layout_marginTop="5dip"
+        android:background="@android:color/transparent"
+        android:src="@drawable/heart_off" >
+    </ImageView>
+
+    <TextView
+        android:id="@+id/textViewBizItemStuffName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/imageButtonStarIt"
+        android:gravity="center_vertical"
+        android:text="TextView"
+        android:textAppearance="?android:attr/textAppearanceLarge" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/textViewBizItemDate"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textViewBizItemStuffName"
+        android:layout_below="@+id/textViewBizItemStuffName"
+        android:gravity="center_vertical"
+        android:text="TextView"
+        android:textAppearance="?android:attr/textAppearanceSmall" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/textViewBizItemCost"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:text="-22.0"
+        android:textAppearance="?android:attr/textAppearanceLarge" >
+    </TextView>
+
 </RelativeLayout>
