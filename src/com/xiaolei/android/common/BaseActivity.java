@@ -36,7 +36,7 @@ public class BaseActivity extends Activity {
 
 			@Override
 			protected Boolean doInBackground(Void... params) {
-				load();
+				initSoundPool();
 
 				return true;
 			}
@@ -51,7 +51,7 @@ public class BaseActivity extends Activity {
 		task.execute();
 	}
 
-	protected void load() {
+	protected void initSoundPool() {
 
 	}
 

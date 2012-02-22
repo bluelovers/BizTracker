@@ -137,7 +137,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		PreferenceHelper.createActiveUserRelatedPreferencesIfNeeds(this);
 		service = DataService.GetInstance(this);
 		PreferenceHelper.migrateOldPreferencesIfNeed(this);
-		
+
 		Button buttonNew = (Button) findViewById(R.id.buttonNew);
 		if (buttonNew != null) {
 			buttonNew.setOnClickListener(this);
@@ -214,7 +214,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		if (tvDefaultCurrencyCode != null) {
 			tvDefaultCurrencyCode.setText(defaultCurrencyCode);
 		}
-		
+
 		SharedPreferences prefs = PreferenceHelper
 				.getActiveUserSharedPreferences(this);
 		if (prefs != null) {
@@ -249,27 +249,32 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	 */
 
 	@Override
-	protected void load() {
-		sounds = new HashMap<Integer, Integer>();
+	protected void initSoundPool() {
+		try {
+			sounds = new HashMap<Integer, Integer>();
 
-		soundPool = new SoundPool(3, android.media.AudioManager.STREAM_RING, 0);
-		int soundId = soundPool.load(this, R.raw.click, 1);
-		sounds.put(R.raw.click, soundId);
+			soundPool = new SoundPool(3,
+					android.media.AudioManager.STREAM_RING, 0);
+			int soundId = soundPool.load(this, R.raw.click, 1);
+			sounds.put(R.raw.click, soundId);
 
-		AudioManager audioManager = (AudioManager) this
-				.getSystemService(AUDIO_SERVICE);
+			AudioManager audioManager = (AudioManager) this
+					.getSystemService(AUDIO_SERVICE);
 
-		float streamVolumeMax = audioManager
-				.getStreamMaxVolume(AudioManager.STREAM_RING);
+			float streamVolumeMax = audioManager
+					.getStreamMaxVolume(AudioManager.STREAM_RING);
 
-		int streamVolumeCurrent = 1;
-		SharedPreferences prefs = PreferenceHelper
-				.getActiveUserSharedPreferences(this);
-		if (prefs != null) {
-			streamVolumeCurrent = prefs.getInt(PreferenceKeys.Volume, 1);
+			int streamVolumeCurrent = 1;
+			SharedPreferences prefs = PreferenceHelper
+					.getActiveUserSharedPreferences(this);
+			if (prefs != null) {
+				streamVolumeCurrent = prefs.getInt(PreferenceKeys.Volume, 1);
+			}
+
+			volume = streamVolumeCurrent / streamVolumeMax;
+		} catch (Exception ex) {
+			// do nothing
 		}
-
-		volume = streamVolumeCurrent / streamVolumeMax;
 	}
 
 	private void showDefaultCurrencyDialog(Boolean saveToDB, String title) {
@@ -1152,7 +1157,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			}
 		});
 
-		//Utility.requestInputMethod(inputPasswordDlg);
+		// Utility.requestInputMethod(inputPasswordDlg);
 		inputPasswordDlg.show();
 		inputPasswordDlg.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
 				R.drawable.lock);
