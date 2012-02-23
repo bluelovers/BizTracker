@@ -165,5 +165,6 @@
     <string name="show_bottom_statistic_panel">顯示匯總數據</string>
     <string name="show_bottom_statistic_panel_description">是否在交易列表的底部顯示匯總數據</string>
     <string name="display">顯示</string>
+    <string name="manually_total">手工匯總</string>
 
 </resources>

@@ -4,19 +4,23 @@
 package com.xiaolei.android.ui;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -33,14 +37,13 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
+import com.xiaolei.android.BizTracker.BizTracker;
 import com.xiaolei.android.BizTracker.DayLogDataAdapter;
 import com.xiaolei.android.BizTracker.Helper;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.listener.OnNotifyDataChangedListener;
-import com.xiaolei.android.preference.PreferenceHelper;
-import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
 import com.xiaolei.android.service.DataService.TransactionType;
 
@@ -60,7 +63,6 @@ public class TransactionListFragment extends Fragment implements
 	private OnNotifyDataChangedListener onNotifyDataChangedListener;
 	private Cursor mCursor = null;
 	private boolean showCheckBox = false;
-	private boolean showStatisticPanel = false;
 
 	private ArrayList<Long> checkedTransactionIds = new ArrayList<Long>();
 
@@ -81,7 +83,6 @@ public class TransactionListFragment extends Fragment implements
 		viewType = ViewType.DailyTransactionList;
 
 		fillDataAsync(date);
-		showStatisticInformationAsync();
 	}
 
 	public void showFavouriteTransactionList() {
@@ -89,7 +90,6 @@ public class TransactionListFragment extends Fragment implements
 
 		viewType = ViewType.FavouriteTransactionList;
 		fillFavouriteTransactionListAsync();
-		showStatisticInformationAsync();
 	}
 
 	public void showDateRangeTransactionList(Date startDate, Date endDate) {
@@ -97,7 +97,6 @@ public class TransactionListFragment extends Fragment implements
 		viewType = ViewType.DateRangeTransactionList;
 
 		showDataRangeTransactionListAsync(startDate, endDate);
-		showStatisticInformationAsync();
 	}
 
 	private void showDataRangeTransactionListAsync(Date startDate, Date endDate) {
@@ -134,7 +133,6 @@ public class TransactionListFragment extends Fragment implements
 		viewType = ViewType.SearchTransactionList;
 
 		searchAsync(keyword);
-		showStatisticInformationAsync();
 	}
 
 	@Override
@@ -149,12 +147,19 @@ public class TransactionListFragment extends Fragment implements
 		View result = inflater.inflate(R.layout.transaction_list_fragment,
 				container, false);
 		context = this;
+
 		if (result != null) {
 			ListView lv = (ListView) result
 					.findViewById(R.id.listViewBizLogByDay);
 			if (lv != null) {
 				lv.setOnItemClickListener(this);
 				lv.setOnItemLongClickListener(this);
+			}
+
+			ViewFlipper viewFlipper = (ViewFlipper) result
+					.findViewById(R.id.viewFlipperStatistic);
+			if (viewFlipper != null) {
+				viewFlipper.setOnClickListener(this);
 			}
 		}
 
@@ -248,22 +253,23 @@ public class TransactionListFragment extends Fragment implements
 	}
 
 	public void showStatisticInformationAsync() {
-		if (!showStatisticPanel) {
-			return;
-		}
-
 		if (getView() != null) {
 			ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
 					R.id.viewFlipperStatistic);
 			if (viewFlipper != null) {
-				viewFlipper.setVisibility(ViewFlipper.VISIBLE);
-				/*
-				 * TextView tvTotal = (TextView) getView().findViewById(
-				 * R.id.textViewTotal); if (tvTotal != null) {
-				 * tvTotal.setText(getString(R.string.computing)); }
-				 */
-				if (viewFlipper.getDisplayedChild() != 1) {
-					viewFlipper.setDisplayedChild(0);
+				if (viewFlipper.getVisibility() != ViewFlipper.VISIBLE) {
+					viewFlipper.setVisibility(ViewFlipper.VISIBLE);
+					/*
+					 * TextView tvTotal = (TextView) getView().findViewById(
+					 * R.id.textViewTotal); if (tvTotal != null) {
+					 * tvTotal.setText(getString(R.string.computing)); }
+					 */
+					if (viewFlipper.getDisplayedChild() != 1) {
+						viewFlipper.setDisplayedChild(0);
+					}
+				} else {
+					viewFlipper.setVisibility(ViewFlipper.GONE);
+					return;
 				}
 			}
 		}
@@ -428,10 +434,26 @@ public class TransactionListFragment extends Fragment implements
 
 	@Override
 	public void onClick(View v) {
-		long[] tag = (long[]) v.getTag();
-		if (tag != null && tag.length == 2) {
-			long transactionId = tag[1];
-			changeStar(transactionId);
+		switch (v.getId()) {
+		case R.id.viewFlipperStatistic:
+			hideStatisticPanel();
+
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void hideStatisticPanel() {
+		ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
+				R.id.viewFlipperStatistic);
+		if (viewFlipper != null
+				&& viewFlipper.getVisibility() == ViewFlipper.VISIBLE) {
+			viewFlipper.setVisibility(ViewFlipper.GONE);
+		}
+		
+		if(showCheckBox){
+			this.showMultiCheckBox(false);
 		}
 	}
 
@@ -506,10 +528,6 @@ public class TransactionListFragment extends Fragment implements
 	}
 
 	private void calculateStatisticInfoOfCheckItemsAsync() {
-		if (!showStatisticPanel) {
-			return;
-		}
-
 		if (checkedTransactionIds.size() == 0) {
 			if (getView() != null) {
 				ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
@@ -625,7 +643,6 @@ public class TransactionListFragment extends Fragment implements
 			break;
 		}
 
-		showStatisticInformationAsync();
 		notifyDataChanged();
 	}
 
@@ -637,7 +654,8 @@ public class TransactionListFragment extends Fragment implements
 				transactionInfo.getStar() == true ? getString(R.string.remove_star)
 						: getString(R.string.make_star),
 				getString(R.string.modify), getString(R.string.delete),
-				getString(R.string.comment), getString(R.string.multi_select),
+				getString(R.string.comment),
+				getString(R.string.manually_total),
 				// getString(R.string.location),
 				getString(R.string.back) };
 		builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -876,10 +894,6 @@ public class TransactionListFragment extends Fragment implements
 	public void onResume() {
 		super.onResume();
 
-		showOrHideStatisticPanel();
-		if (showStatisticPanel) {
-			showStatisticInformationAsync();
-		}
 	}
 
 	private void showMultiCheckBox(boolean visible) {
@@ -895,53 +909,113 @@ public class TransactionListFragment extends Fragment implements
 			}
 		}
 
-		showOrHideStatisticPanel();
+		ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
+				R.id.viewFlipperStatistic);
+		if (viewFlipper != null) {
+			viewFlipper.setVisibility(visible ? ViewFlipper.VISIBLE
+					: ViewFlipper.GONE);
+			if (visible) {
+				viewFlipper.setDisplayedChild(2);
+			}
+		}
 	}
 
-	private void showOrHideStatisticPanel() {
-		showStatisticPanel = false;
-
-		if (!showCheckBox) {
-			SharedPreferences prefs = PreferenceHelper
-					.getActiveUserSharedPreferences(getActivity());
-			if (prefs != null) {
-				showStatisticPanel = prefs.getBoolean(
-						PreferenceKeys.ShowStatisticPanelInTransactionList,
-						false);
-			}
-		} else {
-			showStatisticPanel = true;
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		switch (viewType) {
+		case DailyTransactionList:
+			inflater.inflate(R.menu.menu_for_biz_log, menu);
+			break;
+		default:
+			break;
 		}
+	}
 
-		if (getView() != null) {
-			ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
-					R.id.viewFlipperStatistic);
-			if (viewFlipper != null) {
-				viewFlipper
-						.setVisibility(showStatisticPanel ? ViewFlipper.VISIBLE
-								: ViewFlipper.GONE);
-				/*
-				 * TextView tvTotal = (TextView) getView().findViewById(
-				 * R.id.textViewTotal); if (tvTotal != null) {
-				 * tvTotal.setText(getString(R.string.computing)); }
-				 */
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == Activity.RESULT_OK) {
+			switch (requestCode) {
+			case REQUEST_CODE:
+				reload();
+				break;
+			}
+		}
+	}
 
-				if (this.checkedTransactionIds.size() > 0) {
-					if (viewFlipper.getDisplayedChild() != 1) {
-						viewFlipper.setDisplayedChild(1);
-					}
-				} else {
-					if (!showCheckBox) {
-						if (viewFlipper.getDisplayedChild() != 0) {
-							viewFlipper.setDisplayedChild(0);
-						}
-					} else {
-						if (viewFlipper.getDisplayedChild() != 2) {
-							viewFlipper.setDisplayedChild(2);
-						}
-					}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.itemAppendLog:
+			this.newTransaction();
+
+			return true;
+		case R.id.itemRemoveTodayLog:
+			if (date != null) {
+				Utility.showConfirmDialog(getActivity(),
+						getString(R.string.reset_today_cost), String.format(
+								getString(R.string.confirm_reset_today_cost),
+								DateUtils.formatDateTime(getActivity(),
+										date.getTime(),
+										DateUtils.FORMAT_SHOW_DATE)),
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								deleteTodayCostHistoryAsync();
+							}
+						});
+			}
+
+			return true;
+		case R.id.itemShowStatisticsInfo:
+			showStatisticInformationAsync();
+
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	private void newTransaction() {
+		if (date == null) {
+			return;
+		}
+		Intent intent = new Intent(getActivity(), BizTracker.class);
+
+		Date now = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+
+		// Use current time
+		cal.set(Calendar.HOUR_OF_DAY, now.getHours());
+		cal.set(Calendar.MINUTE, now.getMinutes());
+		cal.set(Calendar.SECOND, now.getSeconds());
+		Date transactionDate = cal.getTime();
+
+		intent.putExtra(BizTracker.KEY_UPDATE_DATE, transactionDate);
+		this.startActivityForResult(intent, REQUEST_CODE);
+	}
+
+	private void deleteTodayCostHistoryAsync() {
+		if (date == null) {
+			return;
+		}
+		AsyncTask<Boolean, Void, Boolean> task = new AsyncTask<Boolean, Void, Boolean>() {
+
+			@Override
+			protected Boolean doInBackground(Boolean... params) {
+				DataService.GetInstance(getActivity()).resetHistoryByDate(date);
+				return true;
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (result) {
+					getActivity().setResult(Activity.RESULT_OK);
+					reload();
 				}
 			}
-		}
+		};
+		task.execute();
+
 	}
+
 }

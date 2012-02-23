@@ -6,20 +6,13 @@ package com.xiaolei.android.ui;
 import java.util.Calendar;
 import java.util.Date;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -30,7 +23,6 @@ import com.xiaolei.android.BizTracker.BizTracker;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.listener.OnNotifyDataChangedListener;
-import com.xiaolei.android.service.DataService;
 
 /**
  * @author xiaolei
@@ -47,7 +39,6 @@ public class DailyTransactionList extends FragmentActivity implements
 	private int currentPosition = 0;
 	private ViewPager viewPager;
 	private DailyTransactionListFragmentPagerAdapter adapter;
-	private Context context;
 
 	public static final String KEY_DATE = "date";
 	public static final String KEY_SHOW_FULL_DATE = "showFullDateTime";
@@ -61,7 +52,6 @@ public class DailyTransactionList extends FragmentActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		context = this;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.setContentView(R.layout.pager_daily_log);
 
@@ -174,69 +164,6 @@ public class DailyTransactionList extends FragmentActivity implements
 				break;
 			}
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-
-		MenuInflater inflater = this.getMenuInflater();
-		inflater.inflate(R.menu.menu_for_biz_log, menu);
-
-		Date now = new Date();
-		if (date != null && date.after(now)) {
-			MenuItem item = menu.getItem(0);
-			item.setEnabled(false);
-		} else {
-			MenuItem item = menu.getItem(0);
-			item.setEnabled(true);
-		}
-
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.itemAppendLog:
-			this.newTransaction();
-
-			return true;
-		case R.id.itemRemoveTodayLog:
-			Utility.showConfirmDialog(this,
-					getString(R.string.reset_today_cost),
-					getString(R.string.confirm_reset_today_cost),
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							deleteTodayCostHistoryAsync();
-						}
-					});
-
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
-
-	private void deleteTodayCostHistoryAsync() {
-		AsyncTask<Boolean, Void, Boolean> task = new AsyncTask<Boolean, Void, Boolean>() {
-
-			@Override
-			protected Boolean doInBackground(Boolean... params) {
-				DataService.GetInstance(context)
-						.resetHistoryByDate(currentDate);
-				return true;
-			}
-
-			@Override
-			protected void onPostExecute(Boolean result) {
-				if (result) {
-					setResult(Activity.RESULT_OK);
-					reload();
-				}
-			}
-		};
-		task.execute();
 	}
 
 	private void reload() {

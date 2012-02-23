@@ -44,13 +44,16 @@ public class DayLogDataAdapter extends CursorAdapter {
 
 	public void allowMultiCheckable(boolean allow) {
 		showCheckBox = allow;
+		if (allow == false) {
+			checkedTransactionIds.clear();
+		}
 		this.notifyDataSetChanged();
 	}
-	
-	public void setCheckedTransactionIds(ArrayList<Long> transactionIds){
-		if(transactionIds != null){
+
+	public void setCheckedTransactionIds(ArrayList<Long> transactionIds) {
+		if (transactionIds != null) {
 			this.checkedTransactionIds = transactionIds;
-		}else{
+		} else {
 			checkedTransactionIds.clear();
 		}
 	}
@@ -117,8 +120,9 @@ public class DayLogDataAdapter extends CursorAdapter {
 		tvTime.setText(lastUpdateTime);
 
 		int incomeColor = context.getResources().getColor(R.color.incomeColor);
-		int expenseColor = context.getResources().getColor(R.color.expenseColor);
-		
+		int expenseColor = context.getResources()
+				.getColor(R.color.expenseColor);
+
 		if (cost > 0) {
 			tvCost.setText(Utility.formatCurrency(cost, currencyCode, false));
 			tvCost.setTextColor(incomeColor);
@@ -136,7 +140,7 @@ public class DayLogDataAdapter extends CursorAdapter {
 			chkBox.setVisibility(showCheckBox ? CheckBox.VISIBLE
 					: CheckBox.GONE);
 			chkBox.setChecked(false);
-			if(checkedTransactionIds.contains(id)){
+			if (checkedTransactionIds.contains(id)) {
 				chkBox.setChecked(true);
 			}
 		}

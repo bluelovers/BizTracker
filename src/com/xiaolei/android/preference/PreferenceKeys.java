@@ -14,6 +14,5 @@ public final class PreferenceKeys {
 	public static final String AlreadySignedIn ="AlreadySignedIn";
 	public static final String SignedInTimestamp ="SignedInTimestamp";
 	
-	public static final String ShowStatisticPanelInTransactionList = "ShowStatisticPanelInTransactionList";
 	
 }
