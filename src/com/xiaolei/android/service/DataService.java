@@ -806,7 +806,7 @@ public class DataService {
 					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else (bl.Cost / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code left join Stuff s on bl.StuffId = s._Id where bl.cost "
 							+ (transactionType == TransactionType.Income ? ">"
 									: "<")
-							+ " 0 and s.Name like ? or bl.Comment like ? ",
+							+ " 0 and (s.Name like ? or bl.Comment like ?) ",
 							defaultCurrencyCode, String
 									.valueOf(defaultCurrencyUSDExchangeRate));
 		}

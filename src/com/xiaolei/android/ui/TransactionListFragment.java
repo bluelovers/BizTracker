@@ -86,14 +86,14 @@ public class TransactionListFragment extends Fragment implements
 	}
 
 	public void showFavouriteTransactionList() {
-		super.setHasOptionsMenu(false);
+		super.setHasOptionsMenu(true);
 
 		viewType = ViewType.FavouriteTransactionList;
 		fillFavouriteTransactionListAsync();
 	}
 
 	public void showDateRangeTransactionList(Date startDate, Date endDate) {
-		super.setHasOptionsMenu(false);
+		super.setHasOptionsMenu(true);
 		viewType = ViewType.DateRangeTransactionList;
 
 		showDataRangeTransactionListAsync(startDate, endDate);
@@ -127,7 +127,7 @@ public class TransactionListFragment extends Fragment implements
 	}
 
 	public void search(String keyword) {
-		super.setHasOptionsMenu(false);
+		super.setHasOptionsMenu(true);
 
 		searchKeyword = keyword;
 		viewType = ViewType.SearchTransactionList;
@@ -451,8 +451,8 @@ public class TransactionListFragment extends Fragment implements
 				&& viewFlipper.getVisibility() == ViewFlipper.VISIBLE) {
 			viewFlipper.setVisibility(ViewFlipper.GONE);
 		}
-		
-		if(showCheckBox){
+
+		if (showCheckBox) {
 			this.showMultiCheckBox(false);
 		}
 	}
@@ -926,6 +926,11 @@ public class TransactionListFragment extends Fragment implements
 		case DailyTransactionList:
 			inflater.inflate(R.menu.menu_for_biz_log, menu);
 			break;
+		case SearchTransactionList:
+		case FavouriteTransactionList:
+		case DateRangeTransactionList:
+			inflater.inflate(R.menu.menu_transaction_list, menu);
+			break;
 		default:
 			break;
 		}
@@ -966,6 +971,10 @@ public class TransactionListFragment extends Fragment implements
 
 			return true;
 		case R.id.itemShowStatisticsInfo:
+			if (viewType == ViewType.SearchTransactionList
+					&& TextUtils.isEmpty(searchKeyword)) {
+				return true;
+			}
 			showStatisticInformationAsync();
 
 			return true;

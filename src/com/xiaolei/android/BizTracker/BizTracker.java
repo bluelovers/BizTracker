@@ -1112,7 +1112,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 					public void afterTextChanged(Editable arg0) {
 						TextView tvVerifyResult = (TextView) inputPasswordDlg
 								.findViewById(R.id.textViewVerifyResult);
-						tvVerifyResult.setVisibility(View.INVISIBLE);
+						tvVerifyResult.setVisibility(View.GONE);
 					}
 
 					@Override
