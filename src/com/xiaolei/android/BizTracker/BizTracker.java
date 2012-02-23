@@ -95,6 +95,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	public static final String APPLICATION_FOLDER = "BizTracker";
 	public static final String PHOTO_PATH = "BizTracker/photo";
 
+
 	// private Boolean requestedLocationUpdates = false;
 	// private Boolean GPSEnableConfirmDialogShown = false;
 
@@ -924,7 +925,11 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 					try {
 						BufferedWriter writer = new BufferedWriter(
 								new OutputStreamWriter(new FileOutputStream(
-										targetFile), "UTF-8"), 8192);
+										targetFile), "UTF-16"), 8192);
+						
+						//Writer UTF-16 BOM
+						//writer.write(0xff);
+						//writer.write(0xfe);
 
 						Cursor cursor = DataService.GetInstance(context)
 								.getAllBizLog();
@@ -950,9 +955,9 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 							}
 
 							if (columnNames.length() > 0) {
-								columnNames.append("," + colName);
+								columnNames.append("\t\"" + colName + "\"");
 							} else {
-								columnNames.append(colName);
+								columnNames.append("\"" + colName + "\"");
 							}
 						}
 						columnNames.append("\n");
@@ -967,10 +972,10 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 							for (int colIndex = 0; colIndex < cursor
 									.getColumnCount(); colIndex++) {
 								if (line.length() > 0) {
-									line.append(","
-											+ cursor.getString(colIndex));
+									line.append("\t\""
+											+ cursor.getString(colIndex) + "\"");
 								} else {
-									line.append(cursor.getString(colIndex));
+									line.append("\"" + cursor.getString(colIndex) + "\"");
 								}
 							}
 							line.append("\n");
