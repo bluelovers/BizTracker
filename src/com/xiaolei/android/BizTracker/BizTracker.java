@@ -57,7 +57,6 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
-import com.xiaolei.android.R;
 import com.xiaolei.android.common.BaseActivity;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
