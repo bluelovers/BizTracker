@@ -31,6 +31,8 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -45,6 +47,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -54,6 +57,7 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
+import com.xiaolei.android.R;
 import com.xiaolei.android.common.BaseActivity;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
@@ -94,7 +98,6 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	public static final int REQUEST_CODE = 1;
 	public static final String APPLICATION_FOLDER = "BizTracker";
 	public static final String PHOTO_PATH = "BizTracker/photo";
-
 
 	// private Boolean requestedLocationUpdates = false;
 	// private Boolean GPSEnableConfirmDialogShown = false;
@@ -926,10 +929,10 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 						BufferedWriter writer = new BufferedWriter(
 								new OutputStreamWriter(new FileOutputStream(
 										targetFile), "UTF-16"), 8192);
-						
-						//Writer UTF-16 BOM
-						//writer.write(0xff);
-						//writer.write(0xfe);
+
+						// Writer UTF-16 BOM
+						// writer.write(0xff);
+						// writer.write(0xfe);
 
 						Cursor cursor = DataService.GetInstance(context)
 								.getAllBizLog();
@@ -975,7 +978,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 									line.append("\t\""
 											+ cursor.getString(colIndex) + "\"");
 								} else {
-									line.append("\"" + cursor.getString(colIndex) + "\"");
+									line.append("\""
+											+ cursor.getString(colIndex) + "\"");
 								}
 							}
 							line.append("\n");
@@ -1166,6 +1170,17 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		inputPasswordDlg.show();
 		inputPasswordDlg.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
 				R.drawable.lock);
+	}
+
+	private void showPopupMessage(String message) {
+		LayoutInflater inflater = getLayoutInflater();
+		View content = inflater.inflate(R.layout.pop_up_content, null, false);
+		if (content != null) {
+			PopupWindow popupWin = new PopupWindow(content, 100, 100, false);
+			popupWin.setAnimationStyle(R.style.AnimationPopup);
+			popupWin.showAtLocation(this.findViewById(R.id.viewSwitcherPanel),
+					Gravity.CENTER, 0, 0);
+		}
 	}
 
 	@Override
