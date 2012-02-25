@@ -23,7 +23,9 @@ public class PopupWindowHelper {
 	private View mContentView = null;
 	private Context mContext = null;
 	private View mParentView = null;
-	private int mAutoDismissDelayMillis = 300;
+	private int mAutoDismissDelayMillis = 5000;
+	private int mExpectedWidth = 200;
+	private int mExpectedHeight = 200;
 
 	public PopupWindowHelper(Context context, View parentView) {
 		mResourceId = R.layout.pop_up_content;
@@ -31,7 +33,15 @@ public class PopupWindowHelper {
 		mContext = context;
 	}
 
-	public void showPopupMessage(String message) {
+	public PopupWindowHelper(Context context, View parentView, int width,
+			int height) {
+		this(context, parentView);
+
+		mExpectedWidth = width;
+		mExpectedHeight = height;
+	}
+
+	public void showPopupMessage(String message, int textColor) {
 		if (mContentView == null) {
 			LayoutInflater inflater = (LayoutInflater) mContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -39,18 +49,22 @@ public class PopupWindowHelper {
 		}
 
 		if (mPopupWindow == null) {
-			mPopupWindow = new PopupWindow(mContentView, 100, 100, false);
+			mPopupWindow = new PopupWindow(mContentView, mExpectedWidth,
+					mExpectedHeight, false);
 			mPopupWindow.setAnimationStyle(R.style.AnimationPopup);
 			mPopupWindow.setOutsideTouchable(true);
+			mPopupWindow.setClippingEnabled(true);
 		}
 
 		if (mPopupWindow != null && mContentView != null) {
 			TextView tvPopupMessage = (TextView) mContentView
 					.findViewById(R.id.textViewPopupMessage);
 			if (tvPopupMessage != null) {
+				tvPopupMessage.setTextColor(textColor);
 				tvPopupMessage.setText(message);
 			}
 			mPopupWindow.showAtLocation(mParentView, Gravity.CENTER, 0, 0);
+			
 			Handler handler = new Handler();
 			handler.postDelayed(new Runnable() {
 

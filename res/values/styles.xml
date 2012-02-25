@@ -18,9 +18,9 @@
         <item name="android:ellipsize">middle</item>
     </style>
 
-    <style name="AnimationPopup">
-        <item name="@android:windowEnterAnimation">@android:anim/fade_in</item>
-        <item name="@android:windowExitAnimation">@android:anim/fade_out</item>
+    <style name="AnimationPopup" parent="android:Animation">
+        <item name="@android:windowEnterAnimation">@anim/popup_window_in</item>
+        <item name="@android:windowExitAnimation">@anim/popup_window_exit</item>
     </style>
 
 </resources>

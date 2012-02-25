@@ -136,6 +136,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:gravity="left"
+                    android:ellipsize="marquee"
+                    android:maxLines="1"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
                 <TextView
@@ -143,6 +145,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:gravity="left"
+                    android:maxLines="1"
+                    android:ellipsize="marquee"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </TextSwitcher>
             <!--

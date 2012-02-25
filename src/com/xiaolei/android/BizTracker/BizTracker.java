@@ -38,6 +38,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -55,7 +57,6 @@ import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
 import com.xiaolei.android.common.BaseActivity;
-import com.xiaolei.android.common.PopupWindowHelper;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
@@ -96,7 +97,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	public static final String APPLICATION_FOLDER = "BizTracker";
 	public static final String PHOTO_PATH = "BizTracker/photo";
 
-	private String mLastCostString = "";
+	private double mLastCost = 0d;
 
 	// private Boolean requestedLocationUpdates = false;
 	// private Boolean GPSEnableConfirmDialogShown = false;
@@ -737,13 +738,12 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 					todaySumPay = service.getTodaySumPay();
 					todaySumEarn = service.getTodaySumEarn();
-					mLastCostString = Utility
-							.formatCurrency(cost, currencyCode);
+					mLastCost = cost;
 
 					return String.format("%s%s: %s",
 							(cost < 0 ? context.getString(R.string.pay)
 									: context.getString(R.string.earn)), name,
-							mLastCostString);
+							Utility.formatCurrency(cost, currencyCode));
 				}
 
 				return context.getString(R.string.save_fail);
@@ -758,7 +758,13 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				if (!TextUtils.isEmpty(result)) {
 					Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
 					refreshTodayCost();
-					showPopupMessage(mLastCostString);
+
+					int color = getResources().getColor(R.color.expenseColor);
+					if (mLastCost > 0) {
+						color = getResources().getColor(R.color.incomeColor);
+					}
+					showPopupMessage(
+							Utility.formatCurrency(mLastCost, "", false), color);
 
 					if (context.updateDate != null) {
 						context.setResult(RESULT_OK);
@@ -1175,15 +1181,26 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				R.drawable.lock);
 	}
 
-	private void showPopupMessage(String message) {
+	private void showPopupMessage(String message, int textColor) {
 		if (TextUtils.isEmpty(message)) {
 			return;
 		}
 
-		View view = this.findViewById(R.id.viewFlipperMain);
-		if (view != null) {
-			PopupWindowHelper helper = new PopupWindowHelper(this, view);
-			helper.showPopupMessage(message);
+		TextView tvPopupMessage = (TextView) findViewById(R.id.textViewMessage);
+		if (tvPopupMessage != null) {
+			tvPopupMessage.setTextColor(textColor);
+			tvPopupMessage.setText(message);
+			if (tvPopupMessage.getVisibility() != TextView.VISIBLE) {
+				tvPopupMessage.setVisibility(TextView.VISIBLE);
+			}
+			
+			Animation inAnimation = AnimationUtils.loadAnimation(this,
+					R.anim.popup_window_in);
+			if (inAnimation != null) {
+				inAnimation.reset();
+				tvPopupMessage.clearAnimation();
+				tvPopupMessage.startAnimation(inAnimation);
+			}
 		}
 	}
 
