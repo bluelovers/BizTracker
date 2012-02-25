@@ -10,5 +10,6 @@
     <color name="lightGray">#333333</color>
     <color name="incomeColor">#99cc00</color>
     <color name="expenseColor">#ff5f5f</color>
+    <color name="popupMessageContainer">#60000000</color>
 
 </resources>

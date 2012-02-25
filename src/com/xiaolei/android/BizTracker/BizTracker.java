@@ -40,6 +40,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
@@ -74,7 +75,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	private int stuffId = 0;
 	private Button btnDeleteStuff;
 	private TableLayout tblStuffs;
-	private TextSwitcher txtStuffName; 
+	private TextSwitcher txtStuffName;
 	private double cost;
 	private double todaySumPay = 0;
 	private double todaySumEarn = 0;
@@ -1183,6 +1184,12 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			return;
 		}
 
+		FrameLayout containter = (FrameLayout) findViewById(R.id.frameLayoutPopupMessage);
+		if (containter != null) {
+			containter.setBackgroundColor(getResources().getColor(
+					R.color.popupMessageContainer));
+		}
+
 		TextView tvPopupMessage = (TextView) findViewById(R.id.textViewMessage);
 		if (tvPopupMessage != null) {
 			int color = Color.BLACK;
@@ -1206,6 +1213,30 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			}
 
 			if (inAnimation != null) {
+				inAnimation.setAnimationListener(new AnimationListener() {
+
+					@Override
+					public void onAnimationEnd(Animation animation) {
+						FrameLayout containter = (FrameLayout) findViewById(R.id.frameLayoutPopupMessage);
+						if (containter != null) {
+							containter.setBackgroundColor(Color.TRANSPARENT);
+						}
+					}
+
+					@Override
+					public void onAnimationRepeat(Animation animation) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onAnimationStart(Animation animation) {
+						// TODO Auto-generated method stub
+
+					}
+
+				});
+
 				inAnimation.reset();
 				tvPopupMessage.clearAnimation();
 				tvPopupMessage.startAnimation(inAnimation);
