@@ -16,10 +16,10 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.DialogInterface.OnCancelListener;
-import android.content.SharedPreferences.Editor;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -31,8 +31,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -47,7 +45,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -58,6 +55,7 @@ import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
 import com.xiaolei.android.common.BaseActivity;
+import com.xiaolei.android.common.PopupWindowHelper;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
@@ -97,6 +95,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	public static final int REQUEST_CODE = 1;
 	public static final String APPLICATION_FOLDER = "BizTracker";
 	public static final String PHOTO_PATH = "BizTracker/photo";
+
+	private String mLastCostString = "";
 
 	// private Boolean requestedLocationUpdates = false;
 	// private Boolean GPSEnableConfirmDialogShown = false;
@@ -737,10 +737,13 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 					todaySumPay = service.getTodaySumPay();
 					todaySumEarn = service.getTodaySumEarn();
+					mLastCostString = Utility
+							.formatCurrency(cost, currencyCode);
+
 					return String.format("%s%s: %s",
 							(cost < 0 ? context.getString(R.string.pay)
 									: context.getString(R.string.earn)), name,
-							Utility.formatCurrency(cost, currencyCode));
+							mLastCostString);
 				}
 
 				return context.getString(R.string.save_fail);
@@ -755,6 +758,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				if (!TextUtils.isEmpty(result)) {
 					Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
 					refreshTodayCost();
+					showPopupMessage(mLastCostString);
 
 					if (context.updateDate != null) {
 						context.setResult(RESULT_OK);
@@ -1172,13 +1176,14 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	}
 
 	private void showPopupMessage(String message) {
-		LayoutInflater inflater = getLayoutInflater();
-		View content = inflater.inflate(R.layout.pop_up_content, null, false);
-		if (content != null) {
-			PopupWindow popupWin = new PopupWindow(content, 100, 100, false);
-			popupWin.setAnimationStyle(R.style.AnimationPopup);
-			popupWin.showAtLocation(this.findViewById(R.id.viewSwitcherPanel),
-					Gravity.CENTER, 0, 0);
+		if (TextUtils.isEmpty(message)) {
+			return;
+		}
+
+		View view = this.findViewById(R.id.viewFlipperMain);
+		if (view != null) {
+			PopupWindowHelper helper = new PopupWindowHelper(this, view);
+			helper.showPopupMessage(message);
 		}
 	}
 
