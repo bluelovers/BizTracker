@@ -9,6 +9,6 @@
     <color name="darkBlue">#0099cc</color>
     <color name="lightGray">#333333</color>
     <color name="incomeColor">#99cc00</color>
-    <color name="expenseColor">#ff4444</color>
+    <color name="expenseColor">#ff5f5f</color>
 
 </resources>

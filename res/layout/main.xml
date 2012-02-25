@@ -49,8 +49,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:drawingCacheQuality="high"
                 android:gravity="center"
                 android:textColor="@color/expenseColor"
+                android:textSize="35sp"
                 android:visibility="invisible" />
         </FrameLayout>
     </FrameLayout>

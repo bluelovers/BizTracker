@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.AsyncTask;
@@ -73,7 +74,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	private int stuffId = 0;
 	private Button btnDeleteStuff;
 	private TableLayout tblStuffs;
-	private TextSwitcher txtStuffName;
+	private TextSwitcher txtStuffName; 
 	private double cost;
 	private double todaySumPay = 0;
 	private double todaySumEarn = 0;
@@ -756,15 +757,11 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				}
 
 				if (!TextUtils.isEmpty(result)) {
-					Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+					// Toast.makeText(context, result,
+					// Toast.LENGTH_SHORT).show();
 					refreshTodayCost();
 
-					int color = getResources().getColor(R.color.expenseColor);
-					if (mLastCost > 0) {
-						color = getResources().getColor(R.color.incomeColor);
-					}
-					showPopupMessage(
-							Utility.formatCurrency(mLastCost, "", false), color);
+					showPopupMessage(mLastCost);
 
 					if (context.updateDate != null) {
 						context.setResult(RESULT_OK);
@@ -1181,21 +1178,33 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				R.drawable.lock);
 	}
 
-	private void showPopupMessage(String message, int textColor) {
-		if (TextUtils.isEmpty(message)) {
+	private void showPopupMessage(double lastCost) {
+		if (lastCost == 0) {
 			return;
 		}
 
 		TextView tvPopupMessage = (TextView) findViewById(R.id.textViewMessage);
 		if (tvPopupMessage != null) {
-			tvPopupMessage.setTextColor(textColor);
-			tvPopupMessage.setText(message);
+			int color = Color.BLACK;
+			Animation inAnimation = null;
+
+			if (lastCost > 0) {
+				color = getResources().getColor(R.color.incomeColor);
+				inAnimation = AnimationUtils.loadAnimation(this, R.anim.income);
+			} else {
+				color = getResources().getColor(R.color.expenseColor);
+				inAnimation = AnimationUtils
+						.loadAnimation(this, R.anim.expense);
+			}
+
+			tvPopupMessage.setTextColor(color);
+			tvPopupMessage.setText(Utility.formatCurrency(lastCost, "", false));
+			tvPopupMessage.setDrawingCacheEnabled(true);
+
 			if (tvPopupMessage.getVisibility() != TextView.VISIBLE) {
 				tvPopupMessage.setVisibility(TextView.VISIBLE);
 			}
-			
-			Animation inAnimation = AnimationUtils.loadAnimation(this,
-					R.anim.popup_window_in);
+
 			if (inAnimation != null) {
 				inAnimation.reset();
 				tvPopupMessage.clearAnimation();
