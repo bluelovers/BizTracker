@@ -44,21 +44,7 @@
             android:layout_height="match_parent"
             android:background="@android:color/transparent" >
 
-            <TextView
-                android:id="@+id/textViewMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:drawingCacheQuality="high"
-                android:gravity="center"
-                android:padding="2dp"
-                android:shadowColor="#ffffff"
-                android:shadowDx="0"
-                android:shadowDy="0"
-                android:shadowRadius="20"
-                android:textColor="@color/expenseColor"
-                android:textSize="35sp"
-                android:visibility="invisible" />
+            <include layout="@layout/price_label" />
         </FrameLayout>
     </FrameLayout>
 

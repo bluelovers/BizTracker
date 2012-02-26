@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -1184,42 +1183,64 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			return;
 		}
 
-		FrameLayout containter = (FrameLayout) findViewById(R.id.frameLayoutPopupMessage);
-		if (containter != null) {
-			containter.setBackgroundColor(getResources().getColor(
-					R.color.popupMessageContainer));
+		String lastCostString = Utility.formatCurrency(lastCost, "", false);
+		String price = "";
+		String digitPartOfPrice = "";
+
+		int digitPointIndex = lastCostString.indexOf('.');
+		if (digitPointIndex >= 0) {
+			price = lastCostString.substring(0, digitPointIndex);
+			digitPartOfPrice = lastCostString.substring(digitPointIndex);
+		} else {
+			price = lastCostString;
+			digitPartOfPrice = "";
 		}
 
-		TextView tvPopupMessage = (TextView) findViewById(R.id.textViewMessage);
-		if (tvPopupMessage != null) {
+		TextView tvPrice = (TextView) findViewById(R.id.textViewPrice);
+		TextView tvDigitPartOfPrice = (TextView) findViewById(R.id.textViewDigitPartOfPrice);
+
+		if (tvPrice != null && tvDigitPartOfPrice != null) {
 			int color = Color.BLACK;
 			Animation inAnimation = null;
+			Animation inAnimation2 = null;
 
 			if (lastCost > 0) {
 				color = getResources().getColor(R.color.incomeColor);
 				inAnimation = AnimationUtils.loadAnimation(this, R.anim.income);
+				inAnimation2 = AnimationUtils.loadAnimation(this, R.anim.income);
 			} else {
 				color = getResources().getColor(R.color.expenseColor);
 				inAnimation = AnimationUtils
 						.loadAnimation(this, R.anim.expense);
+				inAnimation2 = AnimationUtils
+						.loadAnimation(this, R.anim.expense);
 			}
 
-			tvPopupMessage.setTextColor(color);
-			tvPopupMessage.setText(Utility.formatCurrency(lastCost, "", false));
-			tvPopupMessage.setDrawingCacheEnabled(true);
+			tvPrice.setTextColor(color);
+			tvPrice.setText(price);
+			tvPrice.setDrawingCacheEnabled(true);
 
-			if (tvPopupMessage.getVisibility() != TextView.VISIBLE) {
-				tvPopupMessage.setVisibility(TextView.VISIBLE);
+			tvDigitPartOfPrice.setTextColor(color);
+			tvDigitPartOfPrice.setText(digitPartOfPrice);
+			tvDigitPartOfPrice.setDrawingCacheEnabled(true);
+
+			if (tvPrice.getVisibility() != TextView.VISIBLE) {
+				tvPrice.setVisibility(TextView.VISIBLE);
+				tvDigitPartOfPrice.setVisibility(TextView.VISIBLE);
 			}
 
-			if (inAnimation != null) {
+			if (inAnimation != null && inAnimation2 != null) {
 				inAnimation.setAnimationListener(new AnimationListener() {
 
 					@Override
 					public void onAnimationEnd(Animation animation) {
-						FrameLayout containter = (FrameLayout) findViewById(R.id.frameLayoutPopupMessage);
-						if (containter != null) {
-							containter.setBackgroundColor(Color.TRANSPARENT);
+						TextView tvPrice = (TextView) findViewById(R.id.textViewPrice);
+						TextView tvDigitPartOfPrice = (TextView) findViewById(R.id.textViewDigitPartOfPrice);
+
+						if (tvPrice != null) {
+							tvPrice.setVisibility(TextView.INVISIBLE);
+							tvDigitPartOfPrice
+									.setVisibility(TextView.INVISIBLE);
 						}
 					}
 
@@ -1238,9 +1259,15 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				});
 
 				inAnimation.reset();
-				tvPopupMessage.clearAnimation();
-				tvPopupMessage.startAnimation(inAnimation);
+				inAnimation2.reset();
+				
+				tvPrice.clearAnimation();
+				tvDigitPartOfPrice.clearAnimation();
+
+				tvPrice.startAnimation(inAnimation);
+				tvDigitPartOfPrice.startAnimation(inAnimation2);
 			}
+
 		}
 	}
 
