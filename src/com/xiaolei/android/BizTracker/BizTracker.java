@@ -1205,11 +1205,11 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			Animation inAnimation2 = null;
 
 			if (lastCost > 0) {
-				color = getResources().getColor(R.color.incomeColor);
+				color = getResources().getColor(R.color.popupIncomeColor);
 				inAnimation = AnimationUtils.loadAnimation(this, R.anim.income);
 				inAnimation2 = AnimationUtils.loadAnimation(this, R.anim.income);
 			} else {
-				color = getResources().getColor(R.color.expenseColor);
+				color = getResources().getColor(R.color.popupExpenseColor);
 				inAnimation = AnimationUtils
 						.loadAnimation(this, R.anim.expense);
 				inAnimation2 = AnimationUtils

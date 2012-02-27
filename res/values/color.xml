@@ -9,7 +9,10 @@
     <color name="darkBlue">#0099cc</color>
     <color name="lightGray">#333333</color>
     <color name="incomeColor">#99cc00</color>
-    <color name="expenseColor">#ff5f5f</color>
+    <color name="expenseColor">#ff4444</color>
+    <color name="popupIncomeColor">#ffa00e</color>
+    <color name="popupExpenseColor">#ffa00e</color>
+    <color name="costTextShadowColor">#bbc9dd</color>
     <color name="popupMessageContainer">#60000000</color>
 
 </resources>
