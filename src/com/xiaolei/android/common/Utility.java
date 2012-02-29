@@ -600,7 +600,7 @@ public final class Utility {
 		alertDialog.setOnShowListener(onShowListener);
 
 		alertDialog.show();
-		return alertDialog;
+		return alertDialog; 
 	}
 
 	public static boolean dateEquals(Date date1, Date date2) {
@@ -610,7 +610,7 @@ public final class Utility {
 
 		return date1.getYear() == date2.getYear()
 				&& date1.getMonth() == date2.getMonth()
-				&& date1.getDay() == date2.getDay();
+				&& date1.getDate() == date2.getDate();
 	}
 
 	public static Date replaceWithCurrentTime(Date date) {
@@ -663,6 +663,39 @@ public final class Utility {
 			result = Environment.getExternalStorageDirectory() + File.separator
 					+ BizTracker.PHOTO_PATH;
 		}
+		return result;
+	}
+	
+	public static Boolean fileExists(String fileName) {
+		if (TextUtils.isEmpty(fileName)) {
+			return false;
+		}
+
+		File file = new File(fileName);
+		return file.exists();
+	}
+	
+	public static AbsolutePhotoFileInfo getAbsolutePhotoFileName(String shortPhotoFileName){
+		AbsolutePhotoFileInfo result = new AbsolutePhotoFileInfo();
+		
+		Boolean fileExists = false;
+		String finalFileName = shortPhotoFileName;
+
+		if (fileExists(shortPhotoFileName)) {
+			finalFileName = shortPhotoFileName;
+			fileExists = true;
+		} else {
+			String fullFileName = getPhotoStoragePath() + File.separator
+					+ shortPhotoFileName;
+			if (fileExists(fullFileName)) {
+				finalFileName = fullFileName;
+				fileExists = true;
+			}
+		}
+
+		result.AbsolutePhotoFileName = finalFileName;
+		result.FileExists = fileExists;
+		
 		return result;
 	}
 

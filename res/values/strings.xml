@@ -167,5 +167,8 @@
     <string name="show_bottom_statistic_panel_description">Whether show statistic data at bottom of the transaction list</string>
     <string name="display">Display</string>
     <string name="manually_total">Manually summary</string>
+    <string name="total_income">Income</string>
+    <string name="total_expense">Expense</string>
+    <string name="balance">Balance</string>
 
 </resources>

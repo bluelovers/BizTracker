@@ -38,7 +38,7 @@ import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
 import com.xiaolei.android.BizTracker.BizTracker;
-import com.xiaolei.android.BizTracker.DayLogDataAdapter;
+import com.xiaolei.android.BizTracker.TransactionListCursorAdapter;
 import com.xiaolei.android.BizTracker.Helper;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
@@ -83,6 +83,7 @@ public class TransactionListFragment extends Fragment implements
 		viewType = ViewType.DailyTransactionList;
 
 		fillDataAsync(date);
+		calculateStatisticInfoAsync();
 	}
 
 	public void showFavouriteTransactionList() {
@@ -90,6 +91,7 @@ public class TransactionListFragment extends Fragment implements
 
 		viewType = ViewType.FavouriteTransactionList;
 		fillFavouriteTransactionListAsync();
+		calculateStatisticInfoAsync();
 	}
 
 	public void showDateRangeTransactionList(Date startDate, Date endDate) {
@@ -97,6 +99,7 @@ public class TransactionListFragment extends Fragment implements
 		viewType = ViewType.DateRangeTransactionList;
 
 		showDataRangeTransactionListAsync(startDate, endDate);
+		calculateStatisticInfoAsync();
 	}
 
 	private void showDataRangeTransactionListAsync(Date startDate, Date endDate) {
@@ -133,6 +136,7 @@ public class TransactionListFragment extends Fragment implements
 		viewType = ViewType.SearchTransactionList;
 
 		searchAsync(keyword);
+		calculateStatisticInfoAsync();
 	}
 
 	@Override
@@ -178,18 +182,20 @@ public class TransactionListFragment extends Fragment implements
 					ListView lv = (ListView) getView().findViewById(
 							R.id.listViewBizLogByDay);
 					if (lv != null) {
-						DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv
+						TransactionListCursorAdapter listAdapter = (TransactionListCursorAdapter) lv
 								.getAdapter();
 
 						if (listAdapter == null) {
 							boolean showFullDate = false;
 							if (this.viewType == ViewType.SearchTransactionList
-									|| this.viewType == ViewType.DateRangeTransactionList) {
+									|| this.viewType == ViewType.DateRangeTransactionList
+									|| this.viewType == ViewType.FavouriteTransactionList) {
 								showFullDate = true;
 							}
 
-							listAdapter = new DayLogDataAdapter(getActivity(),
-									result, showFullDate, false, context);
+							listAdapter = new TransactionListCursorAdapter(
+									getActivity(), result, showFullDate, false,
+									context);
 							lv.setAdapter(listAdapter);
 						} else {
 							listAdapter.changeCursor(result);
@@ -225,6 +231,7 @@ public class TransactionListFragment extends Fragment implements
 	private class StatisticInfo {
 		private double totalIncome = 0d;
 		private double totalExpense = 0d;
+		private double totalBalance = 0d;
 		private String defaultCurrencyCode = "";
 
 		public double getTotalIncome() {
@@ -249,6 +256,14 @@ public class TransactionListFragment extends Fragment implements
 
 		public void setDefaultCurrencyCode(String defaultCurrencyCode) {
 			this.defaultCurrencyCode = defaultCurrencyCode;
+		}
+
+		public double getTotalBalance() {
+			return totalBalance;
+		}
+
+		public void setTotalBalance(double totalBalance) {
+			this.totalBalance = totalBalance;
 		}
 	}
 
@@ -514,7 +529,7 @@ public class TransactionListFragment extends Fragment implements
 				ListView lv = (ListView) getView().findViewById(
 						R.id.listViewBizLogByDay);
 				if (lv != null) {
-					DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv
+					TransactionListCursorAdapter listAdapter = (TransactionListCursorAdapter) lv
 							.getAdapter();
 					if (listAdapter != null) {
 						listAdapter
@@ -525,6 +540,103 @@ public class TransactionListFragment extends Fragment implements
 				calculateStatisticInfoOfCheckItemsAsync();
 			}
 		}
+	}
+
+	private void calculateStatisticInfoAsync() {
+		AsyncTask<Void, Void, StatisticInfo> task = new AsyncTask<Void, Void, StatisticInfo>() {
+
+			@Override
+			protected StatisticInfo doInBackground(Void... params) {
+				String defaultCurrencyCode = DataService.GetInstance(
+						getActivity()).getDefaultCurrencyCode();
+				StatisticInfo result = new StatisticInfo();
+				result.setDefaultCurrencyCode(defaultCurrencyCode);
+				double totalIncome = 0d;
+				double totalExpense = 0d;
+				double balance = 0d;
+
+				switch (viewType) {
+				case DailyTransactionList:
+					totalIncome = DataService.GetInstance(getActivity())
+							.getTotalEarn(date, date);
+					totalExpense = DataService.GetInstance(getActivity())
+							.getTotalPay(date, date);
+					break;
+				case SearchTransactionList:
+					totalIncome = DataService.GetInstance(getActivity())
+							.getTotalMoneyOfSearchedTransactions(searchKeyword,
+									TransactionType.Income);
+					totalExpense = DataService.GetInstance(getActivity())
+							.getTotalMoneyOfSearchedTransactions(searchKeyword,
+									TransactionType.Expense);
+					break;
+				case FavouriteTransactionList:
+					totalIncome = DataService.GetInstance(getActivity())
+							.getTotalMoneyOfFavouriteTransactions(
+									TransactionType.Income);
+					totalExpense = DataService.GetInstance(getActivity())
+							.getTotalMoneyOfFavouriteTransactions(
+									TransactionType.Expense);
+					break;
+				case DateRangeTransactionList:
+					totalIncome = DataService.GetInstance(getActivity())
+							.getTotalEarn(startDate, endDate);
+					totalExpense = DataService.GetInstance(getActivity())
+							.getTotalPay(startDate, endDate);
+					break;
+				default:
+					break;
+				}
+				balance = totalIncome + totalExpense;
+
+				result.setTotalIncome(totalIncome);
+				result.setTotalExpense(totalExpense);
+				result.setTotalBalance(balance);
+
+				return result;
+			}
+
+			@Override
+			protected void onPostExecute(StatisticInfo result) {
+				if (result != null && getView() != null) {
+
+					TextView tvTotalIncome = (TextView) getView().findViewById(
+							R.id.textViewTotalIncomeMoney);
+					TextView tvTotalExpense = (TextView) getView()
+							.findViewById(R.id.textViewTotalExpenseMoney);
+					TextView tvBalance = (TextView) getView().findViewById(
+							R.id.textViewTotalBalanceMoney);
+
+					if (tvTotalIncome != null) {
+						tvTotalIncome.setText(Utility.formatCurrency(
+								result.getTotalIncome(),
+								result.getDefaultCurrencyCode(), false));
+					}
+					if (tvTotalExpense != null) {
+						tvTotalExpense.setText(Utility.formatCurrency(
+								result.getTotalExpense(),
+								result.getDefaultCurrencyCode(), false));
+					}
+
+					if (tvBalance != null) {
+						if (result.getTotalBalance() > 0) {
+							int incomeColor = getActivity().getResources()
+									.getColor(R.color.incomeColor);
+							tvBalance.setTextColor(incomeColor);
+						} else {
+							int expenseColor = getActivity().getResources()
+									.getColor(R.color.expenseColor);
+							tvBalance.setTextColor(expenseColor);
+						}
+						tvBalance.setText(Utility.formatCurrency(
+								result.getTotalBalance(),
+								result.getDefaultCurrencyCode(), false));
+					}
+				}
+			}
+
+		};
+		task.execute();
 	}
 
 	private void calculateStatisticInfoOfCheckItemsAsync() {
@@ -643,6 +755,7 @@ public class TransactionListFragment extends Fragment implements
 			break;
 		}
 
+		calculateStatisticInfoAsync();
 		notifyDataChanged();
 	}
 
@@ -902,7 +1015,8 @@ public class TransactionListFragment extends Fragment implements
 		ListView lv = (ListView) getView().findViewById(
 				R.id.listViewBizLogByDay);
 		if (lv != null) {
-			DayLogDataAdapter listAdapter = (DayLogDataAdapter) lv.getAdapter();
+			TransactionListCursorAdapter listAdapter = (TransactionListCursorAdapter) lv
+					.getAdapter();
 			if (listAdapter != null) {
 				listAdapter.setCheckedTransactionIds(checkedTransactionIds);
 				listAdapter.allowMultiCheckable(visible);

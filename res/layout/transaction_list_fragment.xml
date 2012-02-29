@@ -26,6 +26,8 @@
                 android:longClickable="true" >
             </ListView>
 
+            <include layout="@layout/statistic_panel" />
+
             <include
                 android:layout_weight="1"
                 layout="@layout/statistic_of_transaction_list" />

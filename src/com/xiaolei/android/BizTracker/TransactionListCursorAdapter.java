@@ -5,6 +5,7 @@ import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,18 +14,20 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xiaolei.android.common.AbsolutePhotoFileInfo;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.BizLogSchema;
+import com.xiaolei.android.entity.PhotoSchema;
 
-public class DayLogDataAdapter extends CursorAdapter {
+public class TransactionListCursorAdapter extends CursorAdapter {
 	private LayoutInflater inflater;
 	private Boolean showFullDateTime = false;
 	private View.OnClickListener starOnClickListener;
 	private boolean showCheckBox = false;
 	private ArrayList<Long> checkedTransactionIds = new ArrayList<Long>();
 
-	public DayLogDataAdapter(Context context, Cursor c,
+	public TransactionListCursorAdapter(Context context, Cursor c,
 			Boolean showFullDateTime, View.OnClickListener starOnClickListener) {
 		super(context, c);
 		this.showFullDateTime = showFullDateTime;
@@ -32,7 +35,7 @@ public class DayLogDataAdapter extends CursorAdapter {
 		inflater = LayoutInflater.from(context);
 	}
 
-	public DayLogDataAdapter(Context context, Cursor c,
+	public TransactionListCursorAdapter(Context context, Cursor c,
 			Boolean showFullDateTime, boolean showCheckBox,
 			View.OnClickListener starOnClickListener) {
 		super(context, c);
@@ -96,6 +99,8 @@ public class DayLogDataAdapter extends CursorAdapter {
 				.findViewById(R.id.textViewBizItemStuffName);
 		ImageView ivStar = (ImageView) view
 				.findViewById(R.id.imageButtonStarIt);
+		ImageView ivPhoto = (ImageView) view
+				.findViewById(R.id.imageViewStuffPhoto);
 		TextView tvCost = (TextView) view
 				.findViewById(R.id.textViewBizItemCost);
 		TextView tvCurrencyCode = (TextView) view
@@ -114,10 +119,18 @@ public class DayLogDataAdapter extends CursorAdapter {
 			ivStar.setTag(tag);
 		}
 
-		tvStuffName.setText(stuffName);
-		tvCurrencyCode.setText(currencyCode);
-		tvComment.setText(comment);
-		tvTime.setText(lastUpdateTime);
+		if (tvStuffName != null) {
+			tvStuffName.setText(stuffName);
+		}
+		if (tvCurrencyCode != null) {
+			tvCurrencyCode.setText(currencyCode);
+		}
+		if (tvComment != null) {
+			tvComment.setText(comment);
+		}
+		if (tvTime != null) {
+			tvTime.setText(lastUpdateTime);
+		}
 
 		int incomeColor = context.getResources().getColor(R.color.incomeColor);
 		int expenseColor = context.getResources()
@@ -142,6 +155,26 @@ public class DayLogDataAdapter extends CursorAdapter {
 			chkBox.setChecked(false);
 			if (checkedTransactionIds.contains(id)) {
 				chkBox.setChecked(true);
+			}
+		}
+
+		if (ivPhoto != null && ivPhoto.getVisibility() == ImageView.VISIBLE) {
+			String photoFileName = cursor.getString(cursor
+					.getColumnIndex(PhotoSchema.FileName));
+			AbsolutePhotoFileInfo photoFileInfo = Utility
+					.getAbsolutePhotoFileName(photoFileName);
+			Bitmap photo = null;
+			if (photoFileInfo.FileExists) {
+				photo = Utility.getScaledBitmap(
+						photoFileInfo.AbsolutePhotoFileName, 64, 64);
+			}
+
+			if (photo != null) {
+				if (ivPhoto != null) {
+					ivPhoto.setImageBitmap(photo);
+				}
+			} else {
+				// TODO: Photo file does not exist.
 			}
 		}
 	}

@@ -166,5 +166,8 @@
     <string name="show_bottom_statistic_panel_description">是否在交易列表的底部显示汇总数据</string>
     <string name="display">显示</string>
     <string name="manually_total">手工汇总</string>
+    <string name="total_income">合计收入</string>
+    <string name="total_expense">合计支出</string>
+    <string name="balance">收支差额</string>
 
 </resources>

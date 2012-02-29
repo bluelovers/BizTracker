@@ -623,7 +623,8 @@ public class DataService {
 
 	public Cursor getBizLogByDay(Date date) {
 		String sql = "SELECT s.Name as StuffName, bl.* FROM BizLog as bl left join Stuff s on bl.StuffId = s._Id where bl.LastUpdateTime between ? and ? order by bl.LastUpdateTime desc";
-
+		//String sql = "SELECT s.Name as StuffName, bl.*, p.FileName FROM BizLog as bl left join Stuff s on bl.StuffId = s._Id left join Photo p on p.BizLogId = bl._id where bl.LastUpdateTime between ? and ? order by bl.LastUpdateTime desc";
+		
 		date.setHours(0);
 		date.setMinutes(0);
 		date.setSeconds(0);
