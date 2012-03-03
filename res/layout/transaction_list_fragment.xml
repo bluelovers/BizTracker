@@ -26,7 +26,7 @@
                 android:longClickable="true" >
             </ListView>
 
-            <include layout="@layout/statistic_panel" />
+            <include layout="@layout/statistic_panel_lite" />
 
             <include
                 android:layout_weight="1"
