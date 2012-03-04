@@ -266,9 +266,15 @@ public class LineChartFragment extends Fragment {
 		super.onResume();
 
 		if (mChartView == null) {
-			mChartView = ChartFactory.getLineChartView(getActivity(), mDataset,
-					mRenderer);
+			LinearLayout container = (LinearLayout) getView().findViewById(
+					R.id.linearLayoutChart);
+			if (container != null) {
+				mChartView = ChartFactory.getTimeChartView(getActivity(),
+						mDataset, mRenderer, mDateFormat);
 
+				container.addView(mChartView, new LayoutParams(
+						LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+			}
 		} else {
 			mChartView.repaint();
 		}

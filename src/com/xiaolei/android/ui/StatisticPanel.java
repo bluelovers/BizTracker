@@ -4,9 +4,11 @@
 package com.xiaolei.android.ui;
 
 import java.text.ParseException;
+import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -89,12 +91,12 @@ public class StatisticPanel extends FragmentActivity {
 						if (fragment != null) {
 							try {
 								fragment.showData();
+
 								fragment.addLines(result,
 										getString(R.string.income),
 										getString(R.string.expense),
 										BizLogSchema.LastUpdateTime,
 										BizLogSchema.Cost);
-								
 							} catch (ParseException e) {
 								fragment.showMessage(e.getMessage());
 								e.printStackTrace();
