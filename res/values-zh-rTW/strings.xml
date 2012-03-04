@@ -169,5 +169,6 @@
     <string name="total_income">合計收入</string>
     <string name="total_expense">合計支出</string>
     <string name="balance">收支差額</string>
+    <string name="no_data_for_chart">沒有可供分析的數據</string>
 
 </resources>

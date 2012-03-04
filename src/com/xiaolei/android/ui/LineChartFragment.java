@@ -26,6 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 /**
  * @author xiaolei
@@ -79,13 +81,13 @@ public class LineChartFragment extends Fragment {
 		mRenderer.setLabelsTextSize(10);
 		mRenderer.setLegendTextSize(15);
 		mRenderer.setMargins(new int[] { 20, 30, 15, 20 });
-		mRenderer.setZoomButtonsVisible(false);
+		mRenderer.setZoomButtonsVisible(true);
 		mRenderer.setXLabelsAngle(10);
 		mRenderer.setShowGrid(true);
 		mRenderer.setAntialiasing(true);
-		mRenderer.setXTitle("Date");
-		mRenderer.setYTitle("Money");
-		
+		mRenderer.setXTitle(getString(R.string.transaction_date));
+		mRenderer.setYTitle(getString(R.string.money));
+
 		mRenderer.setYLabels(10);
 		mRenderer.setXLabels(5);
 	}
@@ -191,31 +193,28 @@ public class LineChartFragment extends Fragment {
 	}
 
 	public void addLines(Cursor cursor, String positiveNumberLineName,
-			String negativeNumberName, String dateTypeColumnName,
+			String negativeNumberLineName, String dateTypeColumnName,
+			String doubleTypeColumnName) throws ParseException {
+		addLines(cursor, positiveNumberLineName, negativeNumberLineName,
+				dateTypeColumnName, doubleTypeColumnName, getActivity()
+						.getResources().getColor(R.color.incomeColor),
+				getActivity().getResources().getColor(R.color.expenseColor));
+	}
+
+	public void addLines(Cursor cursor, String positiveNumberLineName,
+			String negativeNumberLineName, String dateTypeColumnName,
 			String doubleTypeColumnName, int positiveLineColor,
 			int negativeLineColor) throws ParseException {
 		if (cursor == null || cursor.isClosed()) {
 			return;
 		}
-
-		if (mChartView == null) {
-			LinearLayout container = (LinearLayout) getView().findViewById(
-					R.id.linearLayoutChart);
-			if (container != null) {
-				mChartView = ChartFactory.getTimeChartView(getActivity(),
-						mDataset, mRenderer, mDateFormat);
-
-				container.addView(mChartView, new LayoutParams(
-						LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-			}
-		}
-
+		
 		if (mDataset == null) {
 			mDataset = new XYMultipleSeriesDataset();
 		}
 
 		TimeSeries positiveNumberSeries = new TimeSeries(positiveNumberLineName);
-		TimeSeries negativeNumberSeries = new TimeSeries(negativeNumberName);
+		TimeSeries negativeNumberSeries = new TimeSeries(negativeNumberLineName);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		if (cursor.moveToFirst()) {
@@ -234,9 +233,6 @@ public class LineChartFragment extends Fragment {
 			} while (cursor.moveToNext());
 		}
 
-		mDataset.addSeries(positiveNumberSeries);
-		mDataset.addSeries(negativeNumberSeries);
-
 		XYSeriesRenderer positiveNumberSeriesRenderer = new XYSeriesRenderer();
 		positiveNumberSeriesRenderer.setFillPoints(false);
 		positiveNumberSeriesRenderer.setColor(positiveLineColor);
@@ -246,9 +242,23 @@ public class LineChartFragment extends Fragment {
 		negativeNumberSeriesRenderer.setColor(negativeLineColor);
 
 		mRenderer.addSeriesRenderer(positiveNumberSeriesRenderer);
+		mDataset.addSeries(positiveNumberSeries);
 		mRenderer.addSeriesRenderer(negativeNumberSeriesRenderer);
+		mDataset.addSeries(negativeNumberSeries);
+		
+		if (mChartView == null) {
+			LinearLayout container = (LinearLayout) getView().findViewById(
+					R.id.linearLayoutChart);
+			if (container != null) {
+				mChartView = ChartFactory.getTimeChartView(getActivity(),
+						mDataset, mRenderer, mDateFormat);
 
-		mChartView.repaint();
+				container.addView(mChartView, new LayoutParams(
+						LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+			}
+		}else{
+			mChartView.repaint();
+		}
 	}
 
 	@Override
@@ -285,4 +295,36 @@ public class LineChartFragment extends Fragment {
 		super.onDestroyView();
 	}
 
+	public void showBusyIndicator() {
+		if (getView() != null) {
+			ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
+					R.id.viewFlipperLineChart);
+			if (viewFlipper != null) {
+				viewFlipper.setDisplayedChild(0);
+			}
+		}
+	}
+
+	public void showData() {
+		if (getView() != null) {
+			ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
+					R.id.viewFlipperLineChart);
+			if (viewFlipper != null) {
+				viewFlipper.setDisplayedChild(1);
+			}
+		}
+	}
+
+	public void showMessage(String message) {
+		if (getView() != null) {
+			ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
+					R.id.viewFlipperLineChart);
+			TextView tvEmpty = (TextView) getView().findViewById(
+					R.id.textViewEmpty);
+			if (viewFlipper != null && tvEmpty != null) {
+				tvEmpty.setText(message);
+				viewFlipper.setDisplayedChild(2);
+			}
+		}
+	}
 }

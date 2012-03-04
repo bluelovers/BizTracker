@@ -41,6 +41,7 @@ import com.xiaolei.android.BizTracker.BizTracker;
 import com.xiaolei.android.BizTracker.TransactionListCursorAdapter;
 import com.xiaolei.android.BizTracker.Helper;
 import com.xiaolei.android.BizTracker.R;
+import com.xiaolei.android.common.DataSourceType;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.listener.OnNotifyDataChangedListener;
@@ -55,7 +56,7 @@ public class TransactionListFragment extends Fragment implements
 		OnClickListener, OnItemClickListener, OnItemLongClickListener {
 	private TransactionListFragment context;
 	public static final int REQUEST_CODE = 1118;
-	private ViewType viewType = ViewType.Unknown;
+	private DataSourceType dataSourceType = DataSourceType.Unknown;
 	private String searchKeyword = "";
 	private Date date = new Date();
 	private Date startDate;
@@ -80,7 +81,7 @@ public class TransactionListFragment extends Fragment implements
 	public void showTransactionListByDate(Date date) {
 		super.setHasOptionsMenu(true);
 		this.date = date;
-		viewType = ViewType.DailyTransactionList;
+		dataSourceType = DataSourceType.DailyTransactionList;
 
 		fillDataAsync(date);
 		calculateStatisticInfoAsync();
@@ -89,14 +90,14 @@ public class TransactionListFragment extends Fragment implements
 	public void showFavouriteTransactionList() {
 		super.setHasOptionsMenu(true);
 
-		viewType = ViewType.FavouriteTransactionList;
+		dataSourceType = DataSourceType.FavouriteTransactionList;
 		fillFavouriteTransactionListAsync();
 		calculateStatisticInfoAsync();
 	}
 
 	public void showDateRangeTransactionList(Date startDate, Date endDate) {
 		super.setHasOptionsMenu(true);
-		viewType = ViewType.DateRangeTransactionList;
+		dataSourceType = DataSourceType.DateRangeTransactionList;
 
 		showDataRangeTransactionListAsync(startDate, endDate);
 		calculateStatisticInfoAsync();
@@ -133,7 +134,7 @@ public class TransactionListFragment extends Fragment implements
 		super.setHasOptionsMenu(true);
 
 		searchKeyword = keyword;
-		viewType = ViewType.SearchTransactionList;
+		dataSourceType = DataSourceType.SearchTransactionList;
 
 		searchAsync(keyword);
 		calculateStatisticInfoAsync();
@@ -187,9 +188,9 @@ public class TransactionListFragment extends Fragment implements
 
 						if (listAdapter == null) {
 							boolean showFullDate = false;
-							if (this.viewType == ViewType.SearchTransactionList
-									|| this.viewType == ViewType.DateRangeTransactionList
-									|| this.viewType == ViewType.FavouriteTransactionList) {
+							if (this.dataSourceType == DataSourceType.SearchTransactionList
+									|| this.dataSourceType == DataSourceType.DateRangeTransactionList
+									|| this.dataSourceType == DataSourceType.FavouriteTransactionList) {
 								showFullDate = true;
 							}
 
@@ -300,7 +301,7 @@ public class TransactionListFragment extends Fragment implements
 				double totalIncome = 0d;
 				double totalExpense = 0d;
 
-				switch (viewType) {
+				switch (dataSourceType) {
 				case DailyTransactionList:
 					totalIncome = DataService.GetInstance(getActivity())
 							.getTotalEarn(date, date);
@@ -555,7 +556,7 @@ public class TransactionListFragment extends Fragment implements
 				double totalExpense = 0d;
 				double balance = 0d;
 
-				switch (viewType) {
+				switch (dataSourceType) {
 				case DailyTransactionList:
 					totalIncome = DataService.GetInstance(getActivity())
 							.getTotalEarn(date, date);
@@ -738,7 +739,7 @@ public class TransactionListFragment extends Fragment implements
 			mCursor = null;
 		}
 
-		switch (viewType) {
+		switch (dataSourceType) {
 		case DailyTransactionList:
 			this.fillDataAsync(date);
 			break;
@@ -999,10 +1000,6 @@ public class TransactionListFragment extends Fragment implements
 				});
 	}
 
-	public enum ViewType {
-		Unknown, DailyTransactionList, SearchTransactionList, FavouriteTransactionList, DateRangeTransactionList
-	}
-
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -1036,7 +1033,7 @@ public class TransactionListFragment extends Fragment implements
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		switch (viewType) {
+		switch (dataSourceType) {
 		case DailyTransactionList:
 			inflater.inflate(R.menu.menu_for_biz_log, menu);
 			break;
@@ -1085,11 +1082,16 @@ public class TransactionListFragment extends Fragment implements
 
 			return true;
 		case R.id.itemShowStatisticsInfo:
-			if (viewType == ViewType.SearchTransactionList
-					&& TextUtils.isEmpty(searchKeyword)) {
-				return true;
-			}
-			showStatisticInformationAsync();
+			Intent intent = new Intent(getActivity(), StatisticPanel.class);
+			intent.putExtra(StatisticPanel.KEY_DATA_SOURCE_TYPE,
+					dataSourceType.ordinal());
+			startActivity(intent);
+
+			/*
+			 * if (viewType == ViewType.SearchTransactionList &&
+			 * TextUtils.isEmpty(searchKeyword)) { return true; }
+			 * showStatisticInformationAsync();
+			 */
 
 			return true;
 		default:

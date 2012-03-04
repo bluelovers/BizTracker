@@ -170,5 +170,6 @@
     <string name="total_income">Income</string>
     <string name="total_expense">Expense</string>
     <string name="balance">Balance</string>
+    <string name="no_data_for_chart">No transaction information for charting.</string>
 
 </resources>
