@@ -396,13 +396,23 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 			@Override
 			protected Boolean doInBackground(Integer... params) {
-				todaySumPay = DataService.GetInstance(context).getTodaySumPay();
-				todaySumEarn = DataService.GetInstance(context)
+				boolean valueChanged = false;
+				double sumPay = DataService.GetInstance(context)
+						.getTodaySumPay();
+				double sumEarn = DataService.GetInstance(context)
 						.getTodaySumEarn();
+				if (sumPay != todaySumPay) {
+					valueChanged = true;
+					todaySumPay = sumPay;
+				}
+				if (sumEarn != todaySumEarn) {
+					valueChanged = true;
+					todaySumEarn = sumEarn;
+				}
 				defaultCurrencyCode = DataService.GetInstance(context)
 						.getDefaultCurrencyCode();
 
-				return true;
+				return valueChanged;
 			}
 
 			@Override
@@ -1207,13 +1217,14 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			if (lastCost > 0) {
 				color = getResources().getColor(R.color.popupIncomeColor);
 				inAnimation = AnimationUtils.loadAnimation(this, R.anim.income);
-				inAnimation2 = AnimationUtils.loadAnimation(this, R.anim.income);
+				inAnimation2 = AnimationUtils
+						.loadAnimation(this, R.anim.income);
 			} else {
 				color = getResources().getColor(R.color.popupExpenseColor);
 				inAnimation = AnimationUtils
 						.loadAnimation(this, R.anim.expense);
-				inAnimation2 = AnimationUtils
-						.loadAnimation(this, R.anim.expense);
+				inAnimation2 = AnimationUtils.loadAnimation(this,
+						R.anim.expense);
 			}
 
 			tvPrice.setTextColor(color);
@@ -1260,7 +1271,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 				inAnimation.reset();
 				inAnimation2.reset();
-				
+
 				tvPrice.clearAnimation();
 				tvDigitPartOfPrice.clearAnimation();
 

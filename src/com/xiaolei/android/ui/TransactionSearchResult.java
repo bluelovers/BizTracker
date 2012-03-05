@@ -127,6 +127,14 @@ public class TransactionSearchResult extends FragmentActivity implements
 					}
 				}
 			} else {
+				FragmentManager fragMan = this.getSupportFragmentManager();
+				if (fragMan != null) {
+					TransactionListFragment fragment = (TransactionListFragment) fragMan
+							.findFragmentById(R.id.fragmentSearchTransactionList);
+					if (fragment != null) {
+						fragment.clearSearchKeyword();
+					}
+				}
 				viewFlipper.setDisplayedChild(0);
 			}
 		}

@@ -4,6 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <include layout="@layout/title_bar_without_buttons" >
+    </include>
+
     <fragment
         android:id="@+id/fragmentChart"
         android:layout_width="match_parent"

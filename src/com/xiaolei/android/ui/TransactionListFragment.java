@@ -139,6 +139,10 @@ public class TransactionListFragment extends Fragment implements
 		searchAsync(keyword);
 		calculateStatisticInfoAsync();
 	}
+	
+	public void clearSearchKeyword(){
+		searchKeyword = "";
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -218,6 +222,7 @@ public class TransactionListFragment extends Fragment implements
 					ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
 							.findViewById(R.id.viewSwitcherDayBizLog);
 					viewSwitcher.setDisplayedChild(1);
+					this.setHasOptionsMenu(false);
 				}
 			}
 		} else {
@@ -225,6 +230,7 @@ public class TransactionListFragment extends Fragment implements
 				ViewSwitcher viewSwitcher = (ViewSwitcher) getView()
 						.findViewById(R.id.viewSwitcherDayBizLog);
 				viewSwitcher.setDisplayedChild(1);
+				this.setHasOptionsMenu(false);
 			}
 		}
 	}
@@ -1082,21 +1088,35 @@ public class TransactionListFragment extends Fragment implements
 
 			return true;
 		case R.id.itemShowStatisticsInfo:
-			Intent intent = new Intent(getActivity(), StatisticPanel.class);
-			intent.putExtra(StatisticPanel.KEY_DATA_SOURCE_TYPE,
-					dataSourceType.ordinal());
-			startActivity(intent);
-
-			/*
-			 * if (viewType == ViewType.SearchTransactionList &&
-			 * TextUtils.isEmpty(searchKeyword)) { return true; }
-			 * showStatisticInformationAsync();
-			 */
+			startStatisticActivity();
 
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void startStatisticActivity() {
+		Intent intent = new Intent(getActivity(), StatisticPanel.class);
+		switch (dataSourceType) {
+		case DailyTransactionList:
+			intent.putExtra(StatisticPanel.KEY_DATE, date.getTime());
+			break;
+		case SearchTransactionList:
+			intent.putExtra(StatisticPanel.KEY_SEARCH_KEYWORD, searchKeyword);
+			break;
+		case FavouriteTransactionList:
+			intent.putExtra(StatisticPanel.KEY_SHOW_FAVOURITE_LIST, true);
+			break;
+		case DateRangeTransactionList:
+			intent.putExtra(StatisticPanel.KEY_START_DATE, startDate.getTime());
+			intent.putExtra(StatisticPanel.KEY_END_DATE, endDate.getTime());
+			break;
+		default:
+			break;
+		}
+
+		startActivity(intent);
 	}
 
 	private void newTransaction() {
