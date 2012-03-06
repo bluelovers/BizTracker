@@ -7,25 +7,14 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Summary" />
+        android:text="@string/total"
+        android:textAppearance="?android:attr/listSeparatorTextViewStyle" />
 
     <ListView
         android:id="@+id/listViewSummary"
-        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ListView>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Minimum and Maximum" />
-
-    <ListView
-        android:id="@+id/listViewMinAndMaxItem"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="0dp"
+        android:layout_weight="1" >
     </ListView>
 
 </LinearLayout>

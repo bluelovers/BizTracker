@@ -76,8 +76,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	private TableLayout tblStuffs;
 	private TextSwitcher txtStuffName;
 	private double cost;
-	private double todaySumPay = 0;
-	private double todaySumEarn = 0;
+	private double todaySumPay = -1;
+	private double todaySumEarn = -1;
 	private String stuffName = "";
 	private DataService service;
 	private Date updateDate;
