@@ -170,5 +170,9 @@
     <string name="total_expense">合計支出</string>
     <string name="balance">收支差額</string>
     <string name="no_data_for_chart">沒有可供分析的數據</string>
+    <string name="favourite_transaction_list_chart_title">加星標交易</string>
+    <string name="search_result_chart_title">搜尋關鍵字</string>
+    <string name="date_chart_title">交易日期</string>
+    <string name="date_range_chart_title">交易日期範圍</string>
 
 </resources>

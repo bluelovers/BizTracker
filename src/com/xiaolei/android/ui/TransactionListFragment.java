@@ -84,7 +84,7 @@ public class TransactionListFragment extends Fragment implements
 		dataSourceType = DataSourceType.DailyTransactionList;
 
 		fillDataAsync(date);
-		calculateStatisticInfoAsync();
+		//calculateStatisticInfoAsync();
 	}
 
 	public void showFavouriteTransactionList() {
@@ -92,7 +92,7 @@ public class TransactionListFragment extends Fragment implements
 
 		dataSourceType = DataSourceType.FavouriteTransactionList;
 		fillFavouriteTransactionListAsync();
-		calculateStatisticInfoAsync();
+		//calculateStatisticInfoAsync();
 	}
 
 	public void showDateRangeTransactionList(Date startDate, Date endDate) {
@@ -100,7 +100,7 @@ public class TransactionListFragment extends Fragment implements
 		dataSourceType = DataSourceType.DateRangeTransactionList;
 
 		showDataRangeTransactionListAsync(startDate, endDate);
-		calculateStatisticInfoAsync();
+		//calculateStatisticInfoAsync();
 	}
 
 	private void showDataRangeTransactionListAsync(Date startDate, Date endDate) {
@@ -137,7 +137,7 @@ public class TransactionListFragment extends Fragment implements
 		dataSourceType = DataSourceType.SearchTransactionList;
 
 		searchAsync(keyword);
-		calculateStatisticInfoAsync();
+		//calculateStatisticInfoAsync();
 	}
 	
 	public void clearSearchKeyword(){
@@ -762,7 +762,7 @@ public class TransactionListFragment extends Fragment implements
 			break;
 		}
 
-		calculateStatisticInfoAsync();
+		//calculateStatisticInfoAsync();
 		notifyDataChanged();
 	}
 

@@ -16,6 +16,7 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import com.xiaolei.android.BizTracker.R;
+import com.xiaolei.android.listener.OnLoadCompletedListener;
 
 import android.database.Cursor;
 import android.graphics.Color;
@@ -39,6 +40,19 @@ public class LineChartFragment extends Fragment {
 	private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
 	private String mDateFormat;
 	private GraphicalView mChartView;
+	
+	private OnLoadCompletedListener mLoadCompletedListener;
+
+	public void setOnLoadCompletedListener(
+			OnLoadCompletedListener loadCompletedListener) {
+		mLoadCompletedListener = loadCompletedListener;
+	}
+	
+	protected void onLoadCompleted(boolean success){
+		if(mLoadCompletedListener != null){
+			mLoadCompletedListener.onLoadCompleted(success);
+		}
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -76,17 +90,19 @@ public class LineChartFragment extends Fragment {
 	private void configRenderer() {
 		mRenderer.setApplyBackgroundColor(true);
 		mRenderer.setBackgroundColor(Color.argb(100, 50, 50, 50));
-		mRenderer.setAxisTitleTextSize(16);
+		mRenderer.setAxisTitleTextSize(12);
 		mRenderer.setChartTitleTextSize(20);
 		mRenderer.setLabelsTextSize(10);
-		mRenderer.setLegendTextSize(15);
-		mRenderer.setMargins(new int[] { 20, 30, 15, 20 });
+		mRenderer.setLegendTextSize(10);
+		mRenderer.setShowLegend(false);
+		mRenderer.setMargins(new int[] { 0, 10, 5, 0 });
 		mRenderer.setZoomButtonsVisible(false);
 		mRenderer.setXLabelsAngle(10);
 		mRenderer.setShowGrid(true);
 		mRenderer.setAntialiasing(true);
-		mRenderer.setXTitle(getString(R.string.transaction_date));
-		mRenderer.setYTitle(getString(R.string.money));
+		mRenderer.setZoomEnabled(true, false);
+		//mRenderer.setXTitle(getString(R.string.transaction_date));
+		//mRenderer.setYTitle(getString(R.string.money));
 
 		mRenderer.setYLabels(10);
 		mRenderer.setXLabels(5);
@@ -190,6 +206,8 @@ public class LineChartFragment extends Fragment {
 		} else {
 			mChartView.repaint();
 		}
+		
+		onLoadCompleted(true);
 	}
 
 	public void addLines(Cursor cursor, String positiveNumberLineName,
@@ -259,6 +277,8 @@ public class LineChartFragment extends Fragment {
 		}else{
 			mChartView.repaint();
 		}
+		
+		onLoadCompleted(true);
 	}
 
 	@Override

@@ -171,5 +171,9 @@
     <string name="total_expense">Expense</string>
     <string name="balance">Balance</string>
     <string name="no_data_for_chart">No transaction information for charting.</string>
+    <string name="favourite_transaction_list_chart_title">Statistics for stared items</string>
+    <string name="search_result_chart_title">Statistics for keyword</string>
+    <string name="date_chart_title">Statistics for date</string>
+    <string name="date_range_chart_title">Statistics for date range</string>
 
 </resources>

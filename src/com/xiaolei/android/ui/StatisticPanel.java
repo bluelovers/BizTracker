@@ -13,16 +13,21 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
+import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.entity.BizLogSchema;
+import com.xiaolei.android.listener.OnLoadCompletedListener;
 import com.xiaolei.android.service.DataService;
 
 /**
  * @author x
  * 
  */
-public class StatisticPanel extends FragmentActivity {
+public class StatisticPanel extends FragmentActivity implements
+		OnLoadCompletedListener {
 
 	public static final String KEY_DATE = "Date";
 	public static final String KEY_START_DATE = "StartDate";
@@ -31,6 +36,8 @@ public class StatisticPanel extends FragmentActivity {
 	public static final String KEY_SHOW_FAVOURITE_LIST = "ShowFavouriteList";
 
 	private Context mContext;
+	private int loadCompletedCounter = 0;
+	private final int totalLoadCount = 2;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -55,12 +62,14 @@ public class StatisticPanel extends FragmentActivity {
 				if (millionSeconds > 0) {
 					Date date = new Date(millionSeconds);
 					showDailyTransactionListChartAsync(date);
+					showDailyTransactionsSummaryAsync(date);
 				}
 			}
 			if (params.containsKey(KEY_SEARCH_KEYWORD)) {
 				String keyword = params.getString(KEY_SEARCH_KEYWORD);
 				if (!TextUtils.isEmpty(keyword)) {
 					showSearchResultChartAsync(keyword);
+					showSearchTransactionsSummaryAsync(keyword);
 				}
 			}
 			if (params.containsKey(KEY_START_DATE)
@@ -73,11 +82,27 @@ public class StatisticPanel extends FragmentActivity {
 					Date endDate = new Date(endDateMilliseconds);
 
 					showDateRangeTransactionListChart(startDate, endDate);
+					showDateRangeTransactionsSummarnyAsync(startDate, endDate);
 				}
 			}
 		}
 
-		showEmptyChartMessage();
+		FragmentManager fragMan = getSupportFragmentManager();
+		if (fragMan != null) {
+			StatisticPanalFragment fragment = (StatisticPanalFragment) fragMan
+					.findFragmentById(R.id.fragmentStatisticPanel);
+			LineChartFragment fragmentChart = (LineChartFragment) fragMan
+					.findFragmentById(R.id.fragmentChart);
+
+			if (fragment != null) {
+				fragment.setOnLoadCompletedListener(this);
+			}
+			if (fragmentChart != null) {
+				fragmentChart.setOnLoadCompletedListener(this);
+			}
+		}
+
+		isLoading(true);
 	}
 
 	private void showFavouriteTransactionListSummaryAsync() {
@@ -85,12 +110,51 @@ public class StatisticPanel extends FragmentActivity {
 		if (fragMan != null) {
 			StatisticPanalFragment fragment = (StatisticPanalFragment) fragMan
 					.findFragmentById(R.id.fragmentStatisticPanel);
-			fragment.showFavouriteTransactionListSummaryDataAsync();
+			if (fragment != null) {
+				fragment.showFavouriteTransactionListSummaryDataAsync();
+			}
+		}
+	}
+
+	private void showSearchTransactionsSummaryAsync(String keyword) {
+		FragmentManager fragMan = getSupportFragmentManager();
+		if (fragMan != null) {
+			StatisticPanalFragment fragment = (StatisticPanalFragment) fragMan
+					.findFragmentById(R.id.fragmentStatisticPanel);
+			if (fragment != null) {
+				fragment.showSearchResultSummaryDataAsync(keyword);
+			}
+		}
+	}
+
+	private void showDateRangeTransactionsSummarnyAsync(Date startDate,
+			Date endDate) {
+		FragmentManager fragMan = getSupportFragmentManager();
+		if (fragMan != null) {
+			StatisticPanalFragment fragment = (StatisticPanalFragment) fragMan
+					.findFragmentById(R.id.fragmentStatisticPanel);
+			if (fragment != null) {
+				fragment.showDateRangeTransactionListSummaryDataAsync(
+						startDate, endDate);
+			}
+		}
+	}
+
+	private void showDailyTransactionsSummaryAsync(Date date) {
+		FragmentManager fragMan = getSupportFragmentManager();
+		if (fragMan != null) {
+			StatisticPanalFragment fragment = (StatisticPanalFragment) fragMan
+					.findFragmentById(R.id.fragmentStatisticPanel);
+			if (fragment != null) {
+				fragment.showDailyTransactionListSummaryDataAsync(date);
+			}
 		}
 	}
 
 	private void showSearchResultChartAsync(String keyword) {
 		showBusyIndicator();
+		showChartTitle(getString(R.string.search_result_chart_title) + ": "
+				+ keyword);
 		AsyncTask<String, Void, Cursor> task = new AsyncTask<String, Void, Cursor>() {
 
 			@Override
@@ -111,6 +175,11 @@ public class StatisticPanel extends FragmentActivity {
 
 	private void showDateRangeTransactionListChart(Date startDate, Date endDate) {
 		showBusyIndicator();
+		showChartTitle(getString(R.string.date_chart_title)
+				+ String.format(": %s~%s", DateUtils.formatDateTime(this,
+						startDate.getTime(), DateUtils.FORMAT_SHOW_DATE),
+						DateUtils.formatDateTime(this, endDate.getTime(),
+								DateUtils.FORMAT_SHOW_DATE)));
 		AsyncTask<Date, Void, Cursor> task = new AsyncTask<Date, Void, Cursor>() {
 
 			@Override
@@ -136,6 +205,11 @@ public class StatisticPanel extends FragmentActivity {
 
 	private void showDailyTransactionListChartAsync(Date date) {
 		showBusyIndicator();
+		showChartTitle(getString(R.string.date_chart_title)
+				+ ": "
+				+ DateUtils.formatDateTime(this, date.getTime(),
+						DateUtils.FORMAT_SHOW_DATE));
+
 		AsyncTask<Date, Void, Cursor> task = new AsyncTask<Date, Void, Cursor>() {
 
 			@Override
@@ -159,6 +233,7 @@ public class StatisticPanel extends FragmentActivity {
 
 	private void showFavouriteTransactionListChartAsync() {
 		showBusyIndicator();
+		showChartTitle(getString(R.string.favourite_transaction_list_chart_title));
 		AsyncTask<Boolean, Void, Cursor> task = new AsyncTask<Boolean, Void, Cursor>() {
 
 			@Override
@@ -201,6 +276,11 @@ public class StatisticPanel extends FragmentActivity {
 
 	private void buildLineChart(Cursor result) {
 		if (result != null && !result.isClosed()) {
+			if (result.getCount() <= 0) {
+				showNoDateMessage();
+				return;
+			}
+
 			FragmentManager fm = getSupportFragmentManager();
 			if (fm != null) {
 				LineChartFragment fragment = (LineChartFragment) fm
@@ -226,6 +306,35 @@ public class StatisticPanel extends FragmentActivity {
 					}
 				}
 			}
+		}
+	}
+
+	private void showChartTitle(String title) {
+		TextView tvChartTitle = (TextView) findViewById(R.id.textViewChartTitle);
+		if (tvChartTitle != null) {
+			tvChartTitle.setText(title);
+		}
+	}
+
+	private void isLoading(boolean loading) {
+		ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipperStatisticPanel);
+		if (viewFlipper != null) {
+			viewFlipper.setDisplayedChild(loading ? 0 : 1);
+		}
+	}
+
+	private void showNoDateMessage() {
+		ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipperStatisticPanel);
+		if (viewFlipper != null) {
+			viewFlipper.setDisplayedChild(2);
+		}
+	}
+
+	@Override
+	public void onLoadCompleted(Boolean loadSuccess) {
+		loadCompletedCounter++;
+		if (loadCompletedCounter >= totalLoadCount) {
+			isLoading(false);
 		}
 	}
 }
