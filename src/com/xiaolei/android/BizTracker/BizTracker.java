@@ -767,11 +767,11 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				}
 
 				if (!TextUtils.isEmpty(result)) {
-					// Toast.makeText(context, result,
-					// Toast.LENGTH_SHORT).show();
+					Toast.makeText(context, result,
+					Toast.LENGTH_SHORT).show();
 					refreshTodayCost();
 
-					showPopupMessage(mLastCost);
+					//showPopupMessage(mLastCost);
 
 					if (context.updateDate != null) {
 						context.setResult(RESULT_OK);

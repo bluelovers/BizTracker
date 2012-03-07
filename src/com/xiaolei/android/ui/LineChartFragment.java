@@ -40,16 +40,16 @@ public class LineChartFragment extends Fragment {
 	private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
 	private String mDateFormat;
 	private GraphicalView mChartView;
-	
+
 	private OnLoadCompletedListener mLoadCompletedListener;
 
 	public void setOnLoadCompletedListener(
 			OnLoadCompletedListener loadCompletedListener) {
 		mLoadCompletedListener = loadCompletedListener;
 	}
-	
-	protected void onLoadCompleted(boolean success){
-		if(mLoadCompletedListener != null){
+
+	protected void onLoadCompleted(boolean success) {
+		if (mLoadCompletedListener != null) {
 			mLoadCompletedListener.onLoadCompleted(success);
 		}
 	}
@@ -92,7 +92,7 @@ public class LineChartFragment extends Fragment {
 		mRenderer.setBackgroundColor(Color.argb(100, 50, 50, 50));
 		mRenderer.setAxisTitleTextSize(12);
 		mRenderer.setChartTitleTextSize(20);
-		mRenderer.setLabelsTextSize(10);
+		mRenderer.setLabelsTextSize(12);
 		mRenderer.setLegendTextSize(10);
 		mRenderer.setShowLegend(false);
 		mRenderer.setMargins(new int[] { 0, 10, 5, 0 });
@@ -101,8 +101,8 @@ public class LineChartFragment extends Fragment {
 		mRenderer.setShowGrid(true);
 		mRenderer.setAntialiasing(true);
 		mRenderer.setZoomEnabled(true, false);
-		//mRenderer.setXTitle(getString(R.string.transaction_date));
-		//mRenderer.setYTitle(getString(R.string.money));
+		// mRenderer.setXTitle(getString(R.string.transaction_date));
+		// mRenderer.setYTitle(getString(R.string.money));
 
 		mRenderer.setYLabels(10);
 		mRenderer.setXLabels(5);
@@ -206,7 +206,7 @@ public class LineChartFragment extends Fragment {
 		} else {
 			mChartView.repaint();
 		}
-		
+
 		onLoadCompleted(true);
 	}
 
@@ -226,7 +226,7 @@ public class LineChartFragment extends Fragment {
 		if (cursor == null || cursor.isClosed()) {
 			return;
 		}
-		
+
 		if (mDataset == null) {
 			mDataset = new XYMultipleSeriesDataset();
 		}
@@ -263,7 +263,7 @@ public class LineChartFragment extends Fragment {
 		mDataset.addSeries(positiveNumberSeries);
 		mRenderer.addSeriesRenderer(negativeNumberSeriesRenderer);
 		mDataset.addSeries(negativeNumberSeries);
-		
+
 		if (mChartView == null) {
 			LinearLayout container = (LinearLayout) getView().findViewById(
 					R.id.linearLayoutChart);
@@ -274,10 +274,10 @@ public class LineChartFragment extends Fragment {
 				container.addView(mChartView, new LayoutParams(
 						LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 			}
-		}else{
+		} else {
 			mChartView.repaint();
 		}
-		
+
 		onLoadCompleted(true);
 	}
 
