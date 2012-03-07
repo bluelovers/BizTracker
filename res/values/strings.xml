@@ -175,5 +175,7 @@
     <string name="search_result_chart_title">Statistics for keyword</string>
     <string name="date_chart_title">Statistics for date</string>
     <string name="date_range_chart_title">Statistics for date range</string>
+    <string name="contribute_language">Contribute Language</string>
+    <string name="contribute_language_summary">If BizTracker do not support your native language, please contribute your language to make it support it.</string>
 
 </resources>

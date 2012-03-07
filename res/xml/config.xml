@@ -29,6 +29,12 @@
             android:key="FEEDBACK"
             android:summary="@string/send_feedback_desc"
             android:title="@string/send_feedback" />
+
+        <com.xiaolei.android.preference.ContributeLanguagePreference
+            android:key="CONTRIBUTE_LANGUAGE"
+            android:summary="@string/contribute_language_summary"
+            android:title="@string/contribute_language" />
+
         <Preference
             android:key="LOCATE_IN_MARKET"
             android:summary="@string/go_to_android_market_description"

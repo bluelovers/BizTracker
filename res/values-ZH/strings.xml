@@ -174,5 +174,7 @@
     <string name="search_result_chart_title">搜索关键字</string>
     <string name="date_chart_title">交易日期</string>
     <string name="date_range_chart_title">交易日期范围</string>
+    <string name="contribute_language">贡献语言</string>
+    <string name="contribute_language_summary">如果爱记账还不支持显示你的本地语言文字，请帮忙翻译</string>
 
 </resources>

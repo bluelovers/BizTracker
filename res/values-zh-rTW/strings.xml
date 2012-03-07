@@ -174,5 +174,7 @@
     <string name="search_result_chart_title">搜尋關鍵字</string>
     <string name="date_chart_title">交易日期</string>
     <string name="date_range_chart_title">交易日期範圍</string>
+    <string name="contribute_language">貢獻語言</string>
+    <string name="contribute_language_summary">如果愛記賬還不支援顯示你的本地語言文字，請幫忙翻譯</string>
 
 </resources>
