@@ -51,8 +51,7 @@
     <string name="password">Password</string>
     <string name="input_password">Input password</string>
     <string name="send_feedback">Send Feedback</string>
-    <string name="send_feedback_desc">Send feedback via E-Mail to improve the user
-		experience.</string>
+    <string name="send_feedback_desc">Send feedback via E-Mail to improve the user experience.</string>
     <string name="welcome">Welcome!</string>
     <string name="welcome_description">At first, please create a new stuff. After created successfully, press the stuff button, then press \"Pay\" or \"Earn\", enter the cost, press \"OK\" at last."</string>
     <string name="welcome_end_words">Are you ready?</string>
