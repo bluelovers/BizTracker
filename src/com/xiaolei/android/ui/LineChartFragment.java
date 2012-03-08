@@ -95,7 +95,7 @@ public class LineChartFragment extends Fragment {
 		mRenderer.setLabelsTextSize(12);
 		mRenderer.setLegendTextSize(10);
 		mRenderer.setShowLegend(false);
-		mRenderer.setMargins(new int[] { 0, 10, 5, 0 });
+		mRenderer.setMargins(new int[] { 0, 20, 5, 0 });
 		mRenderer.setZoomButtonsVisible(false);
 		mRenderer.setXLabelsAngle(10);
 		mRenderer.setShowGrid(true);
