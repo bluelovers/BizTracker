@@ -7,6 +7,8 @@ import android.preference.Preference;
 import android.util.AttributeSet;
 
 public class ContributeLanguagePreference extends Preference {
+	private final String mContributeLanaguageFileUrl = "https://docs.google.com/document/d/1YtfQYtIurg-xwN8G5HOUZLXxPLjZDdhvAgo-z7il4aU/edit";
+	
 	public ContributeLanguagePreference(Context context) {
 		super(context);
 
@@ -29,7 +31,7 @@ public class ContributeLanguagePreference extends Preference {
 	}
 
 	private void openContributeLanguageWebPage() {
-		String url = "https://skydrive.live.com/redir.aspx?cid=9107ba7a12d48ece&resid=9107BA7A12D48ECE!107&parid=9107BA7A12D48ECE!105&authkey=!AIin8YCUV5ov3Q0";
+		String url = mContributeLanaguageFileUrl;
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setData(Uri.parse(url));
 		getContext().startActivity(intent);
