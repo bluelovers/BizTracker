@@ -549,6 +549,7 @@ public class TransactionListFragment extends Fragment implements
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void calculateStatisticInfoAsync() {
 		AsyncTask<Void, Void, StatisticInfo> task = new AsyncTask<Void, Void, StatisticInfo>() {
 

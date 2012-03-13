@@ -263,6 +263,7 @@ public class StatisticPanel extends FragmentActivity implements
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void showEmptyChartMessage() {
 		FragmentManager fm = getSupportFragmentManager();
 		if (fm != null) {

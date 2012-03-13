@@ -52,6 +52,7 @@ public class TransactionDetailsFragment extends Fragment implements
 	private TransactionPhoto currentPhotoInfo = null;
 	private Cursor cursor = null;
 	private TransactionPhotoPageAdapter adpt;
+	private int mPrimaryPhotoPosition = 0;
 
 	public void setTransactionId(long transactionId) {
 		if (transactionId != mTransactionId) {
@@ -167,6 +168,8 @@ public class TransactionDetailsFragment extends Fragment implements
 			protected Cursor doInBackground(Long... params) {
 				photoCount = DataService.GetInstance(getActivity())
 						.getTransactionPhotoCount(mTransactionId);
+				mPrimaryPhotoPosition = DataService.GetInstance(
+						getActivity()).getPrimaryPhotoPosition(mTransactionId);
 				Cursor cursor = DataService.GetInstance(getActivity())
 						.getTransactionPhotos(mTransactionId);
 
@@ -176,7 +179,7 @@ public class TransactionDetailsFragment extends Fragment implements
 			@Override
 			protected void onPostExecute(Cursor result) {
 				cursor = result;
-				showPhotoData(result);
+				showPhotoData(result, mPrimaryPhotoPosition);
 				ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
 						R.id.viewFlipperTransactionPhoto);
 				if (viewFlipper != null) {
@@ -239,13 +242,13 @@ public class TransactionDetailsFragment extends Fragment implements
 		if (tvTransactionComment != null) {
 			tvTransactionComment.setText(log.getComment());
 		}
-		
-		if(tvLocation != null){
+
+		if (tvLocation != null) {
 			tvLocation.setText(log.getLocationName());
 		}
 	}
 
-	private void showPhotoData(Cursor cursor) {
+	private void showPhotoData(Cursor cursor, int primaryPhotoPosition) {
 		if (cursor != null && cursor.isClosed() != true) {
 			TransactionPhotoPageAdapter adpt = new TransactionPhotoPageAdapter(
 					getActivity(), cursor);
@@ -254,6 +257,10 @@ public class TransactionDetailsFragment extends Fragment implements
 			if (viewPager != null) {
 				viewPager.setAdapter(adpt);
 				currentPhotoInfo = adpt.GetItemSource(0);
+				if (primaryPhotoPosition >= 0
+						&& primaryPhotoPosition < adpt.getCount()) {
+					viewPager.setCurrentItem(primaryPhotoPosition, true);
+				}
 			}
 		}
 	}
@@ -506,5 +513,30 @@ public class TransactionDetailsFragment extends Fragment implements
 			cursor.close();
 			cursor = null;
 		}
+	}
+
+	@Override
+	public void onPause() {
+		updatePrimaryPhotoAsync();
+
+		super.onPause();
+	}
+
+	private void updatePrimaryPhotoAsync() {
+		if (currentPhotoInfo == null) {
+			return;
+		}
+
+		AsyncTask<Long, Void, Void> task = new AsyncTask<Long, Void, Void>() {
+
+			@Override
+			protected Void doInBackground(Long... params) {
+				long id = params[0];
+				DataService.GetInstance(getActivity()).updatePrimaryPhoto(
+						mTransactionId, id);
+				return null;
+			}
+		};
+		task.execute(currentPhotoInfo.getId());
 	}
 }

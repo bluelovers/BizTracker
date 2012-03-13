@@ -20,6 +20,9 @@ public class BizLog {
 	private String stuffName;
 	private String locationName;
 	private String location;
+	private int StuffCount;
+	private int PrimaryPhotoId;
+	private int PrimaryVoiceNoteId;
 
 	/**
 	 * @param id
@@ -154,6 +157,30 @@ public class BizLog {
 
 	public void setLocationName(String locationName) {
 		this.locationName = locationName;
+	}
+
+	public int getStuffCount() {
+		return StuffCount;
+	}
+
+	public void setStuffCount(int stuffCount) {
+		StuffCount = stuffCount;
+	}
+
+	public int getPrimaryPhotoId() {
+		return PrimaryPhotoId;
+	}
+
+	public void setPrimaryPhotoId(int primaryPhotoId) {
+		PrimaryPhotoId = primaryPhotoId;
+	}
+
+	public int getPrimaryVoiceNoteId() {
+		return PrimaryVoiceNoteId;
+	}
+
+	public void setPrimaryVoiceNoteId(int primaryVoiceNoteId) {
+		PrimaryVoiceNoteId = primaryVoiceNoteId;
 	}
 
 

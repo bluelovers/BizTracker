@@ -5,6 +5,7 @@ package com.xiaolei.android.service;
 
 import java.util.ArrayList;
 
+import com.xiaolei.android.entity.BizLogSchema;
 import com.xiaolei.android.entity.CurrencySchema;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,7 +19,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
 	public static final String databaseName = "biz_tracker_data.db";
-	private static final int databaseVersion = 7;
+	private static final int databaseVersion = 8;
 
 	public DatabaseHelper(Context context, String databaseFileName) {
 		super(context, databaseFileName, null, databaseVersion);
@@ -28,10 +29,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String createTable_Stuff = "CREATE TABLE IF NOT EXISTS \"Stuff\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE , \"Name\" TEXT NOT NULL , \"Tag\" TEXT, \"LastUpdateTime\" DATETIME DEFAULT CURRENT_TIMESTAMP, \"Picture\" TEXT, \"LastUsedTime\"  DATETIME DEFAULT CURRENT_TIMESTAMP, \"IsActive\" BOOL NOT NULL  DEFAULT true)";
 		String createIndex_Stuff = "CREATE INDEX IF NOT EXISTS \"Idx_Stuff\" ON \"Stuff\" (\"Name\" ASC, \"LastUpdateTime\" ASC, LastUsedTime ASC)";
+
 		String createTable_Parameter = "CREATE TABLE IF NOT EXISTS \"Parameter\" (\"Id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE , \"Key\" TEXT NOT NULL  UNIQUE , \"Value\" TEXT, \"Tag\" TEXT, \"LastUpdateTime\" DATETIME DEFAULT CURRENT_TIMESTAMP)";
 		String createIndex_Parameter = "CREATE INDEX IF NOT EXISTS \"Idx_Parameter\" ON \"Parameter\" (\"Id\" ASC, \"Key\" ASC, \"LastUpdateTime\" ASC)";
-		String createTable_BizLog = "CREATE TABLE IF NOT EXISTS \"BizLog\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE , \"StuffId\" INTEGER NOT NULL , \"Cost\" DOUBLE NOT NULL , \"LastUpdateTime\" DATETIME DEFAULT CURRENT_TIMESTAMP, \"Star\" BOOL DEFAULT false, \"CurrencyCode\" TEXT, \"Comment\" TEXT, \"Tag\" TEXT, \"LocationName\" TEXT, \"Location\" TEXT)";
+
+		String createTable_BizLog = "CREATE TABLE IF NOT EXISTS \"BizLog\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE , \"StuffId\" INTEGER NOT NULL , \"Cost\" DOUBLE NOT NULL , \"LastUpdateTime\" DATETIME DEFAULT CURRENT_TIMESTAMP, \"Star\" BOOL DEFAULT false, \"CurrencyCode\" TEXT, \"Comment\" TEXT, \"Tag\" TEXT, \"LocationName\" TEXT, \"Location\" TEXT, \"StuffCount\" INTEGER DEFAULT 1, \"PrimaryPhotoId\" INTEGER, \"PrimaryVoiceNoteId\" INTEGER)";
 		String createIndex_BizLog = "CREATE INDEX IF NOT EXISTS \"Idx_BizLog\" ON \"BizLog\" (\"Cost\" ASC, \"LastUpdateTime\" ASC)";
+
 		String createTable_Project = "CREATE TABLE IF NOT EXISTS \"Project\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"Name\" TEXT NOT NULL , \"Description\" TEXT, \"CreatedTime\" DATETIME NOT NULL  DEFAULT CURRENT_TIMESTAMP, \"LastUpdateTime\" DATETIME NOT NULL  DEFAULT CURRENT_TIMESTAMP, \"IsActive\" BOOL NOT NULL  DEFAULT true, \"Tag\" TEXT)";
 		String createIndex_Project = "CREATE INDEX IF NOT EXISTS \"Idx_Project\" ON \"Project\" (\"Name\" DESC, \"CreatedTime\" DESC, \"LastUpdateTime\" DESC, \"IsActive\" DESC)";
 
@@ -48,6 +52,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		db.execSQL(createTable_Project);
 		db.execSQL(createIndex_Project);
+
+		createVoiceNoteTable(db);
+		createLocationCacheTable(db);
 
 		updateDBToVersion5(db);
 		updateDBToVersion6(db);
@@ -82,6 +89,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (currentDBVersion <= 6) {
 			updateDBToVersion7(db);
 		}
+
+		if (currentDBVersion <= 7) {
+			updateDBToVersion8(db);
+		}
+	}
+
+	private void updateDBToVersion8(SQLiteDatabase db) {
+		if (!columnExists(db, BizLogSchema.TableName, BizLogSchema.StuffCount)) {
+			String sql = String.format(
+					"ALTER TABLE \"%s\" ADD COLUMN \"%s\" INTEGER DEFAULT 1",
+					BizLogSchema.TableName, BizLogSchema.StuffCount);
+			db.execSQL(sql);
+		}
+
+		if (!columnExists(db, BizLogSchema.TableName,
+				BizLogSchema.PrimaryVoiceNoteId)) {
+			String sql = String.format(
+					"ALTER TABLE \"%s\" ADD COLUMN \"%s\" INTEGER",
+					BizLogSchema.TableName, BizLogSchema.PrimaryVoiceNoteId);
+			db.execSQL(sql);
+		}
+
+		if (!columnExists(db, BizLogSchema.TableName,
+				BizLogSchema.PrimaryPhotoId)) {
+			String sql = String.format(
+					"ALTER TABLE \"%s\" ADD COLUMN \"%s\" INTEGER",
+					BizLogSchema.TableName, BizLogSchema.PrimaryPhotoId);
+			db.execSQL(sql);
+
+			String sqlBatchUpdatePrimaryPhotoId = "Update BizLog set PrimaryPhotoId = (SELECT max(_id) FROM photo where Photo.BizLogId = BizLog._id group by BizLogId limit 1) where BizLog.PrimaryPhotoId is null";
+			db.execSQL(sqlBatchUpdatePrimaryPhotoId);
+		}
+
+		createVoiceNoteTable(db);
+		createLocationCacheTable(db);
 	}
 
 	private void updateDBToVersion7(SQLiteDatabase db) {
@@ -155,6 +197,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 
 		supportMultiCurrency(db);
+	}
+
+	private void createVoiceNoteTable(SQLiteDatabase db) {
+		String createTable_VoiceNote = "CREATE TABLE IF NOT EXISTS \"VoiceNote\" (\"_Id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"TransactionId\" INTEGER NOT NULL , \"FileName\" TEXT, \"Duration\" INTEGER DEFAULT 0, \"Title\" TEXT, \"Summary\" TEXT, \"Tag\" TEXT, \"LastUpdatedTime\" DATETIME DEFAULT CURRENT_TIMESTAMP)";
+		String createIndex_VoiceNote = "CREATE INDEX IF NOT EXISTS \"Idx_VoiceNote\" ON \"VoiceNote\" (\"Duration\" DESC, \"Title\" DESC, \"Summary\" DESC, \"LastUpdatedTime\" DESC)";
+
+		db.execSQL(createTable_VoiceNote);
+		db.execSQL(createIndex_VoiceNote);
+	}
+
+	private void createLocationCacheTable(SQLiteDatabase db) {
+		String createTable = "CREATE TABLE IF NOT EXISTS \"LocationCache\" (\"_Id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"Latitude\" DOUBLE NOT NULL , \"Longitude\" DOUBLE NOT NULL , \"Provider\" TEXT, \"Address\" TEXT NOT NULL , \"UpdatedTime\" INTEGER, \"Tag\" TEXT)";
+		String createIndex = "CREATE INDEX IF NOT EXISTS \"Idx_LocationCache\" ON \"LocationCache\" (\"Latitude\" DESC, \"Longitude\" DESC, \"Provider\" DESC, \"Address\" DESC, \"UpdatedTime\" DESC)";
+
+		db.execSQL(createTable);
+		db.execSQL(createIndex);
 	}
 
 	private Boolean columnExists(SQLiteDatabase db, String tableName,

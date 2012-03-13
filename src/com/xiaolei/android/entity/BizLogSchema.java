@@ -11,4 +11,7 @@ public class BizLogSchema {
 	public static final String Comment = "Comment";
 	public static final String LocationName = "LocationName";
 	public static final String Location = "Location";
+	public static final String StuffCount = "StuffCount";
+	public static final String PrimaryPhotoId = "PrimaryPhotoId";
+	public static final String PrimaryVoiceNoteId = "PrimaryVoiceNoteId";
 }

@@ -98,7 +98,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	public static final String APPLICATION_FOLDER = "BizTracker";
 	public static final String PHOTO_PATH = "BizTracker/photo";
 
-	private double mLastCost = 0d;
+	//private double mLastCost = 0d;
 
 	// private Boolean requestedLocationUpdates = false;
 	// private Boolean GPSEnableConfirmDialogShown = false;
@@ -744,12 +744,12 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 						log.setLastUpdateTime(context.updateDate);
 					}
 
-					service.addBizLog(log);
+					service.addTransaction(log);
 					service.updateLastUsedTime(id);
 
 					todaySumPay = service.getTodaySumPay();
 					todaySumEarn = service.getTodaySumEarn();
-					mLastCost = cost;
+					//mLastCost = cost;
 
 					return String.format("%s%s: %s",
 							(cost < 0 ? context.getString(R.string.pay)
@@ -1188,6 +1188,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				R.drawable.lock);
 	}
 
+	@SuppressWarnings("unused")
 	private void showPopupMessage(double lastCost) {
 		if (lastCost == 0) {
 			return;
