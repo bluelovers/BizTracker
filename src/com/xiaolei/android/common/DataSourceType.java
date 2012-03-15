@@ -8,5 +8,5 @@ package com.xiaolei.android.common;
  * 
  */
 public enum DataSourceType {
-	Unknown, DailyTransactionList, SearchTransactionList, FavouriteTransactionList, DateRangeTransactionList
+	Unknown, DailyTransactionList, SearchTransactionList, FavouriteTransactionList, DateRangeTransactionList, AllTransactionList
 }

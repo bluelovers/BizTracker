@@ -84,7 +84,7 @@ public class TransactionListFragment extends Fragment implements
 		dataSourceType = DataSourceType.DailyTransactionList;
 
 		fillDataAsync(date);
-		//calculateStatisticInfoAsync();
+		// calculateStatisticInfoAsync();
 	}
 
 	public void showFavouriteTransactionList() {
@@ -92,7 +92,7 @@ public class TransactionListFragment extends Fragment implements
 
 		dataSourceType = DataSourceType.FavouriteTransactionList;
 		fillFavouriteTransactionListAsync();
-		//calculateStatisticInfoAsync();
+		// calculateStatisticInfoAsync();
 	}
 
 	public void showDateRangeTransactionList(Date startDate, Date endDate) {
@@ -100,7 +100,17 @@ public class TransactionListFragment extends Fragment implements
 		dataSourceType = DataSourceType.DateRangeTransactionList;
 
 		showDataRangeTransactionListAsync(startDate, endDate);
-		//calculateStatisticInfoAsync();
+		// calculateStatisticInfoAsync();
+	}
+
+	/**
+	 * Show all existing transaction record list.
+	 */
+	public void showAllTransctionList() {
+		super.setHasOptionsMenu(false);
+
+		dataSourceType = DataSourceType.AllTransactionList;
+		showAllTransactionListAsync();
 	}
 
 	private void showDataRangeTransactionListAsync(Date startDate, Date endDate) {
@@ -137,10 +147,29 @@ public class TransactionListFragment extends Fragment implements
 		dataSourceType = DataSourceType.SearchTransactionList;
 
 		searchAsync(keyword);
-		//calculateStatisticInfoAsync();
+		// calculateStatisticInfoAsync();
 	}
-	
-	public void clearSearchKeyword(){
+
+	private void showAllTransactionListAsync() {
+		AsyncTask<String, Void, Cursor> task = new AsyncTask<String, Void, Cursor>() {
+
+			@Override
+			protected Cursor doInBackground(String... params) {
+				Cursor cursor = DataService.GetInstance(getActivity())
+						.getAllTransactions();
+
+				return cursor;
+			}
+
+			@Override
+			protected void onPostExecute(Cursor result) {
+				showData(result);
+			}
+		};
+		task.execute();
+	}
+
+	public void clearSearchKeyword() {
 		searchKeyword = "";
 	}
 
@@ -748,22 +777,25 @@ public class TransactionListFragment extends Fragment implements
 
 		switch (dataSourceType) {
 		case DailyTransactionList:
-			this.fillDataAsync(date);
+			fillDataAsync(date);
 			break;
 		case SearchTransactionList:
-			this.search(searchKeyword);
+			search(searchKeyword);
 			break;
 		case FavouriteTransactionList:
-			this.showFavouriteTransactionList();
+			showFavouriteTransactionList();
 			break;
 		case DateRangeTransactionList:
-			this.showDateRangeTransactionList(startDate, endDate);
+			showDateRangeTransactionList(startDate, endDate);
+			break;
+		case AllTransactionList:
+			showAllTransctionList();
 			break;
 		default:
 			break;
 		}
 
-		//calculateStatisticInfoAsync();
+		// calculateStatisticInfoAsync();
 		notifyDataChanged();
 	}
 

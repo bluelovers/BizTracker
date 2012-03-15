@@ -27,6 +27,7 @@ public class TransactionList extends FragmentActivity {
 	@SuppressWarnings("unused")
 	private boolean showFullDateTime = false;
 	private boolean getStarredBizLog = false;
+	private boolean showAllTransactions = false;
 
 	private Date startDate;
 	private Date endDate;
@@ -36,9 +37,10 @@ public class TransactionList extends FragmentActivity {
 	public static final String KEY_SEARCH_KEYWORD = "searchKeyword";
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_SHOW_STARRED_RECORDS = "getStarredBizLog";
-
+	public static final String KEY_SHOW_ALL_TRANSACTIONS = "ShowAllTransactionList";
 	public static final String KEY_START_DATE = "StartDate";
 	public static final String KEY_END_DATE = "EndDate";
+
 	protected static final int REQUEST_CODE = 1223;
 
 	/** Called when the activity is first created. */
@@ -86,6 +88,11 @@ public class TransactionList extends FragmentActivity {
 						getStarredBizLog = extras
 								.getBoolean(KEY_SHOW_STARRED_RECORDS);
 					}
+
+					if (extras.containsKey(KEY_SHOW_ALL_TRANSACTIONS)) {
+						showAllTransactions = extras
+								.getBoolean(KEY_SHOW_ALL_TRANSACTIONS);
+					}
 				}
 			}
 		} catch (Exception ex) {
@@ -115,6 +122,8 @@ public class TransactionList extends FragmentActivity {
 					fragment.showFavouriteTransactionList();
 				} else if (startDate != null && endDate != null) {
 					fragment.showDateRangeTransactionList(startDate, endDate);
+				} else if (showAllTransactions) {
+					fragment.showAllTransctionList();
 				} else {
 					fragment.showTransactionListByDate(date);
 				}

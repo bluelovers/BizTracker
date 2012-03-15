@@ -164,6 +164,60 @@ public class DataService {
 		return result;
 	}
 
+	/**
+	 * Get total count of all existing transaction list.
+	 * 
+	 * @return
+	 */
+	public int getTransactionsTotalCount() {
+		int result = 0;
+		String sql = "Select count(_id) from BizLog";
+		Cursor cursor = db.rawQuery(sql, null);
+		if (cursor != null && cursor.getCount() > 0) {
+			result = cursor.getInt(0);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get the date range of all the transactions.
+	 * 
+	 * @return Date[0] is the minimum date, Date[1] is the maximum date
+	 */
+	public Date[] getTransactionsDateRange() {
+		Date[] result = new Date[2];
+		String sql = "SELECT Min(LastUpdateTime) as MinTime, Max(LastUpdateTime) as MaxTime FROM bizlog";
+		Cursor cursor = db.rawQuery(sql, null);
+		if (cursor != null && cursor.getCount() > 0) {
+			result[0] = Utility.convertToDate(cursor.getString(0));
+			result[1] = Utility.convertToDate(cursor.getString(1));
+		}else{
+			result = null;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get transaction total income/expense/balance money
+	 * 
+	 * @return result[0] is total income, result[1] is total expense, result[2]
+	 *         is total balance.
+	 */
+	public double[] getTransactionsTotalCost() {
+		double[] result = new double[2];
+		String sql = "SELECT ifnull((select sum(cost) FROM bizlog where cost > 0), 0) as TotalIncome, ifnull((SELECT sum(cost) FROM bizlog where cost <= 0), 0) as TotalExpense, ifnull((select sum(cost) from bizLog), 0) as Balance";
+		Cursor cursor = db.rawQuery(sql, null);
+		if (cursor != null && cursor.getCount() > 0) {
+			result[0] = cursor.getDouble(0);
+			result[1] = cursor.getDouble(1);
+			result[2] = cursor.getDouble(2);
+		}
+
+		return result;
+	}
+
 	public int getTransactionCountByStuffId(int stuffId) {
 		int result = 0;
 		String sql = "SELECT count(_id) from " + BizLogSchema.TableName
@@ -738,7 +792,7 @@ public class DataService {
 		return result;
 	}
 
-	public Cursor getAllBizLog() {
+	public Cursor getAllTransactions() {
 		String sql = "SELECT s.Name as StuffName, bl.* FROM BizLog as bl left join Stuff s on bl.StuffId = s._Id order by bl.LastUpdateTime desc";
 
 		Cursor cursor = db.rawQuery(sql, null);
@@ -1312,15 +1366,20 @@ public class DataService {
 		return result;
 	}
 
-	public Boolean projectExists(String projectName) {
+	public boolean projectExists(String projectName) {
 		String sql = "Select _id from Project where Name=?";
 		Cursor cursor = db.rawQuery(sql, new String[] { projectName });
-		if (cursor != null) {
-			int count = cursor.getCount();
-			return count > 0;
-		} else {
-			return false;
+		boolean result = false;
+		try {
+			if (cursor != null) {
+				result = cursor.getCount() > 0;
+			}
+		} finally {
+			cursor.close();
+			cursor = null;
 		}
+
+		return result;
 	}
 
 	public Boolean isProjectInUsed(long projectId) {

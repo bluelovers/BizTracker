@@ -176,5 +176,8 @@
     <string name="date_range_chart_title">交易日期範圍</string>
     <string name="contribute_language">貢獻語言</string>
     <string name="contribute_language_summary">如果愛記賬還不支援顯示你的本地語言文字，請幫忙翻譯</string>
-
+    <string name="all_transactions">全部交易</string>
+    <string name="total_count">總數量</string>
+    <string name="from">從</string>
+    <string name="to">到</string>
 </resources>

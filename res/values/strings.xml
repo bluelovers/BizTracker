@@ -176,5 +176,9 @@
     <string name="date_range_chart_title">Statistics for date range</string>
     <string name="contribute_language">Contribute Language</string>
     <string name="contribute_language_summary">If BizTracker do not support your native language, please contribute your language to make it support it.</string>
+    <string name="all_transactions">All Transactions</string>
+    <string name="total_count">Total count</string>
+    <string name="from">from</string>
+    <string name="to">to</string>
 
 </resources>

@@ -82,18 +82,27 @@ public class FunctionTypes extends Activity implements
 			this.startActivityForResult(intentYear, 0);
 			break;
 		case 4:
-			showSearchChooser();
+			showAllTransactionList();
 			break;
 		case 5:
-			showStarredBizLog();
+			showSearchChooser();
 			break;
 		case 6:
+			showStarredBizLog();
+			break;
+		case 7:
 			Intent intentProjectManager = new Intent(this, ProjectManager.class);
 			this.startActivity(intentProjectManager);
 			break;
 		default:
 			break;
 		}
+	}
+
+	private void showAllTransactionList() {
+		Intent intentAllTrans = new Intent(this, TransactionList.class);
+		intentAllTrans.putExtra(TransactionList.KEY_SHOW_ALL_TRANSACTIONS, true);
+		startActivityForResult(intentAllTrans, 0);
 	}
 
 	private void showStarredBizLog() {

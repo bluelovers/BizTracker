@@ -49,8 +49,6 @@ import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,7 +71,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	private Cursor cursor;
 	private int stuffId = 0;
 	private Button btnDeleteStuff;
-	private TableLayout tblStuffs;
+	//private TableLayout tblStuffs;
 	private TextSwitcher txtStuffName;
 	private double cost;
 	private double todaySumPay = -1;
@@ -146,29 +144,6 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		Button buttonNew = (Button) findViewById(R.id.buttonNew);
 		if (buttonNew != null) {
 			buttonNew.setOnClickListener(this);
-		}
-
-		TableLayout tblNumbers = (TableLayout) findViewById(R.id.tableLayoutNumbersPanel);
-		if (tblNumbers != null) {
-			for (int i = 0; i < tblNumbers.getChildCount(); i++) {
-				TableRow row = (TableRow) tblNumbers.getChildAt(i);
-				for (int j = 0; j < row.getChildCount(); j++) {
-					View button = row.getChildAt(j);
-					button.setOnClickListener(this);
-				}
-			}
-		}
-
-		tblStuffs = (TableLayout) findViewById(R.id.tableLayoutStuffPanel);
-		if (tblStuffs != null) {
-			for (int i = 0; i < tblStuffs.getChildCount(); i++) {
-				TableRow row = (TableRow) tblStuffs.getChildAt(i);
-				for (int j = 0; j < row.getChildCount(); j++) {
-					View button = row.getChildAt(j);
-					button.setOnClickListener(null);
-					button.setOnClickListener(this);
-				}
-			}
 		}
 
 		Button btnClear = (Button) findViewById(R.id.buttonClear);
@@ -951,7 +926,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 						// writer.write(0xfe);
 
 						Cursor cursor = DataService.GetInstance(context)
-								.getAllBizLog();
+								.getAllTransactions();
 						int count = cursor.getCount();
 						int index = 0;
 						this.publishProgress(count, 0);

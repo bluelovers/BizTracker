@@ -32,9 +32,10 @@ public class FunctionTypesAdapter extends BaseAdapter {
 				context.getString(R.string.this_week),
 				context.getString(R.string.this_month),
 				context.getString(R.string.this_year),
+				context.getString(R.string.all_transactions),
 				context.getString(R.string.search),
 				context.getString(R.string.starred_biz_log),
-				/*context.getString(R.string.project)*/ };
+		/* context.getString(R.string.project) */};
 		inflater = LayoutInflater.from(context);
 		defaultCurrencyCode = DataService.GetInstance(context)
 				.getDefaultCurrencyCode();
@@ -100,7 +101,8 @@ public class FunctionTypesAdapter extends BaseAdapter {
 			}
 			double value2 = DataService.GetInstance(context).getTodaySumEarn();
 			if (value2 > 0) {
-				tvEarn.setText(Utility.formatCurrency(value2, defaultCurrencyCode));
+				tvEarn.setText(Utility.formatCurrency(value2,
+						defaultCurrencyCode));
 			} else {
 				tvEarn.setText("*");
 			}
@@ -126,7 +128,7 @@ public class FunctionTypesAdapter extends BaseAdapter {
 					.getTotalEarn(startDayOfThisWeek, endDayOfThisWeek);
 			if (valueWeekEarn > 0) {
 				tvEarn.setText(Utility.formatCurrency(valueWeekEarn,
-								defaultCurrencyCode));
+						defaultCurrencyCode));
 			} else {
 				tvEarn.setText("*");
 			}
@@ -151,8 +153,8 @@ public class FunctionTypesAdapter extends BaseAdapter {
 				tvPay.setText("*");
 			}
 			if (monthEarn > 0) {
-				tvEarn.setText(Utility
-								.formatCurrency(monthEarn, defaultCurrencyCode));
+				tvEarn.setText(Utility.formatCurrency(monthEarn,
+						defaultCurrencyCode));
 			} else {
 				tvEarn.setText("*");
 			}
@@ -177,23 +179,43 @@ public class FunctionTypesAdapter extends BaseAdapter {
 				tvPay.setText("*");
 			}
 			if (yearEarn > 0) {
-				tvEarn.setText(Utility.formatCurrency(yearEarn, defaultCurrencyCode));
+				tvEarn.setText(Utility.formatCurrency(yearEarn,
+						defaultCurrencyCode));
 			} else {
 				tvEarn.setText("*");
 			}
 
 			break;
-		case 4: //Search
+		case 4:
+			double[] cost = DataService.GetInstance(context)
+					.getTransactionsTotalCost();
+			if (cost != null && cost.length >= 3) {
+				tvEarn.setText(Utility.formatCurrency(cost[0],
+						defaultCurrencyCode));
+				tvPay.setText(Utility.formatCurrency(cost[1],
+						defaultCurrencyCode));
+			}
+
+			Date[] dateRange = DataService.GetInstance(context)
+					.getTransactionsDateRange();
+			if (dateRange != null && dateRange.length >= 2) {
+				tvDate.setText(String.format("%s ~ %s",
+						Utility.toLocalDateString(context, dateRange[0]),
+						Utility.toLocalDateString(context, dateRange[1])));
+			}
+
+			break;
+		case 5: // Search
 			tvPay.setVisibility(View.INVISIBLE);
 			tvEarn.setVisibility(View.INVISIBLE);
 			tvDate.setText(context.getString(R.string.search_by));
 			break;
-		case 5: // Starred
+		case 6: // Starred
 			tvPay.setVisibility(View.INVISIBLE);
 			tvEarn.setVisibility(View.INVISIBLE);
 			tvDate.setText(context.getString(R.string.view_starred_items));
 			break;
-		case 6: // Project
+		case 7: // Project
 			tvDate.setText(context.getString(R.string.project_description));
 			break;
 		default:
