@@ -82,10 +82,10 @@ public class FunctionTypes extends Activity implements
 			this.startActivityForResult(intentYear, 0);
 			break;
 		case 4:
-			showSearchChooser();
+			showAllTransactionList();
 			break;
 		case 5:
-			showAllTransactionList();
+			showSearchChooser();
 			break;
 		case 6:
 			showStarredBizLog();
