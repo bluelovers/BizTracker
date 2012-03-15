@@ -32,8 +32,8 @@ public class FunctionTypesAdapter extends BaseAdapter {
 				context.getString(R.string.this_week),
 				context.getString(R.string.this_month),
 				context.getString(R.string.this_year),
-				context.getString(R.string.all_transactions),
 				context.getString(R.string.search),
+				context.getString(R.string.all_transactions),
 				context.getString(R.string.starred_biz_log),
 		/* context.getString(R.string.project) */};
 		inflater = LayoutInflater.from(context);
@@ -186,7 +186,12 @@ public class FunctionTypesAdapter extends BaseAdapter {
 			}
 
 			break;
-		case 4:
+		case 4: // Search
+			tvPay.setVisibility(View.INVISIBLE);
+			tvEarn.setVisibility(View.INVISIBLE);
+			tvDate.setText(context.getString(R.string.search_by));
+			break;
+		case 5:
 			double[] cost = DataService.GetInstance(context)
 					.getTransactionsTotalCost();
 			if (cost != null && cost.length >= 3) {
@@ -196,19 +201,11 @@ public class FunctionTypesAdapter extends BaseAdapter {
 						defaultCurrencyCode));
 			}
 
-			Date[] dateRange = DataService.GetInstance(context)
-					.getTransactionsDateRange();
-			if (dateRange != null && dateRange.length >= 2) {
-				tvDate.setText(String.format("%s ~ %s",
-						Utility.toLocalDateString(context, dateRange[0]),
-						Utility.toLocalDateString(context, dateRange[1])));
-			}
+			int count = DataService.GetInstance(context)
+					.getTransactionsTotalCount();
+			tvDate.setText(context.getString(R.string.total_count) + " "
+					+ String.valueOf(count));
 
-			break;
-		case 5: // Search
-			tvPay.setVisibility(View.INVISIBLE);
-			tvEarn.setVisibility(View.INVISIBLE);
-			tvDate.setText(context.getString(R.string.search_by));
 			break;
 		case 6: // Starred
 			tvPay.setVisibility(View.INVISIBLE);

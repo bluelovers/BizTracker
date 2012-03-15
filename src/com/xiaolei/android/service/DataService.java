@@ -174,7 +174,14 @@ public class DataService {
 		String sql = "Select count(_id) from BizLog";
 		Cursor cursor = db.rawQuery(sql, null);
 		if (cursor != null && cursor.getCount() > 0) {
-			result = cursor.getInt(0);
+			try {
+				if (cursor.moveToFirst()) {
+					result = cursor.getInt(0);
+				}
+			} finally {
+				cursor.close();
+				cursor = null;
+			}
 		}
 
 		return result;
@@ -190,9 +197,16 @@ public class DataService {
 		String sql = "SELECT Min(LastUpdateTime) as MinTime, Max(LastUpdateTime) as MaxTime FROM bizlog";
 		Cursor cursor = db.rawQuery(sql, null);
 		if (cursor != null && cursor.getCount() > 0) {
-			result[0] = Utility.convertToDate(cursor.getString(0));
-			result[1] = Utility.convertToDate(cursor.getString(1));
-		}else{
+			try {
+				if (cursor.moveToFirst()) {
+					result[0] = Utility.convertToDate(cursor.getString(0));
+					result[1] = Utility.convertToDate(cursor.getString(1));
+				}
+			} finally {
+				cursor.close();
+				cursor = null;
+			}
+		} else {
 			result = null;
 		}
 
@@ -206,13 +220,20 @@ public class DataService {
 	 *         is total balance.
 	 */
 	public double[] getTransactionsTotalCost() {
-		double[] result = new double[2];
+		double[] result = new double[3];
 		String sql = "SELECT ifnull((select sum(cost) FROM bizlog where cost > 0), 0) as TotalIncome, ifnull((SELECT sum(cost) FROM bizlog where cost <= 0), 0) as TotalExpense, ifnull((select sum(cost) from bizLog), 0) as Balance";
 		Cursor cursor = db.rawQuery(sql, null);
 		if (cursor != null && cursor.getCount() > 0) {
-			result[0] = cursor.getDouble(0);
-			result[1] = cursor.getDouble(1);
-			result[2] = cursor.getDouble(2);
+			try {
+				if (cursor.moveToFirst()) {
+					result[0] = cursor.getDouble(0);
+					result[1] = cursor.getDouble(1);
+					result[2] = cursor.getDouble(2);
+				}
+			} finally {
+				cursor.close();
+				cursor = null;
+			}
 		}
 
 		return result;

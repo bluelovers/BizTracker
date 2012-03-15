@@ -82,10 +82,10 @@ public class FunctionTypes extends Activity implements
 			this.startActivityForResult(intentYear, 0);
 			break;
 		case 4:
-			showAllTransactionList();
+			showSearchChooser();
 			break;
 		case 5:
-			showSearchChooser();
+			showAllTransactionList();
 			break;
 		case 6:
 			showStarredBizLog();
@@ -101,7 +101,10 @@ public class FunctionTypes extends Activity implements
 
 	private void showAllTransactionList() {
 		Intent intentAllTrans = new Intent(this, TransactionList.class);
-		intentAllTrans.putExtra(TransactionList.KEY_SHOW_ALL_TRANSACTIONS, true);
+		intentAllTrans
+				.putExtra(TransactionList.KEY_SHOW_ALL_TRANSACTIONS, true);
+		intentAllTrans.putExtra(TransactionList.KEY_TITLE,
+				getString(R.string.all_transactions));
 		startActivityForResult(intentAllTrans, 0);
 	}
 
@@ -247,7 +250,7 @@ public class FunctionTypes extends Activity implements
 						};
 						task.execute(intent);
 
-						//dialog.dismiss();
+						// dialog.dismiss();
 					}
 				}, new DialogInterface.OnClickListener() {
 
