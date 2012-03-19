@@ -186,14 +186,14 @@ public class FunctionTypesAdapter extends BaseAdapter {
 			}
 
 			break;
-		case 4: //All transactions
+		case 4: // All transactions
 			double[] cost = DataService.GetInstance(context)
 					.getTransactionsTotalCost();
 			if (cost != null && cost.length >= 3) {
-				tvEarn.setText(Utility.formatCurrency(cost[0],
-						defaultCurrencyCode));
-				tvPay.setText(Utility.formatCurrency(cost[1],
-						defaultCurrencyCode));
+				tvEarn.setText(cost[0] != 0 ? Utility.formatCurrency(cost[0],
+						defaultCurrencyCode) : "*");
+				tvPay.setText(cost[1] != 0 ? Utility.formatCurrency(cost[1],
+						defaultCurrencyCode) : "*");
 			}
 
 			int count = DataService.GetInstance(context)
