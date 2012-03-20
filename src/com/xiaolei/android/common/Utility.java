@@ -841,6 +841,26 @@ public final class Utility {
 		}
 		return result;
 	}
+	
+	public String getDefaultAudioNotesFolderPath(Context context){
+		String result = Environment.DIRECTORY_MUSIC;
+		String state = Environment.getExternalStorageState();
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+			result = Environment.getExternalStorageDirectory() + "/"
+					+ "BizTracker/audio";
+			File folder = new File(result);
+			if (!folder.exists()) {
+				boolean photoPathExists = folder.mkdirs();
+				if (photoPathExists == false) {
+					Toast.makeText(
+							context,
+							"Failed to create audio notes folder: " + result,
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+		}
+		return result;
+	}
 
 	/*
 	 * public static Bitmap getScaledBitmap(String fileName, int desiredWidth,
