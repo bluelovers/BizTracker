@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.xiaolei.android.BizTracker.R;
+import com.xiaolei.android.BizTracker.TransactionDetailPagerAdapter;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.TransactionPhoto;
 import com.xiaolei.android.service.DataService;
@@ -40,6 +42,7 @@ public class TransactionDetails extends FragmentActivity implements
 	public static final int TAKE_PHOTO = 1114;
 	private TransactionDetails context;
 	private String currentPhotoFileName = "";
+	
 
 	/** Called when the activity is first created. */
 	@Override
@@ -56,10 +59,10 @@ public class TransactionDetails extends FragmentActivity implements
 				transactionId = bundle.getLong(TRANSACTION_ID);
 				FragmentManager fragmentMan = this.getSupportFragmentManager();
 				if (fragmentMan != null) {
-					TransactionDetailsFragment fragment = (TransactionDetailsFragment) fragmentMan
-							.findFragmentById(R.id.fragmentTransactionDetails);
-					if (fragment != null) {
-						fragment.setTransactionId(transactionId);
+					TransactionPhotosFragment photoFragment = (TransactionPhotosFragment) fragmentMan
+							.findFragmentById(R.id.fragmentTransactionPhotos);
+					if (photoFragment != null) {
+						photoFragment.showTransactionPhotos(transactionId);
 					}
 				}
 			}
@@ -68,6 +71,16 @@ public class TransactionDetails extends FragmentActivity implements
 		ImageButton btnNewPhoto = (ImageButton) findViewById(R.id.buttonNewPhoto);
 		if (btnNewPhoto != null) {
 			btnNewPhoto.setOnClickListener(this);
+		}
+
+		ViewPager viewPagerDetails = (ViewPager) findViewById(R.id.viewPaperTransactionDetail);
+		if (viewPagerDetails != null) {
+			FragmentManager fragmentMan = this.getSupportFragmentManager();
+			if (fragmentMan != null) {
+				TransactionDetailPagerAdapter adapter = new TransactionDetailPagerAdapter(
+						fragmentMan, transactionId);
+				viewPagerDetails.setAdapter(adapter);
+			}
 		}
 	}
 
@@ -130,8 +143,8 @@ public class TransactionDetails extends FragmentActivity implements
 	private void notifyFragmentToReloadPhotoList() {
 		FragmentManager fragmentMan = context.getSupportFragmentManager();
 		if (fragmentMan != null) {
-			TransactionDetailsFragment fragment = (TransactionDetailsFragment) fragmentMan
-					.findFragmentById(R.id.fragmentTransactionDetails);
+			TransactionPhotosFragment fragment = (TransactionPhotosFragment) fragmentMan
+					.findFragmentById(R.id.fragmentTransactionPhotos);
 			if (fragment != null) {
 				fragment.reloadPhotos();
 			}

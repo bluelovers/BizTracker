@@ -1,13 +1,14 @@
 /**
  * 
  */
-package com.xiaolei.android.ui;
+package com.xiaolei.android.BizTracker;
 
 import java.util.Date;
 import java.util.HashMap;
 
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.listener.OnNotifyDataChangedListener;
+import com.xiaolei.android.ui.TransactionListFragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

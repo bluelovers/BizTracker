@@ -7,6 +7,6 @@
 
     <include layout="@layout/loading" />
 
-    <include layout="@layout/transaction_detail_content2" />
+    <include layout="@layout/transaction_detail_summary" />
 
 </ViewFlipper>

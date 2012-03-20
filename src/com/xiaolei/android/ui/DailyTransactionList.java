@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.TextSwitcher;
 
 import com.xiaolei.android.BizTracker.BizTracker;
+import com.xiaolei.android.BizTracker.DailyTransactionListFragmentPagerAdapter;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.listener.OnNotifyDataChangedListener;

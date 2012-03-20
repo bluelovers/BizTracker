@@ -14,21 +14,41 @@
             android:id="@+id/imageButtonPlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/btn_transparent_bg"
             android:onClick="onClick"
-            android:src="@android:drawable/ic_media_play" />
+            android:padding="8dip"
+            android:src="@drawable/ic_media_play" />
+
+        <ImageButton
+            android:id="@+id/imageButtonPrevious"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/imageButtonPlay"
+            android:background="@drawable/btn_transparent_bg"
+            android:padding="8dip"
+            android:src="@drawable/ic_media_previous" />
+
+        <ImageButton
+            android:id="@+id/imageButtonNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/imageButtonPlay"
+            android:background="@drawable/btn_transparent_bg"
+            android:padding="8dip"
+            android:src="@drawable/ic_media_next" />
 
         <ProgressBar
             android:id="@+id/progressBarAudioDuration"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="5dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="10dp"
-            android:layout_toRightOf="@+id/imageButtonPlay" />
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentTop="true" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -36,6 +56,7 @@
         android:id="@+id/relativeLayoutRecordAudio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/btn_transparent_bg"
         android:clickable="true"
         android:onClick="onClick"
         android:padding="10dp" >
