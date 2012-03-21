@@ -42,23 +42,28 @@ public class TransactionPhotosFragment extends Fragment implements
 	private TransactionPhotoPageAdapter adpt;
 	private int mPrimaryPhotoPosition = 0;
 
-	public void showTransactionPhotos(long transactionId) {
-		if (transactionId != mTransactionId) {
-			mTransactionId = transactionId;
+	public TransactionPhotosFragment newInstance(long transactionId) {
+		TransactionPhotosFragment result = new TransactionPhotosFragment();
+		Bundle args = new Bundle();
+		args.putLong("transactionId", transactionId);
+		result.setArguments(args);
 
-			this.loadPhotoAsync();
-		}
+		return result;
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
+		this.loadPhotoAsync();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		if (getArguments() != null) {
+			mTransactionId = getArguments().getLong("transactionId");
+		}
+
 		View result = inflater.inflate(R.layout.transaction_photos_fragment,
 				container, false);
 		if (result != null) {
@@ -442,5 +447,12 @@ public class TransactionPhotosFragment extends Fragment implements
 			}
 		};
 		task.execute(currentPhotoInfo.getId());
+	}
+
+	public void showTransactionPhotos(long transactionId) {
+		if (mTransactionId != transactionId) {
+			mTransactionId = transactionId;
+			this.loadPhotoAsync();
+		}
 	}
 }

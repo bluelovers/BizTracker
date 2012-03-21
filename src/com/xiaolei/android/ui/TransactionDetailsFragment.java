@@ -27,18 +27,23 @@ import com.xiaolei.android.service.DataService;
 public class TransactionDetailsFragment extends Fragment {
 	private long mTransactionId = 0;
 	private String defaultCurrencyCode = "";
-	private boolean isLoaded = false;
 
-	public void showTransactionDetails(long transactionId) {
-		if (transactionId != mTransactionId) {
-			mTransactionId = transactionId;
-			loadDataAsync();
-		}
+	public static TransactionDetailsFragment newInstance(long transactionId) {
+		TransactionDetailsFragment result = new TransactionDetailsFragment();
+		Bundle args = new Bundle();
+		args.putLong("transactionId", transactionId);
+		result.setArguments(args);
+
+		return result;
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		if (getArguments() != null) {
+			mTransactionId = getArguments().getLong("transactionId");
+		}
+
 		View result = inflater.inflate(R.layout.transaction_details_fragment,
 				container, false);
 		if (result != null) {
@@ -51,10 +56,7 @@ public class TransactionDetailsFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
-		if (!isLoaded) {
-			loadDataAsync();
-		}
+		loadDataAsync();
 	}
 
 	@Override
@@ -75,7 +77,6 @@ public class TransactionDetailsFragment extends Fragment {
 			return;
 		}
 
-		isLoaded = true;
 		ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
 				R.id.viewFlipperTransactionDetails);
 		if (viewFlipper != null) {

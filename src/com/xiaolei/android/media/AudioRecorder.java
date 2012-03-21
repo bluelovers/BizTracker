@@ -45,13 +45,20 @@ public class AudioRecorder implements OnErrorListener, OnPreparedListener {
 
 	public AudioRecorder(Context context) {
 		mContext = context;
+		generateNewFileName();
+	}
+
+	/**
+	 * Generate a new random output file name to storage the audio data.
+	 */
+	public void generateNewFileName() {
 		String audioPath = "";
 		if (Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState())) {
 			audioPath = Environment.getExternalStorageDirectory()
 					+ File.separator + "BizTracker/audio";
 			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-			mOutputFileName = String.format("audio_%s",
+			mOutputFileName = String.format("audio_%s.3gp",
 					format.format(new Date()));
 			mOutputFileName = audioPath + File.separator + mOutputFileName;
 

@@ -26,6 +26,8 @@ import com.xiaolei.android.entity.Stuff;
 import com.xiaolei.android.entity.StuffSchema;
 import com.xiaolei.android.entity.TransactionPhoto;
 import com.xiaolei.android.entity.TransactionProjectRelationSchema;
+import com.xiaolei.android.entity.VoiceNote;
+import com.xiaolei.android.entity.VoiceNoteSchema;
 import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 
@@ -1548,6 +1550,43 @@ public class DataService {
 			result = db.insert(TransactionProjectRelationSchema.TableName,
 					null, values);
 		}
+		return result;
+	}
+
+	public Cursor getAllVoiceNotes(long transactionId) {
+		String sql = "select * from VoiceNote";
+		return db.rawQuery(sql, null);
+	}
+
+	public long addVoiceNote(VoiceNote voiceNote) {
+		long newId = 0;
+		if (voiceNote == null) {
+			return newId;
+		}
+
+		ContentValues values = new ContentValues();
+		values.put(VoiceNoteSchema.FileName, voiceNote.getFileName());
+		values.put(VoiceNoteSchema.Duration, voiceNote.getDuration());
+		values.put(VoiceNoteSchema.Summary, voiceNote.getSummary());
+		values.put(VoiceNoteSchema.Title, voiceNote.getTitle());
+		values.put(VoiceNoteSchema.TransactionId, voiceNote.getTransactionId());
+		values.put(VoiceNoteSchema.Tag, voiceNote.getTag());
+
+		newId = db.insert(VoiceNoteSchema.TableName, null, values);
+		if(newId > 0)
+		{
+			setPrimaryVoiceNote(voiceNote.getTransactionId(), newId);
+		}
+		
+		return newId;
+	}
+
+	public int setPrimaryVoiceNote(long transactionId, long voiceNoteId){
+		ContentValues values = new ContentValues();
+		values.put(BizLogSchema.PrimaryVoiceNoteId, voiceNoteId);
+
+		int result = db.update(BizLogSchema.TableName, values, "_Id=?",
+				new String[] { String.valueOf(transactionId) });
 		return result;
 	}
 }

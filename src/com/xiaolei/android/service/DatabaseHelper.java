@@ -19,7 +19,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
 	public static final String databaseName = "biz_tracker_data.db";
-	private static final int databaseVersion = 8;
+	private static final int databaseVersion = 9;
 
 	public DatabaseHelper(Context context, String databaseFileName) {
 		super(context, databaseFileName, null, databaseVersion);
@@ -93,6 +93,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (currentDBVersion <= 7) {
 			updateDBToVersion8(db);
 		}
+		
+		
+		/*
+		if(currentDBVersion <= 8){
+			String sql = "drop index if exists Idx_VoiceNote";
+			db.execSQL(sql);
+			sql = "drop index if exists Idx_LocationCache";
+			db.execSQL(sql);
+			
+			sql = "drop table if exists VoiceNote";
+			db.execSQL(sql);
+			sql = "drop table if exists LocationCache";
+			db.execSQL(sql);
+
+			
+			this.createVoiceNoteTable(db);
+			this.createLocationCacheTable(db);
+		}
+		*/
 	}
 
 	private void updateDBToVersion8(SQLiteDatabase db) {
@@ -200,7 +219,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	private void createVoiceNoteTable(SQLiteDatabase db) {
-		String createTable_VoiceNote = "CREATE TABLE IF NOT EXISTS \"VoiceNote\" (\"_Id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"TransactionId\" INTEGER NOT NULL , \"FileName\" TEXT, \"Duration\" INTEGER DEFAULT 0, \"Title\" TEXT, \"Summary\" TEXT, \"Tag\" TEXT, \"LastUpdatedTime\" DATETIME DEFAULT CURRENT_TIMESTAMP)";
+		String createTable_VoiceNote = "CREATE TABLE IF NOT EXISTS \"VoiceNote\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"TransactionId\" INTEGER NOT NULL , \"FileName\" TEXT, \"Duration\" INTEGER DEFAULT 0, \"Title\" TEXT, \"Summary\" TEXT, \"Tag\" TEXT, \"LastUpdatedTime\" DATETIME DEFAULT CURRENT_TIMESTAMP)";
 		String createIndex_VoiceNote = "CREATE INDEX IF NOT EXISTS \"Idx_VoiceNote\" ON \"VoiceNote\" (\"Duration\" DESC, \"Title\" DESC, \"Summary\" DESC, \"LastUpdatedTime\" DESC)";
 
 		db.execSQL(createTable_VoiceNote);
@@ -208,7 +227,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	private void createLocationCacheTable(SQLiteDatabase db) {
-		String createTable = "CREATE TABLE IF NOT EXISTS \"LocationCache\" (\"_Id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"Latitude\" DOUBLE NOT NULL , \"Longitude\" DOUBLE NOT NULL , \"Provider\" TEXT, \"Address\" TEXT NOT NULL , \"UpdatedTime\" INTEGER, \"Tag\" TEXT)";
+		String createTable = "CREATE TABLE IF NOT EXISTS \"LocationCache\" (\"_id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"Latitude\" DOUBLE NOT NULL , \"Longitude\" DOUBLE NOT NULL , \"Provider\" TEXT, \"Address\" TEXT NOT NULL , \"UpdatedTime\" INTEGER, \"Tag\" TEXT)";
 		String createIndex = "CREATE INDEX IF NOT EXISTS \"Idx_LocationCache\" ON \"LocationCache\" (\"Latitude\" DESC, \"Longitude\" DESC, \"Provider\" DESC, \"Address\" DESC, \"UpdatedTime\" DESC)";
 
 		db.execSQL(createTable);

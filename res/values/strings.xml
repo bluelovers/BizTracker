@@ -180,5 +180,8 @@
     <string name="total_count">Total count</string>
     <string name="from">from</string>
     <string name="to">to</string>
+    <string name="no_voice_notes">No voice note</string>
+    <string name="new_voice_note">New voice note</string>
+    <string name="recording">Recording...</string>
 
 </resources>

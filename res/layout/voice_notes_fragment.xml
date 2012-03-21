@@ -17,7 +17,6 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/btn_transparent_bg"
-            android:onClick="onClick"
             android:padding="8dip"
             android:src="@drawable/ic_media_play" />
 
@@ -58,7 +57,6 @@
         android:layout_height="wrap_content"
         android:background="@drawable/btn_transparent_bg"
         android:clickable="true"
-        android:onClick="onClick"
         android:padding="10dp" >
 
         <ImageView
@@ -76,30 +74,25 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="8dp"
             android:layout_toRightOf="@+id/imageViewRecord"
-            android:text="New voice note"
+            android:text="@string/new_voice_note"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/textViewRecordDuration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:text="00:12:45"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayoutAudioList"
+    <ViewFlipper
+        android:id="@+id/viewFlipperVoiceNoteList"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1" >
+
+        <include layout="@layout/loading" />
 
         <ListView
             android:id="@+id/listViewAudioList"
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
         </ListView>
-    </LinearLayout>
+
+        <include layout="@layout/empty" />
+    </ViewFlipper>
 
 </LinearLayout>

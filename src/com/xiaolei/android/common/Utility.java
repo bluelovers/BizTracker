@@ -600,7 +600,7 @@ public final class Utility {
 		alertDialog.setOnShowListener(onShowListener);
 
 		alertDialog.show();
-		return alertDialog; 
+		return alertDialog;
 	}
 
 	public static boolean dateEquals(Date date1, Date date2) {
@@ -665,7 +665,7 @@ public final class Utility {
 		}
 		return result;
 	}
-	
+
 	public static Boolean fileExists(String fileName) {
 		if (TextUtils.isEmpty(fileName)) {
 			return false;
@@ -674,10 +674,11 @@ public final class Utility {
 		File file = new File(fileName);
 		return file.exists();
 	}
-	
-	public static AbsolutePhotoFileInfo getAbsolutePhotoFileName(String shortPhotoFileName){
+
+	public static AbsolutePhotoFileInfo getAbsolutePhotoFileName(
+			String shortPhotoFileName) {
 		AbsolutePhotoFileInfo result = new AbsolutePhotoFileInfo();
-		
+
 		Boolean fileExists = false;
 		String finalFileName = shortPhotoFileName;
 
@@ -695,7 +696,7 @@ public final class Utility {
 
 		result.AbsolutePhotoFileName = finalFileName;
 		result.FileExists = fileExists;
-		
+
 		return result;
 	}
 
@@ -841,8 +842,8 @@ public final class Utility {
 		}
 		return result;
 	}
-	
-	public String getDefaultAudioNotesFolderPath(Context context){
+
+	public static String getDefaultAudioNotesFolderPath(Context context) {
 		String result = Environment.DIRECTORY_MUSIC;
 		String state = Environment.getExternalStorageState();
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -852,14 +853,28 @@ public final class Utility {
 			if (!folder.exists()) {
 				boolean photoPathExists = folder.mkdirs();
 				if (photoPathExists == false) {
-					Toast.makeText(
-							context,
+					Toast.makeText(context,
 							"Failed to create audio notes folder: " + result,
 							Toast.LENGTH_SHORT).show();
 				}
 			}
 		}
 		return result;
+	}
+
+	public static String getAudioFullFileName(Context context,
+			String shortFileName) {
+		String audioPath = getDefaultAudioNotesFolderPath(context);
+		return audioPath + File.separator + shortFileName;
+	}
+
+	public static String getFileNameWithoutPath(String fileName) {
+		if (TextUtils.isEmpty(fileName)) {
+			return fileName;
+		}
+
+		File file = new File(fileName);
+		return file.getName();
 	}
 
 	/*

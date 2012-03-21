@@ -22,15 +22,15 @@ public class TransactionDetailPagerAdapter extends FragmentPagerAdapter {
 		Fragment result = null;
 		switch (position) {
 		case 0:
-			TransactionDetailsFragment detailsFragment = new TransactionDetailsFragment();
+			TransactionDetailsFragment detailsFragment = TransactionDetailsFragment
+					.newInstance(mTransactionId);
 			result = detailsFragment;
-			detailsFragment.showTransactionDetails(mTransactionId);
 
 			break;
 		case 1:
-			VoiceNotesFragment voiceNotesFragment = new VoiceNotesFragment();
+			VoiceNotesFragment voiceNotesFragment = VoiceNotesFragment
+					.newInstance(mTransactionId);
 			result = voiceNotesFragment;
-			voiceNotesFragment.showVoiceNotes(mTransactionId);
 
 			break;
 		default:
