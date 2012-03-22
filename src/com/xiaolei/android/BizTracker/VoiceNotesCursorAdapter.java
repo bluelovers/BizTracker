@@ -1,12 +1,17 @@
 package com.xiaolei.android.BizTracker;
 
+import java.util.Date;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xiaolei.android.common.TimeSpan;
@@ -16,6 +21,19 @@ import com.xiaolei.android.entity.VoiceNoteSchema;
 public class VoiceNotesCursorAdapter extends CursorAdapter {
 
 	private LayoutInflater mInflater;
+	private OnClickListener mOnButtonClickListener;
+	private long mActiveVoiceNoteId = 0;
+
+	public void setOnButtonClickListener(OnClickListener onClickListener) {
+		mOnButtonClickListener = onClickListener;
+	}
+
+	public void setActiveVoiceNoteId(long id) {
+		if (id != mActiveVoiceNoteId) {
+			mActiveVoiceNoteId = id;
+			this.notifyDataSetChanged();
+		}
+	}
 
 	public VoiceNotesCursorAdapter(Context context, Cursor c) {
 		super(context, c);
@@ -38,6 +56,9 @@ public class VoiceNotesCursorAdapter extends CursorAdapter {
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
+		long id = cursor.getLong(cursor.getColumnIndex(VoiceNoteSchema.Id));
+		ImageView button = (ImageView) view
+				.findViewById(R.id.imageViewDeleteVoiceNote);
 		long duration = cursor.getLong(cursor
 				.getColumnIndex(VoiceNoteSchema.Duration));
 		String title = cursor.getString(cursor
@@ -47,8 +68,10 @@ public class VoiceNotesCursorAdapter extends CursorAdapter {
 		String fileName = cursor.getString(cursor
 				.getColumnIndex(VoiceNoteSchema.FileName));
 		fileName = Utility.getAudioFullFileName(context, fileName);
-		String createdDate = cursor.getString(cursor
+		String createdDateString = cursor.getString(cursor
 				.getColumnIndex(VoiceNoteSchema.LastUpdatedTime));
+		Date createdDate = Utility.convertToDate(createdDateString);
+		TimeSpan durationTime = new TimeSpan(duration);
 
 		view.setTag(fileName);
 
@@ -57,18 +80,29 @@ public class VoiceNotesCursorAdapter extends CursorAdapter {
 		TextView tvSummary = (TextView) view
 				.findViewById(R.id.textViewVoiceNoteSummary);
 
-		if (TextUtils.isEmpty(title)) {
-			if (tvTitle != null) {
-				tvTitle.setText(Utility.toLocalDateString(createdDate));
+		if (tvTitle != null) {
+			if (TextUtils.isEmpty(title)) {
+				tvTitle.setText(durationTime.toString());
+			} else {
+				tvTitle.setText(title);
 			}
-		} else {
-			tvTitle.setText(title);
+
+			if (id == mActiveVoiceNoteId) {
+				tvTitle.setTextColor(context.getResources().getColor(
+						R.color.darkBlue));
+			}
 		}
 
 		if (tvSummary != null) {
-			TimeSpan durationTime = new TimeSpan(duration);
-			tvSummary.setText(durationTime.toString() + (summary != null ? " "
-					+ summary : ""));
+			tvSummary.setText(DateUtils.getRelativeTimeSpanString(createdDate
+					.getTime()) + (summary != null ? " " + summary : ""));
+		}
+
+		if (mOnButtonClickListener != null) {
+			if (button != null) {
+				button.setTag(id);
+				button.setOnClickListener(mOnButtonClickListener);
+			}
 		}
 	}
 

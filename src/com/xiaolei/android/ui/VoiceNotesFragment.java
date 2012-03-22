@@ -1,13 +1,21 @@
 package com.xiaolei.android.ui;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,18 +35,22 @@ import com.xiaolei.android.BizTracker.VoiceNotesCursorAdapter;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.VoiceNoteSchema;
 import com.xiaolei.android.listener.OnVoiceNoteCreatedListener;
+import com.xiaolei.android.media.MediaPlayerStatus;
 import com.xiaolei.android.service.DataService;
 
 public class VoiceNotesFragment extends Fragment implements OnClickListener,
 		OnVoiceNoteCreatedListener, OnItemClickListener, OnPreparedListener,
-		OnCompletionListener {
+		OnCompletionListener, OnErrorListener, OnBufferingUpdateListener {
 
 	public static final String FRAGMENT_VOICE_NOTE_RECORDER_DIALOG = "fragmentVoiceNoteRecorderDialog";
 	private long mTransactionId = 0;
 	private String mCurrentAudioFileName;
 	private MediaPlayer mPlayer;
 	private Cursor mVoiceNoteListCursor = null;
-	private boolean mIsPaused = false;
+	private Handler mHandler;
+	private VoiceNotesFragment mSelf;
+	private Timer mTimer;
+	private ProgressBar mPlayPosition;
 
 	public static VoiceNotesFragment newInstance(long transactionId) {
 		VoiceNotesFragment result = new VoiceNotesFragment();
@@ -95,6 +108,7 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 						} else {
 							VoiceNotesCursorAdapter adapter = new VoiceNotesCursorAdapter(
 									getActivity(), result);
+							adapter.setOnButtonClickListener(mSelf);
 							lv.setAdapter(adapter);
 						}
 					}
@@ -126,6 +140,9 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 		if (getArguments() != null) {
 			mTransactionId = getArguments().getLong("transactionId");
 		}
+
+		mSelf = this;
+		mHandler = new Handler();
 
 		View result = inflater.inflate(R.layout.voice_notes_fragment,
 				container, false);
@@ -159,6 +176,9 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 			if (btnNext != null) {
 				btnNext.setOnClickListener(this);
 			}
+
+			mPlayPosition = (ProgressBar) result
+					.findViewById(R.id.progressBarAudioDuration);
 		}
 
 		return result;
@@ -181,9 +201,22 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 	public void onDestroy() {
 		super.onDestroy();
 
+		if (mPlayer != null) {
+			mPlayer.release();
+			mPlayer = null;
+		}
+
 		if (mVoiceNoteListCursor != null && !mVoiceNoteListCursor.isClosed()) {
 			mVoiceNoteListCursor.close();
 			mVoiceNoteListCursor = null;
+		}
+
+		if (mTimer != null) {
+			try {
+				mTimer.cancel();
+			} catch (Exception ex) {
+				// Do nothing
+			}
 		}
 	}
 
@@ -204,13 +237,21 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 					FRAGMENT_VOICE_NOTE_RECORDER_DIALOG);
 			break;
 		case R.id.imageButtonPlay:
-			play(mCurrentAudioFileName);
+			play(mCurrentAudioFileName, false);
 			break;
 		case R.id.imageButtonPrevious:
 			playPrevious();
 			break;
 		case R.id.imageButtonNext:
 			playNext();
+			break;
+		case R.id.imageViewDeleteVoiceNote:
+			Object tag = v.getTag();
+			if (tag != null) {
+				long id = Long.parseLong(tag.toString());
+				Toast.makeText(getActivity(), tag.toString(),
+						Toast.LENGTH_SHORT).show();
+			}
 			break;
 		default:
 			break;
@@ -225,7 +266,7 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 								.getColumnIndex(VoiceNoteSchema.FileName));
 				fileName = Utility
 						.getAudioFullFileName(getActivity(), fileName);
-				play(fileName);
+				play(fileName, true);
 			}
 		}
 	}
@@ -238,45 +279,74 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 								.getColumnIndex(VoiceNoteSchema.FileName));
 				fileName = Utility
 						.getAudioFullFileName(getActivity(), fileName);
-				play(fileName);
+				play(fileName, true);
 			}
 		}
 	}
 
 	@Override
 	public void onVoiceNoteCreated(String fileName) {
-		mCurrentAudioFileName = fileName;
 		this.loadDataAsync();
 	}
 
-	private void play(String fileName) {
-		if (mPlayer == null) {
-			mPlayer = new MediaPlayer();
-			mPlayer.setAudioStreamType(AudioManager.STREAM_RING);
-			mPlayer.setOnPreparedListener(this);
-			mPlayer.setOnCompletionListener(this);
+	public void stop() {
+		if (mPlayer != null) {
+			mPlayer.stop();
 		}
 
-		if (mIsPaused) {
-			mIsPaused = false;
-			mPlayer.start();
-		} else {
-			if (!mPlayer.isPlaying()) {
-				if (Utility.fileExists(mCurrentAudioFileName)) {
-					try {
-						mCurrentAudioFileName = fileName;
-						mPlayer.setDataSource(mCurrentAudioFileName);
-						mPlayer.prepareAsync();
-					} catch (Exception ex) {
-						Toast.makeText(getActivity(), ex.getMessage(),
-								Toast.LENGTH_LONG).show();
+		setCurrentPlayPosition(0);
+	}
+
+	private void runOnUiThread(Runnable action) {
+		mHandler.post(action);
+	}
+
+	private void play(String fileName, boolean forcePlay) {
+		if (mPlayer == null) {
+			mPlayer = new MediaPlayer();
+			initMediaPlayer();
+		}
+
+		if (forcePlay || TextUtils.isEmpty(fileName)
+				|| !fileName.equalsIgnoreCase(mCurrentAudioFileName)) {
+			if (mPlayer.isPlaying()) {
+				mPlayer.stop();
+				setPlayButtonState(MediaPlayerStatus.Stopped);
+			}
+
+			// Play new audio file
+			if (Utility.fileExists(fileName)) {
+				try {
+					if (!TextUtils.isEmpty(fileName)) {
+						mPlayer.reset();
 					}
+					mCurrentAudioFileName = fileName;
+					mPlayer.setDataSource(mCurrentAudioFileName);
+					mPlayer.prepareAsync();
+					setPlayButtonState(MediaPlayerStatus.Playing);
+				} catch (Exception ex) {
+					Toast.makeText(getActivity(), ex.getMessage(),
+							Toast.LENGTH_LONG).show();
 				}
-			} else {
+			}
+		} else {
+			if (mPlayer.isPlaying()) {
 				mPlayer.pause();
-				mIsPaused = true;
+				setPlayButtonState(MediaPlayerStatus.Paused);
+				updateCurrentPlayPosition();
+			} else {
+				mPlayer.start();
+				setPlayButtonState(MediaPlayerStatus.Playing);
 			}
 		}
+	}
+
+	private void initMediaPlayer() {
+		mPlayer.setAudioStreamType(AudioManager.STREAM_RING);
+		mPlayer.setOnPreparedListener(this);
+		mPlayer.setOnCompletionListener(this);
+		mPlayer.setOnErrorListener(this);
+		mPlayer.setOnBufferingUpdateListener(this);
 	}
 
 	@Override
@@ -284,29 +354,124 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 			long id) {
 		Object tag = view.getTag();
 		if (tag != null) {
-			mCurrentAudioFileName = tag.toString();
-			play(mCurrentAudioFileName);
+			String audioFileName = tag.toString();
+			play(audioFileName, true);
+		}
+	}
+
+	private void setPlayButtonState(MediaPlayerStatus status) {
+		ImageButton btnPlay = (ImageButton) getView().findViewById(
+				R.id.imageButtonPlay);
+		if (btnPlay == null) {
+			return;
+		}
+
+		switch (status) {
+		case Playing:
+			btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+			break;
+		case Paused:
+			btnPlay.setImageResource(android.R.drawable.ic_media_play);
+		case Stopped:
+			btnPlay.setImageResource(android.R.drawable.ic_media_play);
+			setCurrentPlayPosition(0);
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void setDuration(int duration) {
+		ProgressBar progressBar = (ProgressBar) getView().findViewById(
+				R.id.progressBarAudioDuration);
+		if (progressBar != null) {
+			progressBar.setMax(duration);
+		}
+	}
+
+	private void setCurrentPlayPosition(int position) {
+		if (mPlayer != null && mPlayPosition != null) {
+			mPlayPosition.setProgress(position);
+		}
+	}
+
+	private void updateCurrentPlayPosition() {
+		if (mPlayer != null && mPlayPosition != null) {
+			mPlayPosition.setProgress(mPlayer.getCurrentPosition());
+		}
+	}
+
+	private void startTrackPlayPosition() {
+		if (mTimer != null) {
+			try {
+				mTimer.cancel();
+			} catch (Exception ex) {
+				// Do nothing
+			}
+			mTimer = null;
+		}
+
+		mTimer = new Timer();
+		mTimer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						if (mPlayer != null && mPlayer.isPlaying()) {
+							setCurrentPlayPosition(mPlayer.getCurrentPosition());
+						}
+					}
+				});
+			}
+
+		}, 0, 1000);
+	}
+
+	private void stopTrackPlayPosition() {
+		if (mTimer != null) {
+			try {
+				mTimer.cancel();
+			} catch (Exception ex) {
+				// Do nothing
+			}
+			mTimer = null;
+		}
+		if (mPlayPosition != null) {
+			mPlayPosition.setProgress(0);
 		}
 	}
 
 	@Override
 	public void onPrepared(MediaPlayer mp) {
-		ImageButton btnPlay = (ImageButton) getView().findViewById(
-				R.id.imageButtonPlay);
-		if (btnPlay != null) {
-			btnPlay.setImageResource(R.drawable.ic_media_pause);
-		}
+		setPlayButtonState(MediaPlayerStatus.Playing);
+		setDuration(mp.getDuration());
 
 		mp.start();
+		startTrackPlayPosition();
 	}
 
 	@Override
 	public void onCompletion(MediaPlayer mp) {
-		ImageButton btnPlay = (ImageButton) getView().findViewById(
-				R.id.imageButtonPlay);
-		if (btnPlay != null) {
-			btnPlay.setImageResource(R.drawable.ic_media_play);
-		}
+		stopTrackPlayPosition();
+		setPlayButtonState(MediaPlayerStatus.Stopped);
+	}
+
+	@Override
+	public boolean onError(MediaPlayer mp, int what, int extra) {
+		stopTrackPlayPosition();
+		Log.i("DEBUG", String.format("what: %s  extra: %s", what, extra));
+
+		Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
 		mp.reset();
+
+		return true;
+	}
+
+	@Override
+	public void onBufferingUpdate(MediaPlayer mp, int percent) {
+		updateCurrentPlayPosition();
 	}
 }

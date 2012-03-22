@@ -1554,7 +1554,7 @@ public class DataService {
 	}
 
 	public Cursor getAllVoiceNotes(long transactionId) {
-		String sql = "select * from VoiceNote";
+		String sql = "select * from VoiceNote order by LastUpdatedTime desc";
 		return db.rawQuery(sql, null);
 	}
 
@@ -1571,17 +1571,18 @@ public class DataService {
 		values.put(VoiceNoteSchema.Title, voiceNote.getTitle());
 		values.put(VoiceNoteSchema.TransactionId, voiceNote.getTransactionId());
 		values.put(VoiceNoteSchema.Tag, voiceNote.getTag());
+		values.put(VoiceNoteSchema.LastUpdatedTime,
+				Utility.getSqliteDateTimeString(new Date()));
 
 		newId = db.insert(VoiceNoteSchema.TableName, null, values);
-		if(newId > 0)
-		{
+		if (newId > 0) {
 			setPrimaryVoiceNote(voiceNote.getTransactionId(), newId);
 		}
-		
+
 		return newId;
 	}
 
-	public int setPrimaryVoiceNote(long transactionId, long voiceNoteId){
+	public int setPrimaryVoiceNote(long transactionId, long voiceNoteId) {
 		ContentValues values = new ContentValues();
 		values.put(BizLogSchema.PrimaryVoiceNoteId, voiceNoteId);
 

@@ -234,7 +234,11 @@ public class VoiceRecorderFragment extends DialogFragment implements
 
 	public void stop(boolean save) {
 		if (mTimer != null) {
-			mTimer.cancel();
+			try {
+				mTimer.cancel();
+			} catch (Exception ex) {
+				// Do nothing
+			}
 		}
 
 		if (mRecorder != null) {

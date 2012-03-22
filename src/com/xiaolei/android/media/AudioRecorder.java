@@ -122,15 +122,6 @@ public class AudioRecorder implements OnErrorListener, OnPreparedListener {
 		mIsRecording = true;
 	}
 
-	public void pause() {
-		// TODO: not implement
-
-	}
-
-	public void resume() {
-		// TODO: not implement
-	}
-
 	public void stop() {
 		if (mIsRecording) {
 			try {
@@ -176,7 +167,7 @@ public class AudioRecorder implements OnErrorListener, OnPreparedListener {
 				Toast.makeText(mContext, "File not found.", Toast.LENGTH_SHORT)
 						.show();
 			}
-			mPlayer.reset();
+
 			mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mPlayer.setDataSource(audioFileName);
 

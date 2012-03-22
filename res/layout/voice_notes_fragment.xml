@@ -18,7 +18,7 @@
             android:layout_centerHorizontal="true"
             android:background="@drawable/btn_transparent_bg"
             android:padding="8dip"
-            android:src="@drawable/ic_media_play" />
+            android:src="@android:drawable/ic_media_play" />
 
         <ImageButton
             android:id="@+id/imageButtonPrevious"
@@ -29,7 +29,7 @@
             android:layout_toLeftOf="@+id/imageButtonPlay"
             android:background="@drawable/btn_transparent_bg"
             android:padding="8dip"
-            android:src="@drawable/ic_media_previous" />
+            android:src="@android:drawable/ic_media_previous" />
 
         <ImageButton
             android:id="@+id/imageButtonNext"
@@ -40,14 +40,14 @@
             android:layout_toRightOf="@+id/imageButtonPlay"
             android:background="@drawable/btn_transparent_bg"
             android:padding="8dip"
-            android:src="@drawable/ic_media_next" />
+            android:src="@android:drawable/ic_media_next" />
 
         <ProgressBar
             android:id="@+id/progressBarAudioDuration"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_alignParentTop="true" />
+            android:layout_below="@+id/imageButtonPlay" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -59,23 +59,22 @@
         android:clickable="true"
         android:padding="10dp" >
 
-        <ImageView
-            android:id="@+id/imageViewRecord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:src="@android:drawable/ic_btn_speak_now" />
-
         <TextView
             android:id="@+id/textViewRecord"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="8dp"
-            android:layout_toRightOf="@+id/imageViewRecord"
             android:text="@string/new_voice_note"
             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <ImageView
+            android:id="@+id/imageViewRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/textViewRecord"
+            android:src="@android:drawable/ic_btn_speak_now" />
     </RelativeLayout>
 
     <ViewFlipper
