@@ -183,5 +183,7 @@
     <string name="no_voice_notes">No voice note</string>
     <string name="new_voice_note">New voice note</string>
     <string name="recording">Recording...</string>
+    <string name="delete_confirm">Are you sure?</string>
+    <string name="recorder_title">Recording</string>
 
 </resources>

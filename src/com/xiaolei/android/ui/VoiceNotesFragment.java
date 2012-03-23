@@ -3,6 +3,7 @@ package com.xiaolei.android.ui;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -51,6 +52,7 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 	private VoiceNotesFragment mSelf;
 	private Timer mTimer;
 	private ProgressBar mPlayPosition;
+	private long mSelectedVoiceNoteId = 0;
 
 	public static VoiceNotesFragment newInstance(long transactionId) {
 		VoiceNotesFragment result = new VoiceNotesFragment();
@@ -231,7 +233,8 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 		switch (v.getId()) {
 		case R.id.relativeLayoutRecordAudio:
 			VoiceRecorderFragment recorderFragment = VoiceRecorderFragment
-					.newInstance("Record voice note", mTransactionId);
+					.newInstance(getActivity().getString(R.string.recorder_title),
+							mTransactionId);
 			recorderFragment.setOnVoiceNoteCreatedListener(this);
 			recorderFragment.show(getActivity().getSupportFragmentManager(),
 					FRAGMENT_VOICE_NOTE_RECORDER_DIALOG);
@@ -248,14 +251,46 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 		case R.id.imageViewDeleteVoiceNote:
 			Object tag = v.getTag();
 			if (tag != null) {
-				long id = Long.parseLong(tag.toString());
-				Toast.makeText(getActivity(), tag.toString(),
-						Toast.LENGTH_SHORT).show();
+				mSelectedVoiceNoteId = Long.parseLong(tag.toString());
+				stop();
+				
+				Utility.showConfirmDialog(getActivity(), getActivity()
+						.getString(R.string.confirm),
+						getActivity().getString(R.string.delete_confirm),
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								deleteVoiceNoteAsync(mSelectedVoiceNoteId);
+							}
+						});
 			}
 			break;
 		default:
 			break;
 		}
+	}
+
+	private void deleteVoiceNoteAsync(long id) {
+		AsyncTask<Long, Void, Boolean> task = new AsyncTask<Long, Void, Boolean>() {
+
+			@Override
+			protected Boolean doInBackground(Long... params) {
+				DataService.GetInstance(getActivity()).deleteVoiceNote(
+						params[0]);
+				return true;
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (result == true) {
+					loadDataAsync();
+				}
+			}
+
+		};
+		task.execute(id);
 	}
 
 	private void playNext() {
@@ -290,11 +325,12 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 	}
 
 	public void stop() {
-		if (mPlayer != null) {
+		if (mPlayer != null && mPlayer.isPlaying()) {
+			stopTrackPlayPosition();
+			setCurrentPlayPosition(0);
+			setPlayButtonState(MediaPlayerStatus.Stopped);
 			mPlayer.stop();
 		}
-
-		setCurrentPlayPosition(0);
 	}
 
 	private void runOnUiThread(Runnable action) {

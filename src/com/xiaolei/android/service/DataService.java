@@ -3,6 +3,7 @@
  */
 package com.xiaolei.android.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -1580,6 +1581,39 @@ public class DataService {
 		}
 
 		return newId;
+	}
+
+	public void deleteVoiceNote(long voiceNoteId) {
+		if (voiceNoteId <= 0) {
+			return;
+		}
+
+		ContentValues values = new ContentValues();
+		values.putNull(BizLogSchema.PrimaryVoiceNoteId);
+		db.update(BizLogSchema.TableName, values, "PrimaryVoiceNoteId=?",
+				new String[] { String.valueOf(voiceNoteId) });
+
+		String fullFileName = "";
+		Cursor cursor = db.query(VoiceNoteSchema.TableName,
+				new String[] { VoiceNoteSchema.FileName }, "_id=?",
+				new String[] { String.valueOf(voiceNoteId) }, null, null, null);
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				String fileName = cursor.getString(cursor
+						.getColumnIndex(VoiceNoteSchema.FileName));
+				if (!TextUtils.isEmpty(fileName)) {
+					fullFileName = Utility.getAudioFullFileName(context,
+							fileName);
+					File file = new File(fullFileName);
+					if (file.exists()) {
+						file.delete();
+					}
+				}
+			}
+		}
+
+		db.delete(VoiceNoteSchema.TableName, "_id=?",
+				new String[] { String.valueOf(voiceNoteId) });
 	}
 
 	public int setPrimaryVoiceNote(long transactionId, long voiceNoteId) {

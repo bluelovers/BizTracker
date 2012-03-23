@@ -183,5 +183,7 @@
     <string name="no_voice_notes">沒有語音記錄</string>
     <string name="new_voice_note">錄製新的語音日誌</string>
     <string name="recording">正在錄音，請講話...</string>
+    <string name="delete_confirm">您確定要移除這條語音日誌嗎？</string>
+    <string name="recorder_title">正在錄音</string>
 
 </resources>
