@@ -41,15 +41,25 @@
             android:layout_marginTop="5dip"
             android:text="This is the comment. The quick brown fox jump up the lazy dog."
             android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <TextView
-            android:id="@+id/textViewLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dip"
-            android:text="China Beijing"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="4dip"
+        android:layout_marginTop="4dip"
+        android:background="@drawable/btn_flat"
+        android:clickable="true"
+        android:drawableLeft="@android:drawable/ic_dialog_map"
+        android:gravity="center_vertical"
+        android:paddingBottom="4dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="4dp"
+        android:text="@string/use_my_location"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
         android:id="@+id/textViewTransactionTime"

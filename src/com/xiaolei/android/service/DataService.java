@@ -1555,8 +1555,8 @@ public class DataService {
 	}
 
 	public Cursor getAllVoiceNotes(long transactionId) {
-		String sql = "select * from VoiceNote order by LastUpdatedTime desc";
-		return db.rawQuery(sql, null);
+		String sql = "select * from VoiceNote where TransactionId=? order by LastUpdatedTime desc";
+		return db.rawQuery(sql, new String[] { String.valueOf(transactionId) });
 	}
 
 	public long addVoiceNote(VoiceNote voiceNote) {

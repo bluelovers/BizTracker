@@ -185,5 +185,6 @@
     <string name="recording">正在錄音，請講話...</string>
     <string name="delete_confirm">您確定要移除這條語音日誌嗎？</string>
     <string name="recorder_title">正在錄音</string>
+    <string name="use_my_location">使用我的地理位置</string>
 
 </resources>

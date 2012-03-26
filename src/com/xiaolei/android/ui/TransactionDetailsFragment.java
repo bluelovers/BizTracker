@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -155,7 +156,7 @@ public class TransactionDetailsFragment extends Fragment {
 			tvTransactionComment.setText(log.getComment());
 		}
 
-		if (tvLocation != null) {
+		if (tvLocation != null && !TextUtils.isEmpty(log.getLocationName())) {
 			tvLocation.setText(log.getLocationName());
 		}
 	}

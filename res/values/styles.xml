@@ -16,5 +16,8 @@
         <item name="android:includeFontPadding">false</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">middle</item>
+        <item name="android:clickable">true</item>
+        <item name="android:gravity">center</item>
     </style>
+
 </resources>
