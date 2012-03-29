@@ -3,8 +3,10 @@
  */
 package com.xiaolei.android.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -25,7 +28,8 @@ import com.xiaolei.android.service.DataService;
  * @author xiaolei
  * 
  */
-public class TransactionDetailsFragment extends Fragment {
+public class TransactionDetailsFragment extends Fragment implements
+		OnClickListener {
 	private long mTransactionId = 0;
 	private String defaultCurrencyCode = "";
 
@@ -48,7 +52,11 @@ public class TransactionDetailsFragment extends Fragment {
 		View result = inflater.inflate(R.layout.transaction_details_fragment,
 				container, false);
 		if (result != null) {
-
+			TextView tvLocation = (TextView) result
+					.findViewById(R.id.textViewLocation);
+			if (tvLocation != null) {
+				tvLocation.setOnClickListener(this);
+			}
 		}
 
 		return result;
@@ -176,5 +184,23 @@ public class TransactionDetailsFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.textViewLocation:
+			LocationManager locationManager = (LocationManager) getActivity()
+					.getSystemService(Activity.LOCATION_SERVICE);
+			if (locationManager != null
+					&& !locationManager
+							.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                 
+			}
+
+			break;
+		default:
+			break;
+		}
 	}
 }

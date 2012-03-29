@@ -25,7 +25,7 @@ import android.os.Bundle;
 public class LocationService {
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 
-	private Context mContext;
+	private Context mContext; 
 	private static LocationService instance = null;
 	private LocationManager locationManager = null;
 	private LocationListener locationListener = null;
