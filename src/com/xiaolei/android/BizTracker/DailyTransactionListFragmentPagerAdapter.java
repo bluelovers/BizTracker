@@ -4,8 +4,6 @@
 package com.xiaolei.android.BizTracker;
 
 import java.util.Date;
-import java.util.HashMap;
-
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.listener.OnNotifyDataChangedListener;
 import com.xiaolei.android.ui.TransactionListFragment;
@@ -13,6 +11,7 @@ import com.xiaolei.android.ui.TransactionListFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.SparseArray;
 import android.view.ViewGroup;
 
 /**
@@ -24,7 +23,7 @@ public class DailyTransactionListFragmentPagerAdapter extends
 	private int mCount = 1;
 	private Date mDate = new Date();
 	private OnNotifyDataChangedListener onNotifyDataChangedListener;
-	private HashMap<Integer, Fragment> mInitializedFragments = new HashMap<Integer, Fragment>();
+	private SparseArray<Fragment> mInitializedFragments = new SparseArray<Fragment>();
 
 	public void setOnNotifyDataChangedListener(
 			OnNotifyDataChangedListener listener) {
@@ -38,10 +37,7 @@ public class DailyTransactionListFragmentPagerAdapter extends
 	}
 
 	public Fragment getFragmentAtPosition(int position) {
-		Fragment result = null;
-		if (mInitializedFragments.containsKey(position)) {
-			result = mInitializedFragments.get(position);
-		}
+		Fragment result = mInitializedFragments.get(position);
 		return result;
 	}
 
@@ -70,7 +66,7 @@ public class DailyTransactionListFragmentPagerAdapter extends
 		Date date = Utility.addDays(mDate, position);
 		result.setOnNotifyDataChangedListener(this);
 
-		if (!mInitializedFragments.containsKey(position)) {
+		if (mInitializedFragments.get(position) == null) {
 			mInitializedFragments.put(position, result);
 		}
 
@@ -83,7 +79,7 @@ public class DailyTransactionListFragmentPagerAdapter extends
 	public void destroyItem(ViewGroup container, int position, Object object) {
 		super.destroyItem(container, position, object);
 
-		if (mInitializedFragments.containsKey(position)) {
+		if (mInitializedFragments.get(position) != null) {
 			mInitializedFragments.remove(position);
 		}
 	}

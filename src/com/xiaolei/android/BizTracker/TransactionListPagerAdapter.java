@@ -4,13 +4,12 @@
 package com.xiaolei.android.BizTracker;
 
 import java.util.Date;
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -40,7 +39,7 @@ public class TransactionListPagerAdapter extends PagerAdapter {
 	private OnCostValueChangedListener onCostValueChangedListener;
 	private OnItemClickListener onItemClickListener;
 
-	private HashMap<Integer, View> viewPositionMapping = new HashMap<Integer, View>();
+	private SparseArray<View> viewPositionMapping = new SparseArray<View>();
 
 	public TransactionListPagerAdapter(Activity context, Date date,
 			int pageCount) {
@@ -61,10 +60,7 @@ public class TransactionListPagerAdapter extends PagerAdapter {
 	}
 
 	public View getViewAtPosition(int position) {
-		View result = null;
-		if (viewPositionMapping.containsKey(position)) {
-			result = viewPositionMapping.get(position);
-		}
+		View result = viewPositionMapping.get(position);
 
 		return result;
 	}
@@ -92,7 +88,7 @@ public class TransactionListPagerAdapter extends PagerAdapter {
 	 */
 	@Override
 	public void destroyItem(View collection, int position, Object view) {
-		if (viewPositionMapping.containsKey(position)) {
+		if (viewPositionMapping.get(position) != null) {
 			viewPositionMapping.remove(position);
 		}
 
@@ -148,7 +144,7 @@ public class TransactionListPagerAdapter extends PagerAdapter {
 	public Object instantiateItem(View collection, int position) {
 		ViewPager pager = (ViewPager) collection;
 		View result = inflater.inflate(R.layout.transaction_list, pager, false);
-		if (!viewPositionMapping.containsKey(position)) {
+		if (viewPositionMapping.get(position) == null) {
 			viewPositionMapping.put(position, result);
 		}
 		pager.addView(result);

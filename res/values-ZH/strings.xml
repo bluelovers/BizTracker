@@ -186,5 +186,6 @@
     <string name="delete_confirm">您确定要删除这条语音日志吗？</string>
     <string name="recorder_title">正在录音</string>
     <string name="use_my_location">使用我的地理位置</string>
+    <string name="count">数量</string>
 
 </resources>

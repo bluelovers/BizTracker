@@ -6,12 +6,11 @@ package com.xiaolei.android.BizTracker;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
@@ -30,7 +29,7 @@ public class YearlyTransactionListPagerAdapter extends PagerAdapter {
 	private LayoutInflater inflater;
 	private OnItemClickListener onItemClickListener;
 
-	private HashMap<Integer, View> viewPositionMapping = new HashMap<Integer, View>();
+	private SparseArray<View> viewPositionMapping = new SparseArray<View>();
 
 	public YearlyTransactionListPagerAdapter(Activity context, Date date,
 			int pageCount) {
@@ -47,10 +46,7 @@ public class YearlyTransactionListPagerAdapter extends PagerAdapter {
 	}
 
 	public View getViewAtPosition(int position) {
-		View result = null;
-		if (viewPositionMapping.containsKey(position)) {
-			result = viewPositionMapping.get(position);
-		}
+		View result = viewPositionMapping.get(position);
 
 		return result;
 	}
@@ -78,7 +74,7 @@ public class YearlyTransactionListPagerAdapter extends PagerAdapter {
 	 */
 	@Override
 	public void destroyItem(View collection, int position, Object view) {
-		if (viewPositionMapping.containsKey(position)) {
+		if (viewPositionMapping.get(position) != null) {
 			viewPositionMapping.remove(position);
 		}
 
@@ -119,7 +115,7 @@ public class YearlyTransactionListPagerAdapter extends PagerAdapter {
 		ViewPager pager = (ViewPager) collection;
 		View result = inflater.inflate(
 				R.layout.pager_yearly_transaction_list_item, pager, false);
-		if (!viewPositionMapping.containsKey(position)) {
+		if (viewPositionMapping.get(position) == null) {
 			viewPositionMapping.put(position, result);
 		}
 		pager.addView(result);

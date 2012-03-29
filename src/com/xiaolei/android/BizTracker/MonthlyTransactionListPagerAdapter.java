@@ -6,14 +6,13 @@ package com.xiaolei.android.BizTracker;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-
 import com.xiaolei.android.listener.OnLoadCompletedListener;
 
 import android.app.Activity;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
@@ -32,7 +31,7 @@ public class MonthlyTransactionListPagerAdapter extends PagerAdapter {
 	private LayoutInflater inflater;
 	private OnItemClickListener onItemClickListener;
 
-	private HashMap<Integer, View> viewPositionMapping = new HashMap<Integer, View>();
+	private SparseArray<View> viewPositionMapping = new SparseArray<View>();
 
 	public MonthlyTransactionListPagerAdapter(Activity context, Date date) {
 		this.context = context;
@@ -48,10 +47,7 @@ public class MonthlyTransactionListPagerAdapter extends PagerAdapter {
 	}
 
 	public View getViewAtPosition(int position) {
-		View result = null;
-		if (viewPositionMapping.containsKey(position)) {
-			result = viewPositionMapping.get(position);
-		}
+		View result = viewPositionMapping.get(position);
 
 		return result;
 	}
@@ -79,7 +75,7 @@ public class MonthlyTransactionListPagerAdapter extends PagerAdapter {
 	 */
 	@Override
 	public void destroyItem(View collection, int position, Object view) {
-		if (viewPositionMapping.containsKey(position)) {
+		if (viewPositionMapping.get(position) != null) {
 			viewPositionMapping.remove(position);
 		}
 
@@ -119,7 +115,7 @@ public class MonthlyTransactionListPagerAdapter extends PagerAdapter {
 		ViewPager pager = (ViewPager) collection;
 		View result = inflater.inflate(
 				R.layout.pager_monthly_transaction_list_item, pager, false);
-		if (!viewPositionMapping.containsKey(position)) {
+		if (viewPositionMapping.get(position) == null) {
 			viewPositionMapping.put(position, result);
 		}
 		pager.addView(result);

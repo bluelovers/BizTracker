@@ -31,6 +31,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
+import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -60,18 +61,22 @@ import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
 import com.xiaolei.android.entity.Stuff;
+import com.xiaolei.android.popup.ActionItem;
+import com.xiaolei.android.popup.QuickAction;
+import com.xiaolei.android.popup.QuickAction.OnActionItemClickListener;
 import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
 import com.xiaolei.android.ui.FunctionTypes;
 
 public class BizTracker extends BaseActivity implements OnClickListener,
-		OnLongClickListener {
+		OnLongClickListener, OnActionItemClickListener {
 	private BizTracker context;
+	private QuickAction quickAction;
 	private Cursor cursor;
 	private int stuffId = 0;
 	private Button btnDeleteStuff;
-	//private TableLayout tblStuffs;
+	// private TableLayout tblStuffs;
 	private TextSwitcher txtStuffName;
 	private double cost;
 	private double todaySumPay = -1;
@@ -89,14 +94,14 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	private Boolean saveDefaultCurrencyCodeToDB = true;
 
 	private SoundPool soundPool;
-	private HashMap<Integer, Integer> sounds;
+	private SparseIntArray sounds;
 	private float volume = 1.0f;
 
 	public static final int REQUEST_CODE = 1;
 	public static final String APPLICATION_FOLDER = "BizTracker";
 	public static final String PHOTO_PATH = "BizTracker/photo";
 
-	//private double mLastCost = 0d;
+	// private double mLastCost = 0d;
 
 	// private Boolean requestedLocationUpdates = false;
 	// private Boolean GPSEnableConfirmDialogShown = false;
@@ -217,6 +222,15 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 		loadAsync();
 		// initLocationHelper();
+		createActionMenu();
+	}
+
+	private void createActionMenu() {
+		ActionItem nextItem = new ActionItem(1, getString(R.string.new_stuff),
+				getResources().getDrawable(android.R.drawable.ic_input_add));
+		quickAction = new QuickAction(this, QuickAction.VERTICAL);
+		quickAction.addActionItem(nextItem);
+		quickAction.setOnActionItemClickListener(this);
 	}
 
 	/*
@@ -231,7 +245,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	@Override
 	protected void initSoundPool() {
 		try {
-			sounds = new HashMap<Integer, Integer>();
+			sounds = new SparseIntArray();
 
 			soundPool = new SoundPool(3,
 					android.media.AudioManager.STREAM_RING, 0);
@@ -492,7 +506,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		switch (v.getId()) {
 		case R.id.buttonNew:
 		case R.id.relativeLayoutNoStuff:
-			newStuff();
+			// newStuff();
+			quickAction.show(v);
 
 			break;
 		case -1:
@@ -724,7 +739,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 					todaySumPay = service.getTodaySumPay();
 					todaySumEarn = service.getTodaySumEarn();
-					//mLastCost = cost;
+					// mLastCost = cost;
 
 					return String.format("%s%s: %s",
 							(cost < 0 ? context.getString(R.string.pay)
@@ -742,11 +757,10 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				}
 
 				if (!TextUtils.isEmpty(result)) {
-					Toast.makeText(context, result,
-					Toast.LENGTH_SHORT).show();
+					Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
 					refreshTodayCost();
 
-					//showPopupMessage(mLastCost);
+					// showPopupMessage(mLastCost);
 
 					if (context.updateDate != null) {
 						context.setResult(RESULT_OK);
@@ -1300,5 +1314,16 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			soundPool = null;
 		}
 
+	}
+
+	@Override
+	public void onItemClick(QuickAction source, int pos, int actionId) {
+		switch (actionId) {
+		case 1:
+			newStuff();
+			break;
+		default:
+			break;
+		}
 	}
 }

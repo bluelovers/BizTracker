@@ -186,5 +186,6 @@
     <string name="delete_confirm">Are you sure?</string>
     <string name="recorder_title">Recording</string>
     <string name="use_my_location"> My location</string>
+    <string name="count">Count</string>
 
 </resources>
