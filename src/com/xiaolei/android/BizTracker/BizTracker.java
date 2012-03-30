@@ -582,7 +582,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				return;
 			}
 
-			if (originalText.indexOf(MULTIPLY) != -1) {
+			if (inputText.equalsIgnoreCase(".")
+					&& originalText.indexOf(MULTIPLY) != -1) {
 				return;
 			}
 
