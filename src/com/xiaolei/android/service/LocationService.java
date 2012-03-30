@@ -93,11 +93,11 @@ public class LocationService {
 	/**
 	 * Open the system location source settings activity.
 	 */
-	public void openLocationSourceSettingsActivity() {
+	public static void tryOpenLocationSourceSettingsActivity(Context context) {
 		Intent intent = new Intent(
 				android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 		try {
-			mContext.startActivity(intent);
+			context.startActivity(intent);
 		} catch (Exception ex) {
 			// Do nothing
 		}
