@@ -4,8 +4,6 @@
 package com.xiaolei.android.BizTracker;
 
 import java.util.Date;
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Parcelable;

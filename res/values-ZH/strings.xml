@@ -187,5 +187,6 @@
     <string name="recorder_title">正在录音</string>
     <string name="use_my_location">使用我的地理位置</string>
     <string name="count">数量</string>
+    <string name="need_stuff_count">请输入数量</string>
 
 </resources>

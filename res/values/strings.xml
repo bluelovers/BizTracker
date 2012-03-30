@@ -187,5 +187,6 @@
     <string name="recorder_title">Recording</string>
     <string name="use_my_location"> My location</string>
     <string name="count">Count</string>
+    <string name="need_stuff_count">Please input stuff count.</string>
 
 </resources>

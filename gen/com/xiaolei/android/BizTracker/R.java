@@ -611,6 +611,7 @@ public final class R {
         public static final int more_stuffs=0x7f070002;
         public static final int multi_select=0x7f07009f;
         public static final int multi_select_tip=0x7f0700a0;
+        public static final int need_stuff_count=0x7f0700ba;
         public static final int new_password=0x7f070081;
         public static final int new_stuff=0x7f07000b;
         public static final int new_voice_note=0x7f0700b4;

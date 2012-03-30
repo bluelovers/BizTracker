@@ -71,6 +71,7 @@ import com.xiaolei.android.ui.FunctionTypes;
 
 public class BizTracker extends BaseActivity implements OnClickListener,
 		OnLongClickListener, OnActionItemClickListener {
+	private final String MULTIPLY = "¡Á";
 	private BizTracker context;
 	private QuickAction quickAction;
 	private Cursor cursor;
@@ -501,8 +502,26 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		}
 	}
 
+	private String getCurrentCostText() {
+		String result = "";
+		TextView textView = (TextView) findViewById(R.id.textViewCost);
+		result = textView.getText().toString();
+
+		return result;
+	}
+
+	private void appendToCostText(String text) {
+		if (!TextUtils.isEmpty(text)) {
+			TextView textView = (TextView) findViewById(R.id.textViewCost);
+			if (textView != null) {
+				textView.setText(textView.getText() + text);
+			}
+		}
+	}
+
 	@Override
 	public void onClick(View v) {
+		String currentText = null;
 		switch (v.getId()) {
 		case R.id.buttonNew:
 		case R.id.relativeLayoutNoStuff:
@@ -563,37 +582,24 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				return;
 			}
 
+			if (originalText.indexOf(MULTIPLY) != -1) {
+				return;
+			}
+
 			tv1.setText(originalText + inputText);
+
+			break;
+		case R.id.buttonStuffCount:
+			currentText = getCurrentCostText();
+			if (!TextUtils.isEmpty(currentText)
+					&& currentText.indexOf(MULTIPLY) == -1) {
+				appendToCostText(MULTIPLY);
+			}
 
 			break;
 		case R.id.buttonSave:
 			playSound(R.raw.click);
-
-			TextView tvCost = (TextView) findViewById(R.id.textViewCost);
-			TextView tvPayOrEarn1 = (TextView) findViewById(R.id.textViewPayOrEarn);
-
-			double cost = 0d;
-			try {
-				cost = Double.parseDouble(tvCost.getText().toString());
-				if (tvPayOrEarn1.getText().toString()
-						.equalsIgnoreCase(getString(R.string.pay))) {
-					cost = cost * -1d;
-				}
-
-				if (cost != 0) {
-					int idOfStuff = this.stuffId;
-					showStuffPanel();
-					saveAsync(cost, idOfStuff, this.stuffName);
-				} else {
-					Toast.makeText(context, getString(R.string.input_cost),
-							Toast.LENGTH_SHORT).show();
-				}
-			} catch (Exception ex) {
-				tvPayOrEarn1.setText(getString(R.string.error));
-				Toast.makeText(context, getString(R.string.save_fail),
-						Toast.LENGTH_SHORT).show();
-				return;
-			}
+			saveTransaction();
 
 			break;
 		case R.id.buttonClear:
@@ -636,6 +642,51 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			break;
 		default:
 			break;
+		}
+	}
+
+	private void saveTransaction() {
+		TextView tvCost = (TextView) findViewById(R.id.textViewCost);
+		TextView tvPayOrEarn = (TextView) findViewById(R.id.textViewPayOrEarn);
+
+		if (tvCost != null && tvPayOrEarn != null) {
+			String costText = tvCost.getText().toString();
+			String payOrEarnText = tvPayOrEarn.getText().toString();
+
+			int indexOfMultiply = costText.indexOf(MULTIPLY);
+			if (indexOfMultiply == costText.length() - 1) {
+				Toast.makeText(this, getString(R.string.need_stuff_count),
+						Toast.LENGTH_LONG).show();
+				return;
+			}
+
+			double cost = 0d;
+			int stuffCount = 1;
+
+			try {
+
+				String costValueText = costText.substring(0, indexOfMultiply);
+				String stuffCountText = costText.substring(indexOfMultiply);
+
+				cost = Double.parseDouble(costValueText);
+				if (payOrEarnText.equalsIgnoreCase(getString(R.string.pay))) {
+					cost = cost * -1d;
+				}
+
+				stuffCount = Integer.parseInt(stuffCountText);
+
+				if (cost != 0) {
+					int idOfStuff = this.stuffId;
+					showStuffPanel();
+					saveAsync(cost, idOfStuff, this.stuffName, stuffCount);
+				} else {
+					Toast.makeText(context, getString(R.string.input_cost),
+							Toast.LENGTH_SHORT).show();
+				}
+			} catch (Exception ex) {
+				Toast.makeText(context, getString(R.string.save_fail),
+						Toast.LENGTH_SHORT).show();
+			}
 		}
 	}
 
@@ -710,8 +761,12 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		 */
 	}
 
-	private void saveAsync(double money, int idOfStuff, String stuffName) {
+	private void saveAsync(double money, int idOfStuff, String stuffName,
+			int stuffCount) {
 		this.cost = money;
+		if (stuffCount == 0) {
+			stuffCount = 1;
+		}
 
 		AsyncTask<String, Void, String> task = new AsyncTask<String, Void, String>() {
 
@@ -724,12 +779,14 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				Integer id = Integer.parseInt(params[0]);
 				String name = params[1];
 				String currencyCode = params[2];
+				int stuffCount = Integer.parseInt(params[3]);
 
 				if (id > 0) {
 					BizLog log = new BizLog();
 					log.setStuffId(id);
 					log.setCost(cost);
 					log.setCurrencyCode(currencyCode);
+					log.setStuffCount(stuffCount);
 					if (context.updateDate != null) {
 						log.setLastUpdateTime(context.updateDate);
 					}
@@ -741,10 +798,14 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 					todaySumEarn = service.getTodaySumEarn();
 					// mLastCost = cost;
 
-					return String.format("%s%s: %s",
+					return String.format(
+							"%s %s: %s%s",
 							(cost < 0 ? context.getString(R.string.pay)
-									: context.getString(R.string.earn)), name,
-							Utility.formatCurrency(cost, currencyCode));
+									: context.getString(R.string.earn)),
+							name,
+							Utility.formatCurrency(cost, currencyCode),
+							(stuffCount > 1 ? " " + MULTIPLY + " "
+									+ String.valueOf(stuffCount) : ""));
 				}
 
 				return context.getString(R.string.save_fail);
@@ -774,7 +835,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		TextView tvCurrency = (TextView) this
 				.findViewById(R.id.textViewDefaultCurrencyCode);
 		String currency = tvCurrency.getText().toString();
-		task.execute(String.valueOf(idOfStuff), stuffName, currency);
+		task.execute(String.valueOf(idOfStuff), stuffName, currency,
+				String.valueOf(stuffCount));
 	}
 
 	private void clearTopLeftText() {
