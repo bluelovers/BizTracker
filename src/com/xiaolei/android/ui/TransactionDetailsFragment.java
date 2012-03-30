@@ -143,7 +143,12 @@ public class TransactionDetailsFragment extends Fragment implements
 		// ImageView ivStar = (ImageView) findViewById(R.id.imageViewTDStar);
 
 		if (tvStuffName != null) {
-			tvStuffName.setText(log.getStuffName());
+			if (log.getStuffCount() <= 1) {
+				tvStuffName.setText(log.getStuffName());
+			} else {
+				tvStuffName.setText(String.format("%s ¡Á %d",
+						log.getStuffName(), log.getStuffCount()));
+			}
 		}
 		if (tvUpdateTime != null) {
 			String value = DateUtils.formatDateTime(getActivity(), log
@@ -152,8 +157,8 @@ public class TransactionDetailsFragment extends Fragment implements
 			tvUpdateTime.setText(value);
 		}
 		if (tvTransactionCost != null) {
-			tvTransactionCost.setText(Utility.formatCurrency(log.getCost(),
-					this.defaultCurrencyCode));
+			tvTransactionCost.setText(Utility.formatCurrency(log.getCost()
+					* log.getStuffCount(), this.defaultCurrencyCode));
 			if (log.getCost() > 0) {
 				tvTransactionCost.setTextColor(Color.parseColor("#99CC00"));
 			} else {
@@ -195,7 +200,7 @@ public class TransactionDetailsFragment extends Fragment implements
 			if (locationManager != null
 					&& !locationManager
 							.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                 
+
 			}
 
 			break;

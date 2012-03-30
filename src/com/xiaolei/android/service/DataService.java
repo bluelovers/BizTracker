@@ -567,7 +567,7 @@ public class DataService {
 		if (!TextUtils.isEmpty(defaultCurrencyCode)
 				&& defaultCurrencyUSDExchangeRate > 0) {
 			sql = String
-					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost < 0 and bl.LastUpdateTime between ? and ?",
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost < 0 and bl.LastUpdateTime between ? and ?",
 							defaultCurrencyCode,
 							String.valueOf(defaultCurrencyUSDExchangeRate));
 		}
@@ -610,7 +610,7 @@ public class DataService {
 		if (!TextUtils.isEmpty(defaultCurrencyCode)
 				&& defaultCurrencyUSDExchangeRate > 0) {
 			sql = String
-					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost > 0 and bl.LastUpdateTime between ? and ?",
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost > 0 and bl.LastUpdateTime between ? and ?",
 							defaultCurrencyCode,
 							String.valueOf(defaultCurrencyUSDExchangeRate));
 		}
@@ -672,7 +672,7 @@ public class DataService {
 
 				+ " select * from (SELECT count(bl.StuffId) as StuffCounts, min(bl.LastUpdateTime) as FromTime, max(bl.LastUpdateTime) as ToTime "
 				+ String.format(
-						" , sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else ((bl.Cost*bl.StuffCount) / c.USDExchangeRate) * %s end) as SumCost ",
+						" , sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else ((bl.Cost*bl.StuffCount) / c.USDExchangeRate) * %s end) as SumCost ",
 						defaultCurrencyCode,
 						String.valueOf(defaultCurrencyUSDExchangeRate))
 				+ " , s.Name as StuffName, bl.* FROM BizLog as bl left join Stuff s on bl.StuffId = s._Id left join Currency c on bl.CurrencyCode = c.Code where bl.LastUpdateTime between ? and ? group by bl.StuffId) as t where StuffCounts > 1"
@@ -768,7 +768,7 @@ public class DataService {
 		if (!TextUtils.isEmpty(defaultCurrencyCode)
 				&& defaultCurrencyUSDExchangeRate > 0) {
 			String sql = String
-					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost > 0 and bl._id in (Select TransactionId from TransactionProjectRelation where ProjectId = ?)",
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost > 0 and bl._id in (Select TransactionId from TransactionProjectRelation where ProjectId = ?)",
 							defaultCurrencyCode,
 							String.valueOf(defaultCurrencyUSDExchangeRate));
 
@@ -789,7 +789,7 @@ public class DataService {
 		if (!TextUtils.isEmpty(defaultCurrencyCode)
 				&& defaultCurrencyUSDExchangeRate > 0) {
 			String sql = String
-					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else ((bl.Cost*bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost < 0 and bl._id in (Select TransactionId from TransactionProjectRelation where ProjectId = ?)",
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else ((bl.Cost*bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost < 0 and bl._id in (Select TransactionId from TransactionProjectRelation where ProjectId = ?)",
 							defaultCurrencyCode,
 							String.valueOf(defaultCurrencyUSDExchangeRate));
 
@@ -895,7 +895,7 @@ public class DataService {
 		if (!TextUtils.isEmpty(defaultCurrencyCode)
 				&& defaultCurrencyUSDExchangeRate > 0) {
 			sql = String
-					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code left join Stuff s on bl.StuffId = s._Id where bl.cost "
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code left join Stuff s on bl.StuffId = s._Id where bl.cost "
 							+ (transactionType == TransactionType.Income ? ">"
 									: "<")
 							+ " 0 and (s.Name like ? or bl.Comment like ?) ",
@@ -941,7 +941,7 @@ public class DataService {
 		if (!TextUtils.isEmpty(defaultCurrencyCode)
 				&& defaultCurrencyUSDExchangeRate > 0) {
 			sql = String
-					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code left join Stuff s on bl.StuffId = s._Id where bl.cost "
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code left join Stuff s on bl.StuffId = s._Id where bl.cost "
 							+ (transactionType == TransactionType.Income ? ">"
 									: "<")
 							+ " 0 and bl._id in ("
@@ -976,7 +976,7 @@ public class DataService {
 		if (!TextUtils.isEmpty(defaultCurrencyCode)
 				&& defaultCurrencyUSDExchangeRate > 0) {
 			sql = String
-					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost "
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost "
 							+ (transactionType == TransactionType.Income ? ">"
 									: "<") + " 0 and Star = 'true'",
 							defaultCurrencyCode,
@@ -1021,7 +1021,7 @@ public class DataService {
 		if (!TextUtils.isEmpty(defaultCurrencyCode)
 				&& defaultCurrencyUSDExchangeRate > 0) {
 			sql = String
-					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost < 0 and bl.LastUpdateTime between ? and ?",
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost < 0 and bl.LastUpdateTime between ? and ?",
 							defaultCurrencyCode,
 							String.valueOf(defaultCurrencyUSDExchangeRate));
 		}
@@ -1069,7 +1069,7 @@ public class DataService {
 		if (!TextUtils.isEmpty(defaultCurrencyCode)
 				&& defaultCurrencyUSDExchangeRate > 0) {
 			sql = String
-					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost > 0 and bl.LastUpdateTime between ? and ?",
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else ((bl.Cost * bl.StuffCount) / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.cost > 0 and bl.LastUpdateTime between ? and ?",
 							defaultCurrencyCode,
 							String.valueOf(defaultCurrencyUSDExchangeRate));
 		}

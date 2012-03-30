@@ -66,11 +66,14 @@ public class TransactionListCursorAdapter extends CursorAdapter {
 		String currencyCode = cursor.getString(cursor
 				.getColumnIndex("CurrencyCode"));
 		String stuffName = cursor.getString(cursor.getColumnIndex("StuffName"));
+		int stuffCount = cursor.getInt(cursor
+				.getColumnIndex(BizLogSchema.StuffCount));
 		String comment = cursor.getString(cursor.getColumnIndex("Comment"));
 		long id = cursor.getLong(cursor.getColumnIndex("_id"));
 
 		double cost = cursor
 				.getDouble(cursor.getColumnIndex(BizLogSchema.Cost));
+		cost = cost * stuffCount;
 		String value = cursor.getString(cursor
 				.getColumnIndex(BizLogSchema.LastUpdateTime));
 
@@ -93,6 +96,7 @@ public class TransactionListCursorAdapter extends CursorAdapter {
 		transactionInfo.setLastUpdateTime(Utility.parseDate(value, new Date()));
 		transactionInfo.setCurrencyCode(currencyCode);
 		transactionInfo.setStar(star);
+		transactionInfo.setStuffCount(stuffCount);
 		view.setTag(transactionInfo);
 
 		TextView tvStuffName = (TextView) view
@@ -120,7 +124,12 @@ public class TransactionListCursorAdapter extends CursorAdapter {
 		}
 
 		if (tvStuffName != null) {
-			tvStuffName.setText(stuffName);
+			if (stuffCount <= 1) {
+				tvStuffName.setText(stuffName);
+			} else {
+				tvStuffName.setText(String.format("%s ¡Á %d", stuffName,
+						stuffCount));
+			}
 		}
 		if (tvCurrencyCode != null) {
 			tvCurrencyCode.setText(currencyCode);
