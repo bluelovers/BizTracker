@@ -157,7 +157,7 @@ public final class R {
         public static final int buttonCancel=0x7f0b0052;
         public static final int buttonCancelProject=0x7f0b0010;
         public static final int buttonChooseCurrency=0x7f0b0030;
-        public static final int buttonClear=0x7f0b0055;
+        public static final int buttonClear=0x7f0b0054;
         public static final int buttonCreateProject=0x7f0b004f;
         public static final int buttonDeleteStuff=0x7f0b00b7;
         public static final int buttonExpense=0x7f0b00b3;
@@ -184,7 +184,7 @@ public final class R {
         public static final int buttonSave=0x7f0b0061;
         public static final int buttonSearchStuff=0x7f0b00b5;
         public static final int buttonSetCurrency=0x7f0b0053;
-        public static final int buttonStuffCount=0x7f0b0054;
+        public static final int buttonStuffCount=0x7f0b0055;
         public static final int buttonSubtract=0x7f0b00af;
         public static final int checkBoxChecked=0x7f0b000a;
         public static final int checkBoxProjectIsChecked=0x7f0b0012;
