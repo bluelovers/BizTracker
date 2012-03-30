@@ -1,8 +1,22 @@
 package com.xiaolei.android.service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Locale;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +27,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * Provide a service to get the current location. Refer to:
@@ -24,8 +39,9 @@ import android.os.Bundle;
  */
 public class LocationService {
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
+	private final String GoogleMapAPITemplate = "http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true";
 
-	private Context mContext; 
+	private Context mContext;
 	private static LocationService instance = null;
 	private LocationManager locationManager = null;
 	private LocationListener locationListener = null;
@@ -87,7 +103,7 @@ public class LocationService {
 		}
 	}
 
-	private void getLocationAddressAsync(Location location) {
+	private void getLocationAddressByGoogleMapAsync(Location location) {
 		if (location == null) {
 			return;
 		}
@@ -100,24 +116,49 @@ public class LocationService {
 					return null;
 				}
 				Location location = params[0];
-				Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
+
+				StringBuilder jsonText = new StringBuilder();
+				HttpClient client = new DefaultHttpClient();
+				String url = String.format(GoogleMapAPITemplate,
+						location.getLatitude(), location.getLongitude());
+				HttpGet httpGet = new HttpGet(url);
 				try {
-					List<Address> addresses = geocoder.getFromLocation(
-							location.getLatitude(), location.getLongitude(), 1);
-					if (addresses != null && addresses.size() > 0) {
-						Address returnedAddress = addresses.get(0);
-						StringBuilder strReturnedAddress = new StringBuilder();
-						for (int i = 0; i < returnedAddress
-								.getMaxAddressLineIndex(); i++) {
-							strReturnedAddress.append(
-									returnedAddress.getAddressLine(i)).append(
-									"\n");
+					HttpResponse response = client.execute(httpGet);
+					StatusLine statusLine = response.getStatusLine();
+					int statusCode = statusLine.getStatusCode();
+					if (statusCode == 200) {
+						HttpEntity entity = response.getEntity();
+						InputStream content = entity.getContent();
+						BufferedReader reader = new BufferedReader(
+								new InputStreamReader(content));
+						String line;
+						while ((line = reader.readLine()) != null) {
+							jsonText.append(line);
 						}
-						currentBestLocationAddress = strReturnedAddress
-								.toString();
+
+						JSONObject result = new JSONObject(jsonText.toString());
+						String status = result
+								.getString(GoogleMapStatusSchema.status);
+						if (GoogleMapStatusCodes.OK.equals(status)) {
+							JSONArray addresses = result
+									.getJSONArray(GoogleMapStatusSchema.results);
+							if (addresses.length() > 0) {
+								currentBestLocationAddress = addresses
+										.getJSONObject(0)
+										.getString(
+												GoogleMapStatusSchema.formatted_address);
+							}
+						}
+					} else {
+						Log.e("Error",
+								"Failed to get address via google map API.");
 					}
+				} catch (ClientProtocolException e) {
+					e.printStackTrace();
 				} catch (IOException e) {
-					// Do nothing
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 
 				return null;
@@ -125,6 +166,14 @@ public class LocationService {
 
 		};
 		task.execute(currentBestLocation);
+	}
+
+	private void getLocationAddressAsync(Location location) {
+		if (location == null) {
+			return;
+		}
+
+		getLocationAddressByGoogleMapAsync(location);
 	}
 
 	/**
