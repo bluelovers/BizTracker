@@ -668,7 +668,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 				String costValueText = costText;
 				if (indexOfMultiply != -1) {
-					costText.substring(0, indexOfMultiply);
+					costValueText = costText.substring(0, indexOfMultiply);
 					String stuffCountText = costText
 							.substring(indexOfMultiply + 1);
 					stuffCount = Integer.parseInt(stuffCountText);
