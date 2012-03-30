@@ -48,7 +48,7 @@
         </Button>
 
         <Button
-            android:id="@+id/buttonStuffCount"
+            android:id="@+id/buttonClear"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="3dip"
@@ -59,12 +59,12 @@
             android:shadowDx="1"
             android:shadowDy="1"
             android:shadowRadius="1"
-            android:text="@string/count"
+            android:text="@string/clear"
             android:textColor="#1e395b" >
         </Button>
 
         <Button
-            android:id="@+id/buttonClear"
+            android:id="@+id/buttonStuffCount"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="3dip"
@@ -75,7 +75,7 @@
             android:shadowDx="1"
             android:shadowDy="1"
             android:shadowRadius="1"
-            android:text="@string/clear"
+            android:text="@string/count"
             android:textColor="#1e395b" >
         </Button>
     </LinearLayout>

@@ -667,7 +667,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			try {
 
 				String costValueText = costText.substring(0, indexOfMultiply);
-				String stuffCountText = costText.substring(indexOfMultiply);
+				String stuffCountText = costText.substring(indexOfMultiply + 1);
 
 				cost = Double.parseDouble(costValueText);
 				if (payOrEarnText.equalsIgnoreCase(getString(R.string.pay))) {
