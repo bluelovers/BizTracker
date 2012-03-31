@@ -18,6 +18,7 @@ import android.text.TextUtils;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.BizLogSchema;
+import com.xiaolei.android.entity.LocationCacheSchema;
 import com.xiaolei.android.entity.Parameter;
 import com.xiaolei.android.entity.ParameterSchema;
 import com.xiaolei.android.entity.PhotoSchema;
@@ -1623,5 +1624,43 @@ public class DataService {
 		int result = db.update(BizLogSchema.TableName, values, "_Id=?",
 				new String[] { String.valueOf(transactionId) });
 		return result;
+	}
+
+	public String getAddressFormLocationCache(double latitude, double longitude) {
+		String result = "";
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DAY_OF_MONTH, 30);
+		Date minDate = cal.getTime();
+
+		String sql = "SELECT Address from LocationCache where Latitude=? and Longitude=? where UpdatedTime>=?";
+		Cursor cursor = db.rawQuery(
+				sql,
+				new String[] { String.valueOf(latitude),
+						String.valueOf(longitude),
+						Utility.getSqliteDateTimeString(minDate) });
+		if (cursor != null && cursor.getCount() > 0) {
+			result = cursor.getString(0);
+		}
+		return result;
+	}
+
+	public long updateAddressToLocationCache(double latitude, double longitude,
+			String address) {
+		db.delete(
+				LocationCacheSchema.TableName,
+				"Latitude=? and Longitude=?",
+				new String[] { String.valueOf(latitude),
+						String.valueOf(longitude) });
+
+		ContentValues values = new ContentValues();
+		values.put(LocationCacheSchema.Latitude, latitude);
+		values.put(LocationCacheSchema.Longitude, longitude);
+		values.put(LocationCacheSchema.Address, address);
+		values.put(LocationCacheSchema.UpdatedTime,
+				Utility.getSqliteDateTimeString(new Date()));
+
+		return db.insert(LocationCacheSchema.TableName, null, values);
 	}
 }

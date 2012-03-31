@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Hashtable;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -222,10 +221,11 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		}
 
 		loadAsync();
-		// initLocationHelper();
-		createActionMenu();
+		//initLocationHelper();
+		//createActionMenu();
 	}
 
+	/*
 	private void createActionMenu() {
 		ActionItem nextItem = new ActionItem(1, getString(R.string.new_stuff),
 				getResources().getDrawable(android.R.drawable.ic_input_add));
@@ -233,6 +233,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		quickAction.addActionItem(nextItem);
 		quickAction.setOnActionItemClickListener(this);
 	}
+	*/
 
 	/*
 	 * private void initLocationHelper(){
@@ -525,8 +526,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		switch (v.getId()) {
 		case R.id.buttonNew:
 		case R.id.relativeLayoutNoStuff:
-			// newStuff();
-			quickAction.show(v);
+			newStuff();
 
 			break;
 		case -1:

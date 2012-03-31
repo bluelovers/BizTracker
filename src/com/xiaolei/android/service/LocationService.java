@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -20,13 +17,12 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 /**
@@ -117,48 +113,65 @@ public class LocationService {
 				}
 				Location location = params[0];
 
-				StringBuilder jsonText = new StringBuilder();
-				HttpClient client = new DefaultHttpClient();
-				String url = String.format(GoogleMapAPITemplate,
-						location.getLatitude(), location.getLongitude());
-				HttpGet httpGet = new HttpGet(url);
-				try {
-					HttpResponse response = client.execute(httpGet);
-					StatusLine statusLine = response.getStatusLine();
-					int statusCode = statusLine.getStatusCode();
-					if (statusCode == 200) {
-						HttpEntity entity = response.getEntity();
-						InputStream content = entity.getContent();
-						BufferedReader reader = new BufferedReader(
-								new InputStreamReader(content));
-						String line;
-						while ((line = reader.readLine()) != null) {
-							jsonText.append(line);
-						}
-
-						JSONObject result = new JSONObject(jsonText.toString());
-						String status = result
-								.getString(GoogleMapStatusSchema.status);
-						if (GoogleMapStatusCodes.OK.equals(status)) {
-							JSONArray addresses = result
-									.getJSONArray(GoogleMapStatusSchema.results);
-							if (addresses.length() > 0) {
-								currentBestLocationAddress = addresses
-										.getJSONObject(0)
-										.getString(
-												GoogleMapStatusSchema.formatted_address);
+				String cachedAddress = DataService.GetInstance(mContext)
+						.getAddressFormLocationCache(location.getLatitude(),
+								location.getLongitude());
+				if (!TextUtils.isEmpty(cachedAddress)) {
+					currentBestLocationAddress = cachedAddress;
+				} else {
+					StringBuilder jsonText = new StringBuilder();
+					HttpClient client = new DefaultHttpClient();
+					String url = String.format(GoogleMapAPITemplate,
+							location.getLatitude(), location.getLongitude());
+					HttpGet httpGet = new HttpGet(url);
+					try {
+						HttpResponse response = client.execute(httpGet);
+						StatusLine statusLine = response.getStatusLine();
+						int statusCode = statusLine.getStatusCode();
+						if (statusCode == 200) {
+							HttpEntity entity = response.getEntity();
+							InputStream content = entity.getContent();
+							BufferedReader reader = new BufferedReader(
+									new InputStreamReader(content));
+							String line;
+							while ((line = reader.readLine()) != null) {
+								jsonText.append(line);
 							}
+
+							JSONObject result = new JSONObject(
+									jsonText.toString());
+							String status = result
+									.getString(GoogleMapStatusSchema.status);
+							if (GoogleMapStatusCodes.OK.equals(status)) {
+								JSONArray addresses = result
+										.getJSONArray(GoogleMapStatusSchema.results);
+								if (addresses.length() > 0) {
+									currentBestLocationAddress = addresses
+											.getJSONObject(0)
+											.getString(
+													GoogleMapStatusSchema.formatted_address);
+									if (!TextUtils
+											.isEmpty(currentBestLocationAddress)) {
+										DataService
+												.GetInstance(mContext)
+												.updateAddressToLocationCache(
+														location.getLatitude(),
+														location.getLongitude(),
+														currentBestLocationAddress);
+									}
+								}
+							}
+						} else {
+							Log.e("Error",
+									"Failed to get address via google map API.");
 						}
-					} else {
-						Log.e("Error",
-								"Failed to get address via google map API.");
+					} catch (ClientProtocolException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (JSONException e) {
+						e.printStackTrace();
 					}
-				} catch (ClientProtocolException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
 				}
 
 				return null;
