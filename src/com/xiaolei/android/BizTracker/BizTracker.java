@@ -60,19 +60,15 @@ import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
 import com.xiaolei.android.entity.Stuff;
-import com.xiaolei.android.popup.ActionItem;
-import com.xiaolei.android.popup.QuickAction;
-import com.xiaolei.android.popup.QuickAction.OnActionItemClickListener;
 import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
 import com.xiaolei.android.ui.FunctionTypes;
 
 public class BizTracker extends BaseActivity implements OnClickListener,
-		OnLongClickListener, OnActionItemClickListener {
+		OnLongClickListener {
 	private final String MULTIPLY = "¡Á";
 	private BizTracker context;
-	private QuickAction quickAction;
 	private Cursor cursor;
 	private int stuffId = 0;
 	private Button btnDeleteStuff;
@@ -1382,14 +1378,4 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 	}
 
-	@Override
-	public void onItemClick(QuickAction source, int pos, int actionId) {
-		switch (actionId) {
-		case 1:
-			newStuff();
-			break;
-		default:
-			break;
-		}
-	}
 }

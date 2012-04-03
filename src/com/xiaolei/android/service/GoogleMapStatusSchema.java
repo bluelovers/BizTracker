@@ -7,7 +7,7 @@ package com.xiaolei.android.service;
  *
  */
 public final class GoogleMapStatusSchema {
-	public static final String results = "reslts";
+	public static final String results = "results";
 	public static final String status = "status";
 	public static final String formatted_address = "formatted_address";
 }

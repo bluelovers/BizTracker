@@ -1634,13 +1634,13 @@ public class DataService {
 		cal.add(Calendar.DAY_OF_MONTH, 30);
 		Date minDate = cal.getTime();
 
-		String sql = "SELECT Address from LocationCache where Latitude=? and Longitude=? where UpdatedTime>=?";
+		String sql = "SELECT Address from LocationCache where Latitude=? and Longitude=? and UpdatedTime >=?";
 		Cursor cursor = db.rawQuery(
 				sql,
 				new String[] { String.valueOf(latitude),
 						String.valueOf(longitude),
 						Utility.getSqliteDateTimeString(minDate) });
-		if (cursor != null && cursor.getCount() > 0) {
+		if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst()) {
 			result = cursor.getString(0);
 		}
 		return result;

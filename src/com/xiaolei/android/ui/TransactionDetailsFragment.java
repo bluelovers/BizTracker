@@ -3,9 +3,9 @@
  */
 package com.xiaolei.android.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,7 +22,9 @@ import android.widget.ViewFlipper;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
+import com.xiaolei.android.listener.OnGotLocationInfoListener;
 import com.xiaolei.android.service.DataService;
+import com.xiaolei.android.service.LocationService;
 
 /**
  * @author xiaolei
@@ -32,6 +34,8 @@ public class TransactionDetailsFragment extends Fragment implements
 		OnClickListener {
 	private long mTransactionId = 0;
 	private String defaultCurrencyCode = "";
+	private LocationService mLocationService = null;
+	public static final int REQUEST_CODE = 2117;
 
 	public static TransactionDetailsFragment newInstance(long transactionId) {
 		TransactionDetailsFragment result = new TransactionDetailsFragment();
@@ -176,12 +180,29 @@ public class TransactionDetailsFragment extends Fragment implements
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case REQUEST_CODE:
+			initLocationService();
+			if (mLocationService != null
+					&& !mLocationService
+							.isProviderEnable(LocationManager.GPS_PROVIDER)) {
+				mLocationService.start();
+				displayCurrentLocationAddress(getActivity().getString(
+						R.string.loading));
+			}
 
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override
 	public void onStop() {
+		if (mLocationService != null) {
+			mLocationService.stop();
+			mLocationService = null;
+		}
 		super.onStop();
 
 	}
@@ -191,21 +212,59 @@ public class TransactionDetailsFragment extends Fragment implements
 		super.onPause();
 	}
 
+	private void displayCurrentLocationAddress(String address) {
+		if (!TextUtils.isEmpty(address) && getView() != null) {
+			TextView tv = (TextView) getView().findViewById(
+					R.id.textViewLocation);
+			if (tv != null) {
+				tv.setText(address);
+			}
+		}
+	}
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.textViewLocation:
-			LocationManager locationManager = (LocationManager) getActivity()
-					.getSystemService(Activity.LOCATION_SERVICE);
-			if (locationManager != null
-					&& !locationManager
-							.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			initLocationService();
 
+			if (mLocationService != null
+					&& !mLocationService
+							.isProviderEnable(LocationManager.GPS_PROVIDER)) {
+				Intent intent = new Intent(
+						android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+				this.startActivityForResult(intent, REQUEST_CODE);
+			} else {
+				mLocationService.start();
+				displayCurrentLocationAddress(getActivity().getString(
+						R.string.loading));
 			}
 
 			break;
 		default:
 			break;
+		}
+	}
+
+	private void initLocationService() {
+		if (mLocationService == null) {
+			mLocationService = LocationService.getInstance(getActivity());
+			mLocationService
+					.setOnGotLocationInfoListener(new OnGotLocationInfoListener() {
+
+						@Override
+						public void onGotLocation(Location currentLocation) {
+							// Do nothing.
+						}
+
+						@Override
+						public void onGotLocationAddress(
+								Location currentLocation, String address) {
+							displayCurrentLocationAddress(address);
+						}
+
+					});
+
 		}
 	}
 }
