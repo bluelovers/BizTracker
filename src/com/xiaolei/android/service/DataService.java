@@ -1571,7 +1571,10 @@ public class DataService {
 		values.put(VoiceNoteSchema.Duration, voiceNote.getDuration());
 		values.put(VoiceNoteSchema.Summary, voiceNote.getSummary());
 		values.put(VoiceNoteSchema.Title, voiceNote.getTitle());
-		values.put(VoiceNoteSchema.TransactionId, voiceNote.getTransactionId());
+		if (voiceNote.getTransactionId() > 0) {
+			values.put(VoiceNoteSchema.TransactionId,
+					voiceNote.getTransactionId());
+		}
 		values.put(VoiceNoteSchema.Tag, voiceNote.getTag());
 		values.put(VoiceNoteSchema.LastUpdatedTime,
 				Utility.getSqliteDateTimeString(new Date()));
@@ -1602,6 +1605,9 @@ public class DataService {
 			if (cursor.moveToFirst()) {
 				String fileName = cursor.getString(cursor
 						.getColumnIndex(VoiceNoteSchema.FileName));
+				cursor.close();
+				cursor = null;
+				
 				if (!TextUtils.isEmpty(fileName)) {
 					fullFileName = Utility.getAudioFullFileName(context,
 							fileName);

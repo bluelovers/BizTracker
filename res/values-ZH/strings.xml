@@ -188,5 +188,6 @@
     <string name="use_my_location">使用我的地理位置</string>
     <string name="count">数量</string>
     <string name="need_stuff_count">请输入数量</string>
+    <string name="voice_note">语音备忘</string>
 
 </resources>
