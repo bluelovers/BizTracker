@@ -3,8 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="F:/Program Files/eclipse/android/android-sdk/extras/android/support/v4/android-support-v4.jar" sourcepath="F:/Program Files/eclipse/android/android-sdk/sources"/>
+	<classpathentry kind="lib" path="F:/iProgram/Android/android-sdk-windows/extras/android/compatibility/v4/android-support-v4.jar" sourcepath="F:/Program Files/eclipse/android/android-sdk/sources"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="F:/Program Files/eclipse/workspace/BizTracker/libs/achartengine-0.7.0.jar" sourcepath="G:/workspace/android/AChartEngine"/>
+	<classpathentry kind="lib" path="G:/workspace/android/BizTracker/libs/achartengine-0.7.0.jar" sourcepath="G:/workspace/android/AChartEngine"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
