@@ -637,6 +637,15 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		case R.id.viewSwitcherPanel:
 			viewHistory();
 			break;
+		case R.id.buttonConfig:
+			showSettingsUI();
+			break;
+		case R.id.buttonVoiceNote:
+			
+			break;
+		case R.id.buttonViewCostHistory:
+			viewHistory();
+			break;
 		default:
 			break;
 		}
@@ -903,9 +912,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 			return true;
 		case R.id.itemConfig:
-			this.startActivityForResult(new Intent(this,
-					com.xiaolei.android.ui.Settings.class),
-					com.xiaolei.android.ui.Settings.REQUEST_CODE);
+			showSettingsUI();
 
 			return true;
 			/*
@@ -929,6 +936,12 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void showSettingsUI() {
+		this.startActivityForResult(new Intent(this,
+				com.xiaolei.android.ui.Settings.class),
+				com.xiaolei.android.ui.Settings.REQUEST_CODE);
 	}
 
 	private void viewHistory() {

@@ -19,19 +19,24 @@
             android:layout_height="wrap_content" >
 
             <Button
-                style="@style/button_style"
-                android:background="@drawable/blue_button"
-                android:text="@string/view_cost_history" />
-
-            <Button
-                style="@style/button_style"
-                android:background="@drawable/blue_button"
+                android:id="@+id/buttonConfig"
+                style="@style/tool_button_style"
+                android:onClick="onClick"
                 android:text="@string/config" />
 
             <Button
-                style="@style/button_style"
-                android:text="@string/more_stuffs" >
+                android:id="@+id/buttonVoiceNote"
+                style="@style/tool_button_style"
+                android:onClick="onClick"
+                android:text="@string/voice_note" >
             </Button>
+
+            <Button
+                android:id="@+id/buttonViewCostHistory"
+                style="@style/tool_button_style"
+                android:background="@drawable/blue_button"
+                android:onClick="onClick"
+                android:text="@string/view_cost_history" />
         </LinearLayout>
 
         <LinearLayout
