@@ -189,5 +189,6 @@
     <string name="count">數量</string>
     <string name="need_stuff_count">請輸入數量</string>
     <string name="voice_note">語音備忘</string>
+    <string name="can_not_get_location">抱歉，無法定位</string>
 
 </resources>

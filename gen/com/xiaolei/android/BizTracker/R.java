@@ -130,10 +130,10 @@ public final class R {
     }
     public static final class id {
         public static final int autoCompleteTextViewStuffNameKeyword=0x7f0b00a1;
-        public static final int buttonCancel=0x7f0b0050;
+        public static final int buttonCancel=0x7f0b0051;
         public static final int buttonCancelProject=0x7f0b000e;
         public static final int buttonChooseCurrency=0x7f0b002e;
-        public static final int buttonClear=0x7f0b0052;
+        public static final int buttonClear=0x7f0b0053;
         public static final int buttonConfig=0x7f0b00ac;
         public static final int buttonCreateProject=0x7f0b004d;
         public static final int buttonDeleteStuff=0x7f0b00b4;
@@ -160,8 +160,8 @@ public final class R {
         public static final int buttonPlus=0x7f0b00aa;
         public static final int buttonSave=0x7f0b005f;
         public static final int buttonSearchStuff=0x7f0b00b2;
-        public static final int buttonSetCurrency=0x7f0b0051;
-        public static final int buttonStuffCount=0x7f0b0053;
+        public static final int buttonSetCurrency=0x7f0b0052;
+        public static final int buttonStuffCount=0x7f0b0050;
         public static final int buttonSubtract=0x7f0b00a9;
         public static final int buttonViewCostHistory=0x7f0b00ae;
         public static final int buttonVoiceNote=0x7f0b00ad;
@@ -496,6 +496,7 @@ public final class R {
         public static final int best=0x7f090089;
         public static final int biz=0x7f09001c;
         public static final int biz_date=0x7f09001b;
+        public static final int can_not_get_location=0x7f0900bc;
         public static final int cancel=0x7f090008;
         public static final int change_password=0x7f090083;
         public static final int choose_date_range=0x7f09009c;

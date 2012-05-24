@@ -251,6 +251,11 @@ public class LocationService {
 	 * @return
 	 */
 	public boolean isProviderEnable(String provider) {
+		if (locationManager == null) {
+			locationManager = (LocationManager) mContext
+					.getSystemService(Context.LOCATION_SERVICE);
+		}
+		
 		if (locationManager != null) {
 			return locationManager.isProviderEnabled(provider);
 		}

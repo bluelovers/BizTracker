@@ -246,6 +246,32 @@ public class TransactionDetailsFragment extends Fragment implements
 		}
 	}
 
+	private void updateTransactionLocation(final Location location,
+			final String address) {
+		AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				DataService.GetInstance(getActivity())
+						.updateTransactionLocation(mTransactionId, location,
+								address);
+
+				return true;
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (result == true) {
+					displayCurrentLocationAddress(address);
+				} else {
+					displayCurrentLocationAddress(getActivity().getString(
+							R.string.can_not_get_location));
+				}
+			}
+		};
+		task.execute();
+	}
+
 	private void initLocationService() {
 		if (mLocationService == null) {
 			mLocationService = LocationService.getInstance(getActivity());
@@ -260,9 +286,8 @@ public class TransactionDetailsFragment extends Fragment implements
 						@Override
 						public void onGotLocationAddress(
 								Location currentLocation, String address) {
-							displayCurrentLocationAddress(address);
+							updateTransactionLocation(currentLocation, address);
 						}
-
 					});
 
 		}

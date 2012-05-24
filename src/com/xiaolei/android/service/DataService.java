@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.text.TextUtils;
 
 import com.xiaolei.android.common.Utility;
@@ -1219,8 +1220,36 @@ public class DataService {
 		values.put(BizLogSchema.LastUpdateTime,
 				Utility.getCurrentDateTimeString());
 
-		int result = db.update(StuffSchema.TableName, values, "_id=?",
+		int result = db.update(BizLogSchema.TableName, values, "_id=?",
 				new String[] { String.valueOf(log.getId()) });
+		return result;
+	}
+
+	/**
+	 * Update the location of the specified transaction.
+	 * 
+	 * @param transactionId
+	 * @param location
+	 * @param address
+	 * @return
+	 */
+	public int updateTransactionLocation(long transactionId, Location location,
+			String address) {
+		if (transactionId <= 0) {
+			return -1;
+		}
+
+		ContentValues values = new ContentValues();
+		values.put(BizLogSchema.LocationName, address);
+		if (location != null) {
+			values.put(
+					BizLogSchema.Location,
+					String.format("%f,%f", location.getLatitude(),
+							location.getLongitude()));
+		}
+
+		int result = db.update(StuffSchema.TableName, values, "_id=?",
+				new String[] { String.valueOf(transactionId) });
 		return result;
 	}
 
@@ -1607,7 +1636,7 @@ public class DataService {
 						.getColumnIndex(VoiceNoteSchema.FileName));
 				cursor.close();
 				cursor = null;
-				
+
 				if (!TextUtils.isEmpty(fileName)) {
 					fullFileName = Utility.getAudioFullFileName(context,
 							fileName);
