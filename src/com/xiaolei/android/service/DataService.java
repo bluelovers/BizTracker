@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.BizLogSchema;
+import com.xiaolei.android.entity.CurrencySchema;
 import com.xiaolei.android.entity.LocationCacheSchema;
 import com.xiaolei.android.entity.Parameter;
 import com.xiaolei.android.entity.ParameterSchema;
@@ -1125,7 +1126,7 @@ public class DataService {
 		return cursor;
 	}
 
-	public Cursor getAllActiveCurrency() {
+	public Cursor getAllExchangeRate() {
 		String sql = "SELECT * FROM Currency where IsActive = 'true' order by Code asc";
 
 		Cursor cursor = db.rawQuery(sql, null);
@@ -1204,6 +1205,28 @@ public class DataService {
 							Utility.getSqliteDateTimeString(new Date()),
 							String.valueOf(id) });
 		}
+	}
+
+	/**
+	 * Update exchange rate by currency code.
+	 * 
+	 * @param currencyCode
+	 * @param exchangeRate
+	 * @return
+	 */
+	public int updateExchangeRateByCurrencyCode(String currencyCode,
+			double exchangeRate, Date updateTime) {
+		int result = -1;
+		if (!TextUtils.isEmpty(currencyCode)) {
+			ContentValues values = new ContentValues();
+			values.put(CurrencySchema.USDExchangeRate, exchangeRate);
+			values.put(CurrencySchema.LastUpdateTime,
+					Utility.getSqliteDateTimeString(updateTime));
+
+			result = db.update(CurrencySchema.TableName, values, "Code=?",
+					new String[] { currencyCode });
+		}
+		return result;
 	}
 
 	public int updateBizLog(BizLog log) {

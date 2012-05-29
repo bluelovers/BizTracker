@@ -50,7 +50,7 @@ public class CurrencyListPreference extends ListPreference {
 		refreshTitle();
 
 		Cursor cursor = DataService.GetInstance(getContext())
-				.getAllActiveCurrency();
+				.getAllExchangeRate();
 		if (cursor == null || cursor.getCount() == 0) {
 			return;
 		}

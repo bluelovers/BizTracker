@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/viewSwitcherMain"
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewFlipperMain"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_weight="1" >
@@ -30,4 +30,28 @@
         </ListView>
     </LinearLayout>
 
-</ViewSwitcher>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <TextView
+            android:id="@+id/textViewUpdateExchangeRateListError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/fail_to_online_update_exchange_rate" >
+        </TextView>
+
+        <Button
+            android:id="@+id/buttonUpdateExchangeRateListError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textViewUpdateExchangeRateListError"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:minWidth="120dp"
+            android:onClick="onClick"
+            android:text="@string/retry" />
+    </RelativeLayout>
+
+</ViewFlipper>

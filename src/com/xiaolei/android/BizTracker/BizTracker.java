@@ -270,7 +270,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	}
 
 	private void showDefaultCurrencyDialog(Boolean saveToDB, String title) {
-		Cursor cursor = DataService.GetInstance(this).getAllActiveCurrency();
+		Cursor cursor = DataService.GetInstance(this).getAllExchangeRate();
 		if (cursor == null || cursor.getCount() == 0) {
 			return;
 		}

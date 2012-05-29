@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <include layout="@layout/title_bar_without_buttons" />
+    <include layout="@layout/title_bar_exchange_rate_list" />
 
     <fragment
         android:id="@+id/fragmentExchangeRateList"

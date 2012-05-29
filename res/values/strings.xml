@@ -190,5 +190,6 @@
     <string name="need_stuff_count">Please input stuff count.</string>
     <string name="voice_note">Voice Note</string>
     <string name="can_not_get_location">Sorry, cannot get your location.</string>
-
+    <string name="fail_to_online_update_exchange_rate">Fail to update exchange rate list online.</string>
+    <string name="retry">Retry</string>
 </resources>

@@ -41,7 +41,7 @@ public final class Helper {
 			String checkedCurrencyCode,
 			DialogInterface.OnClickListener okButtonClickListener,
 			DialogInterface.OnClickListener cancelButtonClickListener) {
-		final Cursor cursor = DataService.GetInstance(context).getAllActiveCurrency();
+		final Cursor cursor = DataService.GetInstance(context).getAllExchangeRate();
 		if (cursor == null || cursor.getCount() == 0) {
 			cursor.close();
 			return;

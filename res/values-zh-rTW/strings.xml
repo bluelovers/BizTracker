@@ -190,5 +190,7 @@
     <string name="need_stuff_count">請輸入數量</string>
     <string name="voice_note">語音備忘</string>
     <string name="can_not_get_location">抱歉，無法定位</string>
+    <string name="fail_to_online_update_exchange_rate">在線更新失敗。</string>
+    <string name="retry">重試</string>
 
 </resources>
