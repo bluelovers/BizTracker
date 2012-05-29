@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -40,7 +41,7 @@ import com.xiaolei.android.listener.OnGotLocationInfoListener;
  */
 public class LocationService {
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
-	private final String GoogleMapAPITemplate = "http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true";
+	private final String GoogleMapAPITemplate = "http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true&language=%s";
 
 	private Context mContext;
 	private static LocationService instance = null;
@@ -169,7 +170,9 @@ public class LocationService {
 					StringBuilder jsonText = new StringBuilder();
 					HttpClient client = new DefaultHttpClient();
 					String url = String.format(GoogleMapAPITemplate,
-							location.getLatitude(), location.getLongitude());
+							location.getLatitude(), 
+							location.getLongitude(),
+							Locale.getDefault().getLanguage());
 					HttpGet httpGet = new HttpGet(url);
 					try {
 						HttpResponse response = client.execute(httpGet);
