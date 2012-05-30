@@ -1271,7 +1271,7 @@ public class DataService {
 							location.getLongitude()));
 		}
 
-		int result = db.update(StuffSchema.TableName, values, "_id=?",
+		int result = db.update(BizLogSchema.TableName, values, "_id=?",
 				new String[] { String.valueOf(transactionId) });
 		return result;
 	}
