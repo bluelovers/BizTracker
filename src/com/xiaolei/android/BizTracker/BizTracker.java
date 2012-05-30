@@ -9,6 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+
+import org.json.JSONException;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -56,6 +59,7 @@ import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
 import com.xiaolei.android.common.BaseActivity;
+import com.xiaolei.android.common.CurrencyNamesHelper;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
@@ -217,19 +221,18 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		}
 
 		loadAsync();
-		//initLocationHelper();
-		//createActionMenu();
+		// initLocationHelper();
+		// createActionMenu();
 	}
 
 	/*
-	private void createActionMenu() {
-		ActionItem nextItem = new ActionItem(1, getString(R.string.new_stuff),
-				getResources().getDrawable(android.R.drawable.ic_input_add));
-		quickAction = new QuickAction(this, QuickAction.VERTICAL);
-		quickAction.addActionItem(nextItem);
-		quickAction.setOnActionItemClickListener(this);
-	}
-	*/
+	 * private void createActionMenu() { ActionItem nextItem = new ActionItem(1,
+	 * getString(R.string.new_stuff),
+	 * getResources().getDrawable(android.R.drawable.ic_input_add)); quickAction
+	 * = new QuickAction(this, QuickAction.VERTICAL);
+	 * quickAction.addActionItem(nextItem);
+	 * quickAction.setOnActionItemClickListener(this); }
+	 */
 
 	/*
 	 * private void initLocationHelper(){
@@ -270,6 +273,16 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	}
 
 	private void showDefaultCurrencyDialog(Boolean saveToDB, String title) {
+		CurrencyNamesHelper currencyNamesHelper = null;
+		try {
+			currencyNamesHelper = CurrencyNamesHelper.getInstance(this);
+		} catch (IOException e) {
+			Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+		} catch (JSONException e) {
+			Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+		}
 		Cursor cursor = DataService.GetInstance(this).getAllExchangeRate();
 		if (cursor == null || cursor.getCount() == 0) {
 			return;
@@ -340,10 +353,15 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				do {
 					String currencyCode = cursor.getString(cursor
 							.getColumnIndex(CurrencySchema.Code));
-					String currency = String.format("%s (%s)", cursor
-							.getString(cursor
-									.getColumnIndex(CurrencySchema.Name)),
+					String name = cursor.getString(cursor
+							.getColumnIndex(CurrencySchema.Name));
+					if (currencyNamesHelper != null) {
+						name = currencyNamesHelper.getLocalizedCurrencyName(
+								currencyCode, name);
+					}
+					String currency = String.format("%s (%s)", name,
 							currencyCode);
+
 					strings.add(currency);
 					if (value != null && selectedItemIndex == -1
 							&& value.equalsIgnoreCase(currencyCode)) {
@@ -641,7 +659,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			showSettingsUI();
 			break;
 		case R.id.buttonVoiceNote:
-			
+
 			break;
 		case R.id.buttonViewCostHistory:
 			viewHistory();

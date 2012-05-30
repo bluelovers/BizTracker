@@ -877,6 +877,24 @@ public final class Utility {
 		return file.getName();
 	}
 
+	/**
+	 * Get the device current language code. If language code is empty then returns "en-US".
+	 * @return
+	 */
+	public static String getCurrentLanguageCode() {
+		String result = "en-US";
+		String languageCode = Locale.getDefault().getLanguage();
+		String countryCode = Locale.getDefault().getCountry();
+		if (!TextUtils.isEmpty(languageCode)) {
+			result = languageCode;
+			if (!TextUtils.isEmpty(countryCode)) {
+				result = result + "-" + countryCode;
+			}
+		}
+
+		return result;
+	}
+
 	/*
 	 * public static Bitmap getScaledBitmap(String fileName, int desiredWidth,
 	 * int desiredHeight) { if (!Environment.MEDIA_MOUNTED.equals(Environment

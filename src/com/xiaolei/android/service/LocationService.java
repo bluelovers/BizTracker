@@ -29,6 +29,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.listener.OnGotLocationInfoListener;
 
 /**
@@ -172,7 +173,7 @@ public class LocationService {
 					String url = String.format(GoogleMapAPITemplate,
 							location.getLatitude(), 
 							location.getLongitude(),
-							Locale.getDefault().getLanguage());
+							Utility.getCurrentLanguageCode());
 					HttpGet httpGet = new HttpGet(url);
 					try {
 						HttpResponse response = client.execute(httpGet);

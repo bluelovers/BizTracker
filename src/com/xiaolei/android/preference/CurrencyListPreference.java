@@ -3,15 +3,20 @@
  */
 package com.xiaolei.android.preference;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import org.json.JSONException;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.preference.ListPreference;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.widget.Toast;
 
 import com.xiaolei.android.BizTracker.R;
+import com.xiaolei.android.common.CurrencyNamesHelper;
 import com.xiaolei.android.entity.CurrencySchema;
 import com.xiaolei.android.service.DataService;
 
@@ -49,6 +54,17 @@ public class CurrencyListPreference extends ListPreference {
 	private void prepareDataSource() {
 		refreshTitle();
 
+		CurrencyNamesHelper currencyNamesHelper = null;
+		try {
+			currencyNamesHelper = CurrencyNamesHelper.getInstance(getContext());
+		} catch (IOException e) {
+			Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+		} catch (JSONException e) {
+			Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+		}
+
 		Cursor cursor = DataService.GetInstance(getContext())
 				.getAllExchangeRate();
 		if (cursor == null || cursor.getCount() == 0) {
@@ -63,6 +79,10 @@ public class CurrencyListPreference extends ListPreference {
 						.getColumnIndex(CurrencySchema.Code));
 				String name = cursor.getString(cursor
 						.getColumnIndex(CurrencySchema.Name));
+				if (currencyNamesHelper != null) {
+					name = currencyNamesHelper.getLocalizedCurrencyName(code,
+							name);
+				}
 				codes.add(code);
 				names.add(String.format("%s (%s)", name, code));
 			} while (cursor.moveToNext());

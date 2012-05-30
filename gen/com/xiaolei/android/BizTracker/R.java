@@ -131,7 +131,7 @@ public final class R {
     }
     public static final class id {
         public static final int autoCompleteTextViewStuffNameKeyword=0x7f0b00a2;
-        public static final int buttonCancel=0x7f0b0052;
+        public static final int buttonCancel=0x7f0b0053;
         public static final int buttonCancelProject=0x7f0b000e;
         public static final int buttonChooseCurrency=0x7f0b002e;
         public static final int buttonClear=0x7f0b0054;
@@ -161,7 +161,7 @@ public final class R {
         public static final int buttonPlus=0x7f0b00ab;
         public static final int buttonSave=0x7f0b0060;
         public static final int buttonSearchStuff=0x7f0b00b3;
-        public static final int buttonSetCurrency=0x7f0b0053;
+        public static final int buttonSetCurrency=0x7f0b0052;
         public static final int buttonStuffCount=0x7f0b0051;
         public static final int buttonSubtract=0x7f0b00aa;
         public static final int buttonUpdateExchangRateOnline=0x7f0b00b6;
@@ -487,6 +487,7 @@ public final class R {
     }
     public static final class raw {
         public static final int click=0x7f060000;
+        public static final int currency_names=0x7f060001;
     }
     public static final class string {
         public static final int about=0x7f090095;

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.http.HttpEntity;
@@ -14,7 +13,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -181,7 +179,22 @@ public class ExchangeRateListFragment extends Fragment implements
 	private void fillData(Cursor cursor) {
 		ListView lv = (ListView) getView().findViewById(R.id.listViewData);
 		if (lv.getAdapter() == null) {
-			CurrencyAdapter adpt = new CurrencyAdapter(getActivity(), cursor);
+			CurrencyAdapter adpt = null;
+			try {
+				adpt = new CurrencyAdapter(getActivity(), cursor);
+			} catch (IOException e) {
+				hideWaitCursorAndShowError(e.getMessage());
+				e.printStackTrace();
+			} catch (JSONException e) {
+				String text = getActivity().getString(
+						R.string.fail_to_online_update_exchange_rate);
+				if (!TextUtils.isEmpty(errorMessage)) {
+					text = text + "\n" + errorMessage;
+				}
+				
+				hideWaitCursorAndShowError(text);
+				e.printStackTrace();
+			}
 			lv.setAdapter(adpt);
 		} else {
 			CurrencyAdapter adapter = (CurrencyAdapter) lv.getAdapter();
@@ -204,12 +217,7 @@ public class ExchangeRateListFragment extends Fragment implements
 		TextView tv = (TextView) getView().findViewById(
 				R.id.textViewUpdateExchangeRateListError);
 		if (tv != null) {
-			String text = getActivity().getString(
-					R.string.fail_to_online_update_exchange_rate);
-			if (!TextUtils.isEmpty(errorMessage)) {
-				text = text + "\n" + errorMessage;
-			}
-			tv.setText(text);
+			tv.setText(errorMessage);
 		}
 	}
 
