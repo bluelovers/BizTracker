@@ -28,7 +28,7 @@
         android:layout_centerVertical="true"
         android:background="@drawable/title_bar_button_bg"
         android:contentDescription="@string/photo"
-        android:src="@android:drawable/ic_menu_camera"
+        android:src="@drawable/ic_menu_camera"
         android:textColor="@android:color/white" >
     </ImageButton>
 
