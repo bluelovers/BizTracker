@@ -180,16 +180,19 @@
     <string name="total_count">Total count</string>
     <string name="from">from</string>
     <string name="to">to</string>
-    <string name="no_voice_notes">No voice note</string>
-    <string name="new_voice_note">New voice note</string>
+    <string name="no_voice_notes">No voice memo</string>
+    <string name="new_voice_note">New voice memo</string>
     <string name="recording">Recording...</string>
     <string name="delete_confirm">Are you sure?</string>
     <string name="recorder_title">Recording</string>
     <string name="use_my_location"> My location</string>
     <string name="count">Count</string>
     <string name="need_stuff_count">Please input stuff count.</string>
-    <string name="voice_note">Voice Note</string>
+    <string name="voice_note">Voice Memo</string>
     <string name="can_not_get_location">Sorry, cannot get your location.</string>
     <string name="fail_to_online_update_exchange_rate">Fail to update exchange rate list online.</string>
     <string name="retry">Retry</string>
+    <string name="cannot_get_current_location">Sorry, cannot get your current location. please try again later.</string>
+    <string name="detecting_location">Detecting your location, please wait</string>
+    <string name="network_not_available">Cannot access Internet</string>
 </resources>

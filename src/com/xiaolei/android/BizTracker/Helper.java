@@ -3,7 +3,10 @@
  */
 package com.xiaolei.android.BizTracker;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import org.json.JSONException;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -23,6 +26,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.xiaolei.android.common.CurrencyNamesHelper;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
@@ -41,10 +45,22 @@ public final class Helper {
 			String checkedCurrencyCode,
 			DialogInterface.OnClickListener okButtonClickListener,
 			DialogInterface.OnClickListener cancelButtonClickListener) {
-		final Cursor cursor = DataService.GetInstance(context).getAllExchangeRate();
+		final Cursor cursor = DataService.GetInstance(context)
+				.getAllExchangeRate();
 		if (cursor == null || cursor.getCount() == 0) {
 			cursor.close();
 			return;
+		}
+
+		CurrencyNamesHelper currencyNamesHelper = null;
+		try {
+			currencyNamesHelper = CurrencyNamesHelper.getInstance(context);
+		} catch (IOException e) {
+			Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+		} catch (JSONException e) {
+			Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
 		}
 
 		int selectedItemIndex = -1;
@@ -74,8 +90,15 @@ public final class Helper {
 			do {
 				String currencyCode = cursor.getString(cursor
 						.getColumnIndex(CurrencySchema.Code));
-				String currency = String.format("%s (%s)", cursor
-						.getString(cursor.getColumnIndex(CurrencySchema.Name)),
+				String currencyName = cursor.getString(cursor
+						.getColumnIndex(CurrencySchema.Name));
+				if (currencyNamesHelper != null) {
+					currencyName = currencyNamesHelper
+							.getLocalizedCurrencyName(currencyCode,
+									currencyName);
+				}
+				
+				String currency = String.format("%s (%s)", currencyName,
 						currencyCode);
 				strings.add(currency);
 				if (selectedItemIndex == -1
@@ -105,12 +128,13 @@ public final class Helper {
 						}
 					}
 				});
-		builder.setOnCancelListener(new OnCancelListener(){
+		builder.setOnCancelListener(new OnCancelListener() {
 
 			@Override
 			public void onCancel(DialogInterface dialog) {
-				
-			}});
+
+			}
+		});
 		builder.show();
 	}
 
@@ -129,7 +153,7 @@ public final class Helper {
 				context.getString(R.string.modify),
 				context.getString(R.string.delete),
 				context.getString(R.string.comment),
-				//context.getString(R.string.choose_project),
+				// context.getString(R.string.choose_project),
 				context.getString(R.string.back) };
 		builder.setItems(items, new OnClickListener() {
 

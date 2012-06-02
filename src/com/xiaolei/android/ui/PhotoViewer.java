@@ -267,10 +267,29 @@ public class PhotoViewer extends CameraSupportableActivity implements
 
 	@Override
 	public void onStop() {
-		super.onStop();
-
+		
 		if (cursor != null && !cursor.isClosed()) {
 			cursor.close();
 		}
+		
+		super.onStop();
 	}
+
+	/*
+	@Override
+	public void onPause() {
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+		}
+
+		super.onPause();
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		
+		
+	}
+	*/
 }

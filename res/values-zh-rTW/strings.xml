@@ -142,7 +142,7 @@
     <string name="confirm_password_not_match">請輸入一致的密碼</string>
     <string name="photo_info">詳細資訊</string>
     <string name="open_photo">查看原圖</string>
-    <string name="no_stuff_hint">開始記賬前，請觸摸這裏，增加你的第一個物品。</string>
+    <string name="no_stuff_hint">開始記賬前，請觸摸這裏，增加您的第一個物品。</string>
     <string name="confirm">確認</string>
     <string name="confirm_delete_photo">確定要刪除這張照片嗎？</string>
     <string name="take_photo">拍照</string>
@@ -181,9 +181,9 @@
     <string name="from">從</string>
     <string name="to">到</string>
     <string name="no_voice_notes">沒有語音記錄</string>
-    <string name="new_voice_note">錄製新的語音日誌</string>
+    <string name="new_voice_note">錄製新的語音備忘</string>
     <string name="recording">正在錄音，請講話...</string>
-    <string name="delete_confirm">您確定要移除這條語音日誌嗎？</string>
+    <string name="delete_confirm">您確定要移除這條語音備忘嗎？</string>
     <string name="recorder_title">正在錄音</string>
     <string name="use_my_location">使用我的地理位置</string>
     <string name="count">數量</string>
@@ -192,5 +192,8 @@
     <string name="can_not_get_location">抱歉，無法定位</string>
     <string name="fail_to_online_update_exchange_rate">在線更新失敗。</string>
     <string name="retry">重試</string>
+    <string name="cannot_get_current_location">抱歉，暫時無法定位到您的當前位置，請稍後重試</string>
+    <string name="detecting_location">正在定位，請稍候</string>
+    <string name="network_not_available">無法連接至  Internet, 請先啟用 Internet 連接</string>
 
 </resources>

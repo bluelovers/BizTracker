@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.xiaolei.android.BizTracker.R;
@@ -35,6 +36,8 @@ public class TransactionDetailsFragment extends Fragment implements
 	private long mTransactionId = 0;
 	private String defaultCurrencyCode = "";
 	private LocationService mLocationService = null;
+	private boolean mIsNetworkAvailable = false;
+	private boolean mHasLocation = false;
 	public static final int REQUEST_CODE = 2117;
 
 	public static TransactionDetailsFragment newInstance(long transactionId) {
@@ -107,6 +110,7 @@ public class TransactionDetailsFragment extends Fragment implements
 				}
 				defaultCurrencyCode = DataService.GetInstance(getActivity())
 						.getDefaultCurrencyCode();
+				mIsNetworkAvailable = Utility.isNetworkAvailable(getActivity());
 
 				return result;
 			}
@@ -122,6 +126,7 @@ public class TransactionDetailsFragment extends Fragment implements
 	}
 
 	private void showData(BizLog log) {
+		mHasLocation = false;
 		ViewFlipper viewFlipper = (ViewFlipper) getView().findViewById(
 				R.id.viewFlipperTransactionDetails);
 		if (viewFlipper != null) {
@@ -174,6 +179,7 @@ public class TransactionDetailsFragment extends Fragment implements
 		}
 
 		if (tvLocation != null && !TextUtils.isEmpty(log.getLocationName())) {
+			mHasLocation = true;
 			tvLocation.setText(log.getLocationName());
 		}
 	}
@@ -213,11 +219,22 @@ public class TransactionDetailsFragment extends Fragment implements
 	}
 
 	private void displayCurrentLocationAddress(String address) {
-		if (!TextUtils.isEmpty(address) && getView() != null) {
-			TextView tv = (TextView) getView().findViewById(
-					R.id.textViewLocation);
-			if (tv != null) {
-				tv.setText(address);
+		if (!TextUtils.isEmpty(address)) {
+			if (getView() != null) {
+				TextView tv = (TextView) getView().findViewById(
+						R.id.textViewLocation);
+				if (tv != null) {
+					tv.setText(address);
+				}
+			}
+		} else {
+			if (getView() != null) {
+				TextView tv = (TextView) getView().findViewById(
+						R.id.textViewLocation);
+				if (tv != null) {
+					tv.setText(getActivity().getString(
+							R.string.cannot_get_current_location));
+				}
 			}
 		}
 	}
@@ -226,11 +243,33 @@ public class TransactionDetailsFragment extends Fragment implements
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.textViewLocation:
+			prepareToGetCurrentLocation();
+
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void prepareToGetCurrentLocation() {
+		if (!mHasLocation) {
+			// Check whether can access Internet.
+			if (!mIsNetworkAvailable) {
+				mIsNetworkAvailable = Utility.isNetworkAvailable(getActivity());
+				if (!mIsNetworkAvailable) {
+					displayCurrentLocationAddress(getActivity().getString(
+							R.string.network_not_available));
+					return;
+				}
+			}
+
 			initLocationService();
 
+			// Open system GPS settings UI if it's not enabled.
 			if (mLocationService != null
 					&& !mLocationService
 							.isProviderEnable(LocationManager.GPS_PROVIDER)) {
+
 				Intent intent = new Intent(
 						android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 				this.startActivityForResult(intent, REQUEST_CODE);
@@ -239,10 +278,6 @@ public class TransactionDetailsFragment extends Fragment implements
 				displayCurrentLocationAddress(getActivity().getString(
 						R.string.loading));
 			}
-
-			break;
-		default:
-			break;
 		}
 	}
 
@@ -265,7 +300,7 @@ public class TransactionDetailsFragment extends Fragment implements
 					displayCurrentLocationAddress(address);
 				} else {
 					displayCurrentLocationAddress(getActivity().getString(
-							R.string.can_not_get_location));
+							R.string.cannot_get_current_location));
 				}
 			}
 		};
@@ -280,15 +315,44 @@ public class TransactionDetailsFragment extends Fragment implements
 
 						@Override
 						public void onGotLocation(Location currentLocation) {
-							// Do nothing.
+							if (currentLocation != null) {
+								Toast.makeText(
+										getActivity(),
+										String.format("%f, %f",
+												currentLocation.getLatitude(),
+												currentLocation.getLongitude()),
+										Toast.LENGTH_SHORT).show();
+							}
 						}
 
 						@Override
-						public void onGotLocationAddress(
+						public void onGotLocationAddress(String errorMessage,
 								Location currentLocation, String address) {
-							updateTransactionLocation(currentLocation, address);
+							if (mLocationService != null) {
+								mLocationService.pause();
+							}
+
+							if (TextUtils.isEmpty(errorMessage)
+									&& !TextUtils.isEmpty(address)) {
+								updateTransactionLocation(currentLocation,
+										address);
+								mHasLocation = true;
+							} else {
+								mHasLocation = false;
+								displayCurrentLocationAddress(getActivity()
+										.getString(
+												R.string.cannot_get_current_location)
+										+ (!TextUtils.isEmpty(errorMessage) ? "\nError: "
+												+ errorMessage
+												: ""));
+							}
 						}
 					});
+
+		} else {
+			if (mLocationService.isPaused()) {
+				mLocationService.resume();
+			}
 
 		}
 	}

@@ -5,5 +5,5 @@ import android.location.Location;
 public interface OnGotLocationInfoListener {
 	void onGotLocation(Location currentLocation);
 
-	void onGotLocationAddress(Location currentLocation, String address);
+	void onGotLocationAddress(String errorMessage, Location currentLocation, String address);
 }

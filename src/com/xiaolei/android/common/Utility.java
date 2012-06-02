@@ -198,21 +198,6 @@ public final class Utility {
 		}
 	}
 
-	public static boolean isNetworkAvailable(Context context) {
-		if (context == null) {
-			return false;
-		}
-		try {
-			ConnectivityManager connectivityManager = (ConnectivityManager) context
-					.getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo activeNetworkInfo = connectivityManager
-					.getActiveNetworkInfo();
-			return activeNetworkInfo != null;
-		} catch (Exception ex) {
-			return false;
-		}
-	}
-
 	public static Date parseDate(String date, Date defaultValue) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(
 				"yyyy-MM-dd HH:mm:ss");
@@ -878,7 +863,9 @@ public final class Utility {
 	}
 
 	/**
-	 * Get the device current language code. If language code is empty then returns "en-US".
+	 * Get the device current language code. If language code is empty then
+	 * returns "en-US".
+	 * 
 	 * @return
 	 */
 	public static String getCurrentLanguageCode() {
@@ -894,6 +881,37 @@ public final class Utility {
 
 		return result;
 	}
+
+	/**
+	 * Detect whether the device can access the Internet.
+	 * 
+	 * @param activity
+	 * @return
+	 */
+	public static boolean isNetworkAvailable(Activity activity) {
+		if (activity == null) {
+			return false;
+		}
+
+		Context context = activity.getApplicationContext();
+		ConnectivityManager connectivity = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (connectivity == null) {
+			return false;
+		} else {
+			NetworkInfo[] info = connectivity.getAllNetworkInfo();
+			if (info != null) {
+				for (int i = 0; i < info.length; i++) {
+					if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	// see http://androidsnippets.com/check-if-the-network-is-available
 
 	/*
 	 * public static Bitmap getScaledBitmap(String fileName, int desiredWidth,

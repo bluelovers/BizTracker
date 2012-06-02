@@ -72,6 +72,7 @@ import com.xiaolei.android.ui.FunctionTypes;
 public class BizTracker extends BaseActivity implements OnClickListener,
 		OnLongClickListener {
 	private final String MULTIPLY = "¡Á";
+	private final String DEFAULT_CURRENCY_CODE = "USD";
 	private BizTracker context;
 	private Cursor cursor;
 	private int stuffId = 0;
@@ -312,26 +313,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						TextView tvDefaultCurrencyCode = (TextView) context
-								.findViewById(R.id.textViewDefaultCurrencyCode);
-						tvDefaultCurrencyCode.setText(defaultCurrencyCode);
-
-						if (saveDefaultCurrencyCodeToDB) {
-							SharedPreferences prefs = PreferenceHelper
-									.getActiveUserSharedPreferences(context);
-							if (prefs != null) {
-								Editor editor = prefs.edit();
-								editor.putString(
-										PreferenceKeys.DefaultCurrencyCode,
-										defaultCurrencyCode);
-								editor.commit();
-							}
-
-							DataService
-									.GetInstance(context)
-									.updateEmptyCurrencyCodeToDefaultCurrencyCode();
-							loadStaticsInfoAsync();
-						}
+						saveDefaultCurrency();
 					}
 				});
 
@@ -341,6 +323,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						saveDefaultCurrency();
+
 						dialog.dismiss();
 					}
 				});
@@ -394,6 +378,31 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 					}
 				});
 		builder.show();
+	}
+
+	private void saveDefaultCurrency() {
+		if (TextUtils.isEmpty(defaultCurrencyCode)) {
+			defaultCurrencyCode = DEFAULT_CURRENCY_CODE;
+		}
+
+		TextView tvDefaultCurrencyCode = (TextView) context
+				.findViewById(R.id.textViewDefaultCurrencyCode);
+		tvDefaultCurrencyCode.setText(defaultCurrencyCode);
+
+		if (saveDefaultCurrencyCodeToDB) {
+			SharedPreferences prefs = PreferenceHelper
+					.getActiveUserSharedPreferences(context);
+			if (prefs != null) {
+				Editor editor = prefs.edit();
+				editor.putString(PreferenceKeys.DefaultCurrencyCode,
+						defaultCurrencyCode);
+				editor.commit();
+			}
+
+			DataService.GetInstance(context)
+					.updateEmptyCurrencyCodeToDefaultCurrencyCode();
+			loadStaticsInfoAsync();
+		}
 	}
 
 	private void loadStaticsInfoAsync() {

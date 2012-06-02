@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,8 +26,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
-
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.listener.OnGotLocationInfoListener;
 
@@ -45,6 +42,8 @@ public class LocationService {
 	private final String GoogleMapAPITemplate = "http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true&language=%s";
 
 	private Context mContext;
+	private String mLastErrorMessage = null;
+	private boolean mIsPaused = false;
 	private static LocationService instance = null;
 	private LocationManager locationManager = null;
 	private LocationListener locationListener = null;
@@ -81,24 +80,51 @@ public class LocationService {
 	}
 
 	protected void onGotLocation(Location location) {
-		if (mOnGotLocationInfoListener != null && location != null) {
+		if (!mIsPaused && mOnGotLocationInfoListener != null
+				&& location != null) {
 			mOnGotLocationInfoListener.onGotLocation(location);
 		}
 	}
 
-	protected void onGotAddress(Location location, String address) {
-		if (mOnGotLocationInfoListener != null && location != null
-				&& !TextUtils.isEmpty(address)) {
-			mOnGotLocationInfoListener.onGotLocationAddress(location, address);
+	protected void onGotAddress(String errorMessage, Location location,
+			String address) {
+		if (!mIsPaused && mOnGotLocationInfoListener != null
+				&& location != null) {
+			mOnGotLocationInfoListener.onGotLocationAddress(errorMessage,
+					location, address);
 		}
 	}
 
+	/**
+	 * Start to track the location changed event.
+	 */
 	public void start() {
 		if (!isListening) {
 			this.init();
-		}else{
-			
+		} else {
+			// Do nothing.
 		}
+	}
+	
+	/**
+	 * Detect if the location service is paused.
+	 */
+	public boolean isPaused(){
+		return mIsPaused;
+	}
+
+	/**
+	 * Pause notifying location and address changed event.
+	 */
+	public void pause() {
+		mIsPaused = true;
+	}
+
+	/**
+	 * Continue to notify location and address changed event.
+	 */
+	public void resume() {
+		mIsPaused = false;
 	}
 
 	/**
@@ -129,8 +155,9 @@ public class LocationService {
 		if (!TextUtils.isEmpty(address)
 				&& !address.equals(currentBestLocationAddress)) {
 			currentBestLocationAddress = address;
-			this.onGotAddress(location, address);
 		}
+
+		this.onGotAddress(mLastErrorMessage, location, address);
 	}
 
 	/**
@@ -148,7 +175,7 @@ public class LocationService {
 	}
 
 	private void getLocationAddressByGoogleMapAsync(Location location) {
-		if (location == null) {
+		if (location == null || mIsPaused) {
 			return;
 		}
 
@@ -161,6 +188,7 @@ public class LocationService {
 				}
 				Location location = params[0];
 				String address = "";
+				mLastErrorMessage = "";
 
 				String cachedAddress = DataService.GetInstance(mContext)
 						.getAddressFormLocationCache(location.getLatitude(),
@@ -171,8 +199,7 @@ public class LocationService {
 					StringBuilder jsonText = new StringBuilder();
 					HttpClient client = new DefaultHttpClient();
 					String url = String.format(GoogleMapAPITemplate,
-							location.getLatitude(), 
-							location.getLongitude(),
+							location.getLatitude(), location.getLongitude(),
 							Utility.getCurrentLanguageCode());
 					HttpGet httpGet = new HttpGet(url);
 					try {
@@ -211,18 +238,27 @@ public class LocationService {
 														currentBestLocationAddress);
 									}
 								}
+							} else if (GoogleMapStatusCodes.ZERO_RESULTS
+									.equals(status)) {
+								address = "";
+								Log.e("Error", "Zero result fetched.");
+							} else {
+								address = "";
 							}
 						} else {
+							mLastErrorMessage = "Failed to get address via google map API.";
 							Log.e("Error",
 									"Failed to get address via google map API.");
 						}
 					} catch (ClientProtocolException e) {
 						e.printStackTrace();
-						Toast.makeText(mContext, "Failed to get location.", Toast.LENGTH_SHORT).show();
+						mLastErrorMessage = e.getMessage();
 					} catch (IOException e) {
-						Toast.makeText(mContext, "Failed to get location.", Toast.LENGTH_SHORT).show();
+						e.printStackTrace();
+						mLastErrorMessage = e.getMessage();
 					} catch (JSONException e) {
-						Toast.makeText(mContext, "Failed to get location.", Toast.LENGTH_SHORT).show();
+						e.printStackTrace();
+						mLastErrorMessage = e.getMessage();
 					}
 				}
 
@@ -259,7 +295,7 @@ public class LocationService {
 			locationManager = (LocationManager) mContext
 					.getSystemService(Context.LOCATION_SERVICE);
 		}
-		
+
 		if (locationManager != null) {
 			return locationManager.isProviderEnabled(provider);
 		}
@@ -280,11 +316,11 @@ public class LocationService {
 						getLocationAddressAsync(currentBestLocation);
 						setCurrentBestLocation(currentBestLocation);
 
-						Toast.makeText(
-								mContext,
-								String.format("%f, %f", location.getLatitude(),
-										location.getLongitude()),
-								Toast.LENGTH_SHORT).show();
+						/*
+						 * Toast.makeText( mContext, String.format("%f, %f",
+						 * location.getLatitude(), location.getLongitude()),
+						 * Toast.LENGTH_SHORT).show();
+						 */
 					}
 				}
 
@@ -366,7 +402,7 @@ public class LocationService {
 	}
 
 	/**
-	 * Stop listening the location changed event.
+	 * Stop tracking the location changed event.
 	 */
 	public void stop() {
 		if (locationManager != null && locationListener != null) {

@@ -60,7 +60,7 @@
         android:paddingRight="10dp"
         android:paddingTop="4dp"
         android:text="@string/use_my_location"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/textViewTransactionTime"

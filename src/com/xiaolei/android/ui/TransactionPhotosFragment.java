@@ -108,8 +108,12 @@ public class TransactionPhotosFragment extends Fragment implements
 	@Override
 	public void onDestroyView() {
 
-		super.onDestroyView();
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.close();
+			cursor = null;
+		}
 
+		super.onDestroyView();
 	}
 
 	private void loadPhotoAsync() {

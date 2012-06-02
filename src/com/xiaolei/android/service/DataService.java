@@ -1701,6 +1701,10 @@ public class DataService {
 		if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst()) {
 			result = cursor.getString(0);
 		}
+		
+		cursor.close();
+		cursor = null;
+		
 		return result;
 	}
 

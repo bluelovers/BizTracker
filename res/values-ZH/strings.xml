@@ -142,7 +142,7 @@
     <string name="confirm_password_not_match">请输入一致的密码</string>
     <string name="photo_info">详细信息</string>
     <string name="open_photo">查看原图</string>
-    <string name="no_stuff_hint">开始记账前，请触摸这里，增加你的第一个物品。</string>
+    <string name="no_stuff_hint">开始记账前，请触摸这里，增加您的第一个物品。</string>
     <string name="confirm">确认</string>
     <string name="confirm_delete_photo">确定要删除这张照片吗?</string>
     <string name="take_photo">拍照</string>
@@ -180,10 +180,10 @@
     <string name="total_count">交易次数</string>
     <string name="from">从</string>
     <string name="to">到</string>
-    <string name="no_voice_notes">没有语音记录</string>
-    <string name="new_voice_note">录制新的语音日志</string>
+    <string name="no_voice_notes">没有语音备忘</string>
+    <string name="new_voice_note">录制新的语音备忘</string>
     <string name="recording">正在录音，请讲话...</string>
-    <string name="delete_confirm">您确定要删除这条语音日志吗？</string>
+    <string name="delete_confirm">您确定要删除这条语音备忘吗？</string>
     <string name="recorder_title">正在录音</string>
     <string name="use_my_location">使用我的地理位置</string>
     <string name="count">数量</string>
@@ -192,4 +192,8 @@
     <string name="can_not_get_location">抱歉，无法定位</string>
     <string name="fail_to_online_update_exchange_rate">在线更新失败。</string>
     <string name="retry">重试</string>
-</resources>
+    <string name="cannot_get_current_location">抱歉，暂时无法定位到您的当前位置，请稍后重试</string>
+    <string name="detecting_location">正在定位，请稍候</string>
+    <string name="network_not_available">无法连接至  Internet, 请先启用 Internet 连接。</string>
+
+</resources>
