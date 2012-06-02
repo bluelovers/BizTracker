@@ -100,6 +100,11 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 				if (getView() != null) {
 					ListView lv = (ListView) getView().findViewById(
 							R.id.listViewAudioList);
+
+					if (result == null || result.getCount() == 0) {
+						showOrHidePlayControlPanel(false);
+					}
+
 					if (lv != null) {
 						if (lv.getAdapter() != null) {
 							VoiceNotesCursorAdapter adapter = (VoiceNotesCursorAdapter) lv
@@ -233,7 +238,8 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 		switch (v.getId()) {
 		case R.id.relativeLayoutRecordAudio:
 			VoiceRecorderFragment recorderFragment = VoiceRecorderFragment
-					.newInstance(getActivity().getString(R.string.recorder_title),
+					.newInstance(
+							getActivity().getString(R.string.recorder_title),
 							mTransactionId);
 			recorderFragment.setOnVoiceNoteCreatedListener(this);
 			recorderFragment.show(getActivity().getSupportFragmentManager(),
@@ -253,7 +259,7 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 			if (tag != null) {
 				mSelectedVoiceNoteId = Long.parseLong(tag.toString());
 				stop();
-				
+
 				Utility.showConfirmDialog(getActivity(), getActivity()
 						.getString(R.string.confirm),
 						getActivity().getString(R.string.delete_confirm),
@@ -392,6 +398,16 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 		if (tag != null) {
 			String audioFileName = tag.toString();
 			play(audioFileName, true);
+			showOrHidePlayControlPanel(true);
+		}
+	}
+
+	private void showOrHidePlayControlPanel(boolean show) {
+		RelativeLayout controlPanel = (RelativeLayout) getView().findViewById(
+				R.id.relativeLayoutAudioPlayer);
+		if (controlPanel != null) {
+			controlPanel.setVisibility(show ? RelativeLayout.VISIBLE
+					: RelativeLayout.INVISIBLE);
 		}
 	}
 
