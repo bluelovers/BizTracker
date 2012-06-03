@@ -3,6 +3,8 @@
  */
 package com.xiaolei.android.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -152,6 +154,8 @@ public class TransactionDetailsFragment extends Fragment implements
 		// ImageView ivStar = (ImageView) findViewById(R.id.imageViewTDStar);
 
 		if (tvStuffName != null) {
+			tvStuffName.setText("");
+
 			if (log.getStuffCount() <= 1) {
 				tvStuffName.setText(log.getStuffName());
 			} else {
@@ -160,12 +164,16 @@ public class TransactionDetailsFragment extends Fragment implements
 			}
 		}
 		if (tvUpdateTime != null) {
+			tvUpdateTime.setText("");
+
 			String value = DateUtils.formatDateTime(getActivity(), log
 					.getLastUpdateTime().getTime(), DateUtils.FORMAT_SHOW_DATE
 					| DateUtils.FORMAT_SHOW_TIME);
 			tvUpdateTime.setText(value);
 		}
 		if (tvTransactionCost != null) {
+			tvTransactionCost.setText("");
+
 			tvTransactionCost.setText(Utility.formatCurrency(log.getCost()
 					* log.getStuffCount(), this.defaultCurrencyCode));
 			if (log.getCost() > 0) {
@@ -178,9 +186,14 @@ public class TransactionDetailsFragment extends Fragment implements
 			tvTransactionComment.setText(log.getComment());
 		}
 
-		if (tvLocation != null && !TextUtils.isEmpty(log.getLocationName())) {
-			mHasLocation = true;
-			tvLocation.setText(log.getLocationName());
+		if (tvLocation != null) {
+			if (!TextUtils.isEmpty(log.getLocationName())) {
+				mHasLocation = true;
+				tvLocation.setText(log.getLocationName());
+			} else {
+				tvLocation.setText(getActivity().getString(
+						R.string.use_my_location));
+			}
 		}
 	}
 
@@ -194,7 +207,7 @@ public class TransactionDetailsFragment extends Fragment implements
 							.isProviderEnable(LocationManager.GPS_PROVIDER)) {
 				mLocationService.start();
 				displayCurrentLocationAddress(getActivity().getString(
-						R.string.loading));
+						R.string.detecting_location));
 			}
 
 			break;
@@ -251,34 +264,84 @@ public class TransactionDetailsFragment extends Fragment implements
 		}
 	}
 
+	private void getCurrentLocation() {
+		// Check whether can access Internet.
+		if (!mIsNetworkAvailable) {
+			mIsNetworkAvailable = Utility.isNetworkAvailable(getActivity());
+			if (!mIsNetworkAvailable) {
+				displayCurrentLocationAddress(getActivity().getString(
+						R.string.network_not_available));
+				return;
+			}
+		}
+
+		initLocationService();
+
+		// Open system GPS settings UI if it's not enabled.
+		if (mLocationService != null
+				&& !mLocationService
+						.isProviderEnable(LocationManager.GPS_PROVIDER)) {
+
+			Intent intent = new Intent(
+					android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			this.startActivityForResult(intent, REQUEST_CODE);
+		} else {
+			mLocationService.start();
+			displayCurrentLocationAddress(getActivity().getString(
+					R.string.detecting_location));
+		}
+	}
+
 	private void prepareToGetCurrentLocation() {
 		if (!mHasLocation) {
-			// Check whether can access Internet.
-			if (!mIsNetworkAvailable) {
-				mIsNetworkAvailable = Utility.isNetworkAvailable(getActivity());
-				if (!mIsNetworkAvailable) {
-					displayCurrentLocationAddress(getActivity().getString(
-							R.string.network_not_available));
-					return;
+			getCurrentLocation();
+		} else {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+					.setTitle(getActivity().getString(R.string.location))
+					.setItems(
+							new String[] {
+									getActivity().getString(
+											R.string.update_location),
+									getActivity().getString(
+											R.string.remove_location) },
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									switch (which) {
+									case 0:
+										getCurrentLocation();
+										break;
+									case 1:
+										removeTransactionLocationAsync();
+										break;
+									}
+								}
+							});
+			builder.show();
+		}
+	}
+
+	private void removeTransactionLocationAsync() {
+		AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				DataService.GetInstance(getActivity())
+						.removeTransactionLocation(mTransactionId);
+				return true;
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (result == true) {
+					loadDataAsync();
 				}
 			}
 
-			initLocationService();
-
-			// Open system GPS settings UI if it's not enabled.
-			if (mLocationService != null
-					&& !mLocationService
-							.isProviderEnable(LocationManager.GPS_PROVIDER)) {
-
-				Intent intent = new Intent(
-						android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-				this.startActivityForResult(intent, REQUEST_CODE);
-			} else {
-				mLocationService.start();
-				displayCurrentLocationAddress(getActivity().getString(
-						R.string.loading));
-			}
-		}
+		};
+		task.execute();
 	}
 
 	private void updateTransactionLocation(final Location location,

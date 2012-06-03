@@ -158,6 +158,21 @@ public class DataService {
 				new String[] { String.valueOf(bizLogId) });
 		return result;
 	}
+	
+	/**
+	 * Remove the location information of the specified transaction by transaction id.
+	 * @param transactionId
+	 * @return
+	 */
+	public int removeTransactionLocation(long transactionId){
+		ContentValues values = new ContentValues();
+		values.putNull(BizLogSchema.LocationName);
+		values.putNull(BizLogSchema.Location);
+
+		int result = db.update(BizLogSchema.TableName, values, "_id=?",
+				new String[] { String.valueOf(transactionId) });
+		return result;
+	}
 
 	public int getTotalStuffCount() {
 		int result = 0;

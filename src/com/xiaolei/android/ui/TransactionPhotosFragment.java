@@ -135,7 +135,7 @@ public class TransactionPhotosFragment extends Fragment implements
 						.getTransactionPhotoCount(mTransactionId);
 				mPrimaryPhotoPosition = DataService.GetInstance(getActivity())
 						.getPrimaryPhotoPosition(mTransactionId);
-				Cursor cursor = DataService.GetInstance(getActivity())
+				cursor = DataService.GetInstance(getActivity())
 						.getTransactionPhotos(mTransactionId);
 
 				return cursor;
@@ -421,11 +421,12 @@ public class TransactionPhotosFragment extends Fragment implements
 
 	@Override
 	public void onStop() {
-		super.onStop();
 		if (cursor != null && cursor.isClosed() == false) {
 			cursor.close();
 			cursor = null;
 		}
+		
+		super.onStop();
 	}
 
 	@Override

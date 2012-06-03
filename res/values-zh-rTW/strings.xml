@@ -196,5 +196,6 @@
     <string name="detecting_location">正在定位，請稍候</string>
     <string name="network_not_available">無法連接至  Internet, 請先啟用 Internet 連接</string>
     <string name="external_storage_not_available">未插入存儲卡或存儲卡不可用。請先插入存儲卡並斷開USB連接後重試。</string>
-
+    <string name="remove_location">刪除</string>
+    <string name="update_location">更新為當前位置</string>
 </resources>

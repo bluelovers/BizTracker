@@ -22,6 +22,8 @@
             android:id="@+id/textViewStuffName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="Stuff Name Here"
             android:textColor="#33b4e4"
             android:textSize="25sp"
@@ -31,6 +33,8 @@
             android:id="@+id/textViewTransactionCost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="-20 CNY"
             android:textSize="15sp" />
 
@@ -39,6 +43,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dip"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="This is the comment. The quick brown fox jump up the lazy dog."
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
