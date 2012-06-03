@@ -97,6 +97,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	private SoundPool soundPool;
 	private SparseIntArray sounds;
 	private float volume = 1.0f;
+	private String mExportErrorMessage = "";
 
 	public static final int REQUEST_CODE = 1;
 	public static final String APPLICATION_FOLDER = "BizTracker";
@@ -1017,6 +1018,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 			@Override
 			protected Boolean doInBackground(Boolean... arg0) {
+				mExportErrorMessage = "";
 				String state = Environment.getExternalStorageState();
 				if (Environment.MEDIA_MOUNTED.equals(state)) {
 					File targetDir = new File(
@@ -1043,67 +1045,78 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 
 						Cursor cursor = DataService.GetInstance(context)
 								.getAllTransactions();
-						int count = cursor.getCount();
-						int index = 0;
-						this.publishProgress(count, 0);
+						try {
+							int count = cursor.getCount();
+							int index = 0;
+							this.publishProgress(count, 0);
 
-						Hashtable<String, String> dic = new Hashtable<String, String>();
-						dic.put("StuffName",
-								context.getString(R.string.stuff_name));
-						dic.put("Cost", context.getString(R.string.cost));
-						dic.put("LastUpdateTime",
-								context.getString(R.string.last_update_time));
-						dic.put("Star", context.getString(R.string.star));
-						dic.put("CurrencyCode",
-								context.getString(R.string.currency_code));
+							Hashtable<String, String> dic = new Hashtable<String, String>();
+							dic.put("StuffName",
+									context.getString(R.string.stuff_name));
+							dic.put("Cost", context.getString(R.string.cost));
+							dic.put("LastUpdateTime", context
+									.getString(R.string.last_update_time));
+							dic.put("Star", context.getString(R.string.star));
+							dic.put("CurrencyCode",
+									context.getString(R.string.currency_code));
 
-						StringBuffer columnNames = new StringBuffer();
-						for (int i = 0; i < cursor.getColumnCount(); i++) {
-							String colName = cursor.getColumnName(i);
-							if (dic.containsKey(colName)) {
-								colName = dic.get(colName);
-							}
+							StringBuffer columnNames = new StringBuffer();
+							for (int i = 0; i < cursor.getColumnCount(); i++) {
+								String colName = cursor.getColumnName(i);
+								if (dic.containsKey(colName)) {
+									colName = dic.get(colName);
+								}
 
-							if (columnNames.length() > 0) {
-								columnNames.append("\t\"" + colName + "\"");
-							} else {
-								columnNames.append("\"" + colName + "\"");
-							}
-						}
-						columnNames.append("\n");
-						writer.append(columnNames.toString());
-
-						while (cursor.moveToNext()) {
-							if (this.isCancelled()) {
-								break;
-							}
-
-							StringBuffer line = new StringBuffer();
-							for (int colIndex = 0; colIndex < cursor
-									.getColumnCount(); colIndex++) {
-								if (line.length() > 0) {
-									line.append("\t\""
-											+ cursor.getString(colIndex) + "\"");
+								if (columnNames.length() > 0) {
+									columnNames.append("\t\"" + colName + "\"");
 								} else {
-									line.append("\""
-											+ cursor.getString(colIndex) + "\"");
+									columnNames.append("\"" + colName + "\"");
 								}
 							}
-							line.append("\n");
-							writer.append(line.toString());
+							columnNames.append("\n");
+							writer.append(columnNames.toString());
 
-							index++;
-							this.publishProgress(index);
+							if (cursor.moveToFirst()) {
+								do {
+									if (this.isCancelled()) {
+										break;
+									}
+
+									StringBuffer line = new StringBuffer();
+									for (int colIndex = 0; colIndex < cursor
+											.getColumnCount(); colIndex++) {
+										if (line.length() > 0) {
+											line.append("\t\""
+													+ cursor.getString(colIndex)
+													+ "\"");
+										} else {
+											line.append("\""
+													+ cursor.getString(colIndex)
+													+ "\"");
+										}
+									}
+									line.append("\n");
+									writer.append(line.toString());
+
+									index++;
+									this.publishProgress(index);
+								} while (cursor.moveToNext());
+							}
+
+							writer.flush();
+							writer.close();
+						} finally {
+							cursor.close();
+							cursor = null;
 						}
-
-						writer.flush();
-						writer.close();
 
 						return true;
 					} catch (IOException e) {
+						mExportErrorMessage = e.getMessage();
 						return false;
 					}
 				} else {
+					mExportErrorMessage = getString(R.string.external_storage_not_available);
 					return false;
 				}
 			}
@@ -1139,10 +1152,17 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 								}
 							});
 				} else {
+					String errorMessage = context
+							.getString(R.string.export_failed);
+					if (!TextUtils.isEmpty(errorMessage)) {
+						errorMessage = errorMessage + "\n"
+								+ mExportErrorMessage;
+					}
+
 					Utility.showMessageBox(context,
 							android.R.drawable.ic_dialog_alert,
 							context.getString(R.string.export_fail_title),
-							context.getString(R.string.export_failed),
+							errorMessage,
 							new DialogInterface.OnClickListener() {
 
 								@Override

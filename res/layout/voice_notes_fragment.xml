@@ -6,52 +6,6 @@
     android:orientation="vertical" >
 
     <RelativeLayout
-        android:visibility="gone"
-        android:id="@+id/relativeLayoutAudioPlayer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <ImageButton
-            android:id="@+id/imageButtonPlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/btn_transparent_bg"
-            android:padding="8dip"
-            android:src="@android:drawable/ic_media_play" />
-
-        <ImageButton
-            android:id="@+id/imageButtonPrevious"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@+id/imageButtonPlay"
-            android:background="@drawable/btn_transparent_bg"
-            android:padding="8dip"
-            android:src="@android:drawable/ic_media_previous" />
-
-        <ImageButton
-            android:id="@+id/imageButtonNext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/imageButtonPlay"
-            android:background="@drawable/btn_transparent_bg"
-            android:padding="8dip"
-            android:src="@android:drawable/ic_media_next" />
-
-        <ProgressBar
-            android:id="@+id/progressBarAudioDuration"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_below="@+id/imageButtonPlay" />
-    </RelativeLayout>
-
-    <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/relativeLayoutRecordAudio"
         android:layout_width="match_parent"
@@ -94,5 +48,58 @@
 
         <include layout="@layout/empty" />
     </ViewFlipper>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutAudioPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" >
+
+        <ProgressBar
+            android:id="@+id/progressBarAudioDuration"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="2dp" />
+
+        <RelativeLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/progressBarAudioDuration"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp" >
+
+            <ImageButton
+                android:id="@+id/imageButtonPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/btn_transparent_bg"
+                android:padding="8dip"
+                android:src="@android:drawable/ic_media_play" />
+
+            <ImageButton
+                android:id="@+id/imageButtonPrevious"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/imageButtonPlay"
+                android:background="@drawable/btn_transparent_bg"
+                android:padding="8dip"
+                android:src="@android:drawable/ic_media_previous" />
+
+            <ImageButton
+                android:id="@+id/imageButtonNext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/imageButtonPlay"
+                android:background="@drawable/btn_transparent_bg"
+                android:padding="8dip"
+                android:src="@android:drawable/ic_media_next" />
+        </RelativeLayout>
+    </RelativeLayout>
 
 </LinearLayout>

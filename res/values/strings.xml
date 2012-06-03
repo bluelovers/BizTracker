@@ -195,4 +195,5 @@
     <string name="cannot_get_current_location">Sorry, cannot get your current location. please try again later.</string>
     <string name="detecting_location">Detecting your location, please wait</string>
     <string name="network_not_available">Cannot access Internet</string>
+    <string name="external_storage_not_available">SD Card does not mounted or present.</string>
 </resources>
