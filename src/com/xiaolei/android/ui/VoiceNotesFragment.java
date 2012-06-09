@@ -53,6 +53,7 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 	private Timer mTimer;
 	private ProgressBar mPlayPosition;
 	private long mSelectedVoiceNoteId = 0;
+	private VoiceNotesCursorAdapter adapter;
 
 	public static VoiceNotesFragment newInstance(long transactionId) {
 		VoiceNotesFragment result = new VoiceNotesFragment();
@@ -107,8 +108,7 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 
 					if (lv != null) {
 						if (lv.getAdapter() != null) {
-							VoiceNotesCursorAdapter adapter = (VoiceNotesCursorAdapter) lv
-									.getAdapter();
+							adapter = (VoiceNotesCursorAdapter) lv.getAdapter();
 							if (adapter != null) {
 								adapter.changeCursor(result);
 							}
@@ -291,6 +291,7 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 			@Override
 			protected void onPostExecute(Boolean result) {
 				if (result == true) {
+					mSelectedVoiceNoteId = 0;
 					loadDataAsync();
 				}
 			}
@@ -299,28 +300,87 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 		task.execute(id);
 	}
 
+	private void setSelectedVoiceNoteId(long id) {
+		mSelectedVoiceNoteId = id;
+		if (adapter != null && mSelectedVoiceNoteId > 0) {
+			adapter.setActiveVoiceNoteId(id);
+		}
+	}
+
 	private void playNext() {
 		if (mVoiceNoteListCursor != null && !mVoiceNoteListCursor.isClosed()) {
-			if (mVoiceNoteListCursor.moveToLast()) {
-				String fileName = mVoiceNoteListCursor
-						.getString(mVoiceNoteListCursor
-								.getColumnIndex(VoiceNoteSchema.FileName));
-				fileName = Utility
-						.getAudioFullFileName(getActivity(), fileName);
-				play(fileName, true);
+			if (mSelectedVoiceNoteId > 0) {
+				if (mVoiceNoteListCursor.moveToFirst()) {
+					do {
+						long id = mVoiceNoteListCursor
+								.getLong(mVoiceNoteListCursor
+										.getColumnIndex(VoiceNoteSchema.Id));
+						if (id == mSelectedVoiceNoteId) {
+							if (mVoiceNoteListCursor.moveToNext()) {
+								mSelectedVoiceNoteId = mVoiceNoteListCursor
+										.getLong(mVoiceNoteListCursor
+												.getColumnIndex(VoiceNoteSchema.Id));
+								setSelectedVoiceNoteId(id);
+								String fileName = mVoiceNoteListCursor
+										.getString(mVoiceNoteListCursor
+												.getColumnIndex(VoiceNoteSchema.FileName));
+								fileName = Utility.getAudioFullFileName(getActivity(),
+										fileName);
+								play(fileName, true);
+								
+								break;
+							}
+						}
+					} while (mVoiceNoteListCursor.moveToNext());
+				}
+			} else {
+				if (mVoiceNoteListCursor.moveToLast()) {
+					String fileName = mVoiceNoteListCursor
+							.getString(mVoiceNoteListCursor
+									.getColumnIndex(VoiceNoteSchema.FileName));
+					fileName = Utility.getAudioFullFileName(getActivity(),
+							fileName);
+					play(fileName, true);
+				}
 			}
 		}
 	}
 
 	private void playPrevious() {
 		if (mVoiceNoteListCursor != null && !mVoiceNoteListCursor.isClosed()) {
-			if (mVoiceNoteListCursor.moveToLast()) {
-				String fileName = mVoiceNoteListCursor
-						.getString(mVoiceNoteListCursor
-								.getColumnIndex(VoiceNoteSchema.FileName));
-				fileName = Utility
-						.getAudioFullFileName(getActivity(), fileName);
-				play(fileName, true);
+			if (mSelectedVoiceNoteId > 0) {
+				if (mVoiceNoteListCursor.moveToFirst()) {
+					do {
+						long id = mVoiceNoteListCursor
+								.getLong(mVoiceNoteListCursor
+										.getColumnIndex(VoiceNoteSchema.Id));
+						if (id == mSelectedVoiceNoteId) {
+							if (mVoiceNoteListCursor.moveToPrevious()) {
+								mSelectedVoiceNoteId = mVoiceNoteListCursor
+										.getLong(mVoiceNoteListCursor
+												.getColumnIndex(VoiceNoteSchema.Id));
+								setSelectedVoiceNoteId(id);
+								String fileName = mVoiceNoteListCursor
+										.getString(mVoiceNoteListCursor
+												.getColumnIndex(VoiceNoteSchema.FileName));
+								fileName = Utility.getAudioFullFileName(getActivity(),
+										fileName);
+								play(fileName, true);
+								
+								break;
+							}
+						}
+					} while (mVoiceNoteListCursor.moveToNext());
+				}
+			} else {
+				if (mVoiceNoteListCursor.moveToFirst()) {
+					String fileName = mVoiceNoteListCursor
+							.getString(mVoiceNoteListCursor
+									.getColumnIndex(VoiceNoteSchema.FileName));
+					fileName = Utility.getAudioFullFileName(getActivity(),
+							fileName);
+					play(fileName, true);
+				}
 			}
 		}
 	}
@@ -394,6 +454,7 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		mSelectedVoiceNoteId = id;
 		Object tag = view.getTag();
 		if (tag != null) {
 			String audioFileName = tag.toString();
@@ -407,7 +468,7 @@ public class VoiceNotesFragment extends Fragment implements OnClickListener,
 				R.id.relativeLayoutAudioPlayer);
 		if (controlPanel != null) {
 			controlPanel.setVisibility(show ? RelativeLayout.VISIBLE
-					: RelativeLayout.INVISIBLE);
+					: RelativeLayout.GONE);
 		}
 	}
 
