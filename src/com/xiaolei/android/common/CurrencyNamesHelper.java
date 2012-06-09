@@ -24,10 +24,11 @@ public final class CurrencyNamesHelper {
 
 	private CurrencyNamesHelper() throws IOException, JSONException {
 		mNames = new Hashtable<String, String>();
+		String UTF8 = "utf8"; 
 		InputStream fileStream = mContext.getResources().openRawResource(
 				R.raw.currency_names);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				fileStream));
+				fileStream, UTF8));
 
 		StringBuilder jsonResult = new StringBuilder();
 		String line = null;
@@ -38,7 +39,12 @@ public final class CurrencyNamesHelper {
 		reader.close();
 
 		String currentLanguageCode = Utility.getCurrentLanguageCode();
-		JSONArray languages = new JSONArray(jsonResult.toString());
+		String jsonText = jsonResult.toString();
+		
+		if(!jsonText.substring(0, 1).equals('[')){
+			jsonText = jsonText.substring(1);
+		}
+		JSONArray languages = new JSONArray(jsonText);
 		if (languages != null && languages.length() > 0) {
 			for (int i = 0; i < languages.length(); i++) {
 				JSONObject item = languages.getJSONObject(i);

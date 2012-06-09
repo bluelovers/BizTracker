@@ -185,7 +185,7 @@
     <string name="recording">正在录音，请讲话...</string>
     <string name="delete_confirm">您确定要删除这条语音备忘吗？</string>
     <string name="recorder_title">正在录音</string>
-    <string name="use_my_location">使用我的地理位置</string>
+    <string name="use_my_location">触摸此处定位</string>
     <string name="count">数量</string>
     <string name="need_stuff_count">请输入数量</string>
     <string name="voice_note">语音备忘</string>

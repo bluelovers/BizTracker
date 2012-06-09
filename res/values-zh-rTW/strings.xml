@@ -185,7 +185,7 @@
     <string name="recording">正在錄音，請講話...</string>
     <string name="delete_confirm">您確定要移除這條語音備忘嗎？</string>
     <string name="recorder_title">正在錄音</string>
-    <string name="use_my_location">使用我的地理位置</string>
+    <string name="use_my_location">觸摸此處定位</string>
     <string name="count">數量</string>
     <string name="need_stuff_count">請輸入數量</string>
     <string name="voice_note">語音備忘</string>

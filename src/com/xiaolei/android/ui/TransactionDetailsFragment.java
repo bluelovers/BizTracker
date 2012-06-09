@@ -40,6 +40,7 @@ public class TransactionDetailsFragment extends Fragment implements
 	private LocationService mLocationService = null;
 	private boolean mIsNetworkAvailable = false;
 	private boolean mHasLocation = false;
+	private boolean mIsLocating = false;
 	public static final int REQUEST_CODE = 2117;
 
 	public static TransactionDetailsFragment newInstance(long transactionId) {
@@ -286,6 +287,7 @@ public class TransactionDetailsFragment extends Fragment implements
 					android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 			this.startActivityForResult(intent, REQUEST_CODE);
 		} else {
+			mIsLocating = true;
 			mLocationService.start();
 			displayCurrentLocationAddress(getActivity().getString(
 					R.string.detecting_location));
@@ -293,6 +295,10 @@ public class TransactionDetailsFragment extends Fragment implements
 	}
 
 	private void prepareToGetCurrentLocation() {
+		if (mIsLocating) {
+			return;
+		}
+
 		if (!mHasLocation) {
 			getCurrentLocation();
 		} else {
@@ -409,6 +415,8 @@ public class TransactionDetailsFragment extends Fragment implements
 												+ errorMessage
 												: ""));
 							}
+
+							mIsLocating = false;
 						}
 					});
 
