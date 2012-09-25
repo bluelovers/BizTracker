@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
-import android.view.ViewGroup;
 
 /**
  * @author xiaolei
@@ -73,15 +72,6 @@ public class DailyTransactionListFragmentPagerAdapter extends
 		result.showTransactionListByDate(date);
 
 		return result;
-	}
-
-	@Override
-	public void destroyItem(ViewGroup container, int position, Object object) {
-		super.destroyItem(container, position, object);
-
-		if (mInitializedFragments.get(position) != null) {
-			mInitializedFragments.remove(position);
-		}
 	}
 
 	/*
