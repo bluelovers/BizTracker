@@ -198,4 +198,5 @@
     <string name="external_storage_not_available">SD Card does not mounted or present.</string>
     <string name="remove_location">Remove</string>
     <string name="update_location">Update</string>
+    <string name="stuff_count">Count</string>
 </resources>

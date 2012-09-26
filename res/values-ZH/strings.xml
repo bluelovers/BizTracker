@@ -198,4 +198,5 @@
     <string name="external_storage_not_available">未插入存储卡或存储卡不可用。请先插入存储卡并断开USB连接后重试。</string>
     <string name="remove_location">删除</string>
     <string name="update_location">更新为当前位置</string>
+    <string name="stuff_count">数量</string>
 </resources>

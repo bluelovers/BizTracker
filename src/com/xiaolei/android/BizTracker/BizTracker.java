@@ -1060,6 +1060,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 							dic.put("StuffName",
 									context.getString(R.string.stuff_name));
 							dic.put("Cost", context.getString(R.string.cost));
+							dic.put("StuffCount",
+									context.getString(R.string.stuff_count));
 							dic.put("LastUpdateTime", context
 									.getString(R.string.last_update_time));
 							dic.put("Star", context.getString(R.string.star));
