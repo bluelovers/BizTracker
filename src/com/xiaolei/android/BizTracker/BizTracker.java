@@ -1021,11 +1021,17 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				mExportErrorMessage = "";
 				String state = Environment.getExternalStorageState();
 				if (Environment.MEDIA_MOUNTED.equals(state)) {
-					File targetDir = new File(
-							Environment.getExternalStorageDirectory() + "/"
-									+ APPLICATION_FOLDER + "/backup");
+					String appFolder = Environment
+							.getExternalStorageDirectory().getAbsolutePath()
+							+ File.separator + APPLICATION_FOLDER;
+					File targetDir = new File(appFolder);
 					if (!targetDir.exists()) {
-						targetDir.mkdir();
+						boolean success = targetDir.mkdirs();
+						if (!success) {
+							mExportErrorMessage = "Cannot create folder: "
+									+ targetDir;
+							return false;
+						}
 					}
 
 					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -1065,6 +1071,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 								String colName = cursor.getColumnName(i);
 								if (dic.containsKey(colName)) {
 									colName = dic.get(colName);
+								} else {
+									continue;
 								}
 
 								if (columnNames.length() > 0) {
@@ -1085,6 +1093,12 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 									StringBuffer line = new StringBuffer();
 									for (int colIndex = 0; colIndex < cursor
 											.getColumnCount(); colIndex++) {
+										String colName = cursor
+												.getColumnName(colIndex);
+										if (!dic.containsKey(colName)) {
+											continue;
+										}
+
 										if (line.length() > 0) {
 											line.append("\t\""
 													+ cursor.getString(colIndex)
