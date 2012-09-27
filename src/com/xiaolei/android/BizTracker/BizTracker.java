@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 import org.json.JSONException;
 
@@ -1023,7 +1023,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 				if (Environment.MEDIA_MOUNTED.equals(state)) {
 					String appFolder = Environment
 							.getExternalStorageDirectory().getAbsolutePath()
-							+ File.separator + APPLICATION_FOLDER;
+							+ File.separator + APPLICATION_FOLDER + "/backup";
 					File targetDir = new File(appFolder);
 					if (!targetDir.exists()) {
 						boolean success = targetDir.mkdirs();
@@ -1050,23 +1050,23 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 						// writer.write(0xfe);
 
 						Cursor cursor = DataService.GetInstance(context)
-								.getAllTransactions();
+								.getTransactionsForExport();
 						try {
 							int count = cursor.getCount();
 							int index = 0;
 							this.publishProgress(count, 0);
 
-							Hashtable<String, String> dic = new Hashtable<String, String>();
+							LinkedHashMap<String, String> dic = new LinkedHashMap<String, String>();
 							dic.put("StuffName",
 									context.getString(R.string.stuff_name));
 							dic.put("Cost", context.getString(R.string.cost));
 							dic.put("StuffCount",
 									context.getString(R.string.stuff_count));
+							dic.put("CurrencyCode",
+									context.getString(R.string.currency_code));
 							dic.put("LastUpdateTime", context
 									.getString(R.string.last_update_time));
 							dic.put("Star", context.getString(R.string.star));
-							dic.put("CurrencyCode",
-									context.getString(R.string.currency_code));
 
 							StringBuffer columnNames = new StringBuffer();
 							for (int i = 0; i < cursor.getColumnCount(); i++) {

@@ -158,13 +158,15 @@ public class DataService {
 				new String[] { String.valueOf(bizLogId) });
 		return result;
 	}
-	
+
 	/**
-	 * Remove the location information of the specified transaction by transaction id.
+	 * Remove the location information of the specified transaction by
+	 * transaction id.
+	 * 
 	 * @param transactionId
 	 * @return
 	 */
-	public int removeTransactionLocation(long transactionId){
+	public int removeTransactionLocation(long transactionId) {
 		ContentValues values = new ContentValues();
 		values.putNull(BizLogSchema.LocationName);
 		values.putNull(BizLogSchema.Location);
@@ -836,6 +838,13 @@ public class DataService {
 
 	public Cursor getAllTransactions() {
 		String sql = "SELECT s.Name as StuffName, bl.* FROM BizLog as bl left join Stuff s on bl.StuffId = s._Id order by bl.LastUpdateTime desc";
+
+		Cursor cursor = db.rawQuery(sql, null);
+		return cursor;
+	}
+
+	public Cursor getTransactionsForExport() {
+		String sql = "SELECT s.Name as StuffName, bl.Cost, bl.StuffCount, bl.CurrencyCode, bl.LastUpdateTime, bl.Star FROM BizLog as bl left join Stuff s on bl.StuffId = s._Id order by bl.LastUpdateTime desc";
 
 		Cursor cursor = db.rawQuery(sql, null);
 		return cursor;
@@ -1716,10 +1725,10 @@ public class DataService {
 		if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst()) {
 			result = cursor.getString(0);
 		}
-		
+
 		cursor.close();
 		cursor = null;
-		
+
 		return result;
 	}
 
