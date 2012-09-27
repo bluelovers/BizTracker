@@ -191,7 +191,7 @@ public class ExchangeRateListFragment extends Fragment implements
 				if (!TextUtils.isEmpty(errorMessage)) {
 					text = text + "\n" + errorMessage;
 				}
-				
+
 				hideWaitCursorAndShowError(text);
 				e.printStackTrace();
 			}
@@ -319,7 +319,8 @@ public class ExchangeRateListFragment extends Fragment implements
 				if (result == true) {
 					fillDataAsync();
 				} else {
-					hideWaitCursorAndShowError(errorMessage);
+					hideWaitCursorAndShowError(getActivity().getString(
+							R.string.sync_exchange_rate_list_faild));
 				}
 			}
 		};

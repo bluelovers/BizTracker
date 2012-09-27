@@ -199,4 +199,6 @@
     <string name="remove_location">Remove</string>
     <string name="update_location">Update</string>
     <string name="stuff_count">Count</string>
+    <string name="confirm_sync_exchange_rate_list">Are you sure to sync to the latest currency exchange rate list now?</string>
+    <string name="sync_exchange_rate_list_faild">Sorry, sync failed, please check you Internet connection then retry.</string>
 </resources>

@@ -668,8 +668,8 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		case R.id.buttonConfig:
 			showSettingsUI();
 			break;
-		case R.id.buttonVoiceNote:
-
+		case R.id.buttonExport:
+			export();
 			break;
 		case R.id.buttonViewCostHistory:
 			viewHistory();
@@ -950,20 +950,24 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			 * return true;
 			 */
 		case R.id.itemExport:
-			Utility.showConfirmDialog(this, getString(R.string.export_title),
-					getString(R.string.export_confirm),
-					new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							export();
-						}
-					});
+			export();
 
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void export() {
+		Utility.showConfirmDialog(this, getString(R.string.export_title),
+				getString(R.string.export_confirm),
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						exportAsCSV();
+					}
+				});
 	}
 
 	private void showSettingsUI() {
@@ -986,7 +990,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		return false;
 	}
 
-	private void export() {
+	private void exportAsCSV() {
 		if (exportTask != null) {
 			return;
 		}
@@ -995,6 +999,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			@Override
 			protected void onPreExecute() {
 				exportProgressDlg = new ProgressDialog(context);
+				exportProgressDlg.setCancelable(false);
 				exportProgressDlg.setIcon(R.drawable.export);
 				exportProgressDlg
 						.setTitle(getString(R.string.exporting_to_file));

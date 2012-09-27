@@ -25,10 +25,10 @@
                 android:text="@string/config" />
 
             <Button
-                android:id="@+id/buttonVoiceNote"
+                android:id="@+id/buttonExport"
                 style="@style/tool_button_style"
                 android:onClick="onClick"
-                android:text="@string/voice_note" >
+                android:text="@string/export" >
             </Button>
 
             <Button

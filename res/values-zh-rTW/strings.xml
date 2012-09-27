@@ -199,4 +199,6 @@
     <string name="remove_location">刪除</string>
     <string name="update_location">更新為當前位置</string>
     <string name="stuff_count">數量</string>
+    <string name="confirm_sync_exchange_rate_list">您確定要將匯率同步更新至最新值嗎?</string>
+    <string name="sync_exchange_rate_list_faild">:( 更新匯率失敗，請檢查您的 Internet 連接後重試。</string>
 </resources>

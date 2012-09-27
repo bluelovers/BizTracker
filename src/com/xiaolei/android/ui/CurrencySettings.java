@@ -4,7 +4,9 @@
 package com.xiaolei.android.ui;
 
 import com.xiaolei.android.BizTracker.R;
+import com.xiaolei.android.common.Utility;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -30,14 +32,23 @@ public class CurrencySettings extends FragmentActivity implements
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.buttonUpdateExchangRateOnline:
-			FragmentManager fragmentManager = this.getSupportFragmentManager();
-			if (fragmentManager != null) {
-				ExchangeRateListFragment fragment = (ExchangeRateListFragment) fragmentManager
-						.findFragmentById(R.id.fragmentExchangeRateList);
-				if (fragment != null) {
-					fragment.updateAllExchangeRateOnlineAsync();
-				}
-			}
+			Utility.showConfirmDialog(this, getString(R.string.confirm),
+					getString(R.string.confirm_sync_exchange_rate_list),
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							FragmentManager fragmentManager = getSupportFragmentManager();
+							if (fragmentManager != null) {
+								ExchangeRateListFragment fragment = (ExchangeRateListFragment) fragmentManager
+										.findFragmentById(R.id.fragmentExchangeRateList);
+								if (fragment != null) {
+									fragment.updateAllExchangeRateOnlineAsync();
+								}
+							}
+						}
+					});
+
 			break;
 		default:
 			break;

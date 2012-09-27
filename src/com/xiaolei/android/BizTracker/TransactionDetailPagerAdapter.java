@@ -9,7 +9,7 @@ import com.xiaolei.android.ui.VoiceNotesFragment;
 
 public class TransactionDetailPagerAdapter extends FragmentPagerAdapter {
 
-	private final int mItemCount = 2;
+	private final int mItemCount = 1; //If you want to show voice note fragment, set this value to 2.
 	private long mTransactionId = 0;
 
 	public TransactionDetailPagerAdapter(FragmentManager fm, long transactionId) {
