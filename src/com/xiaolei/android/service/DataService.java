@@ -129,6 +129,36 @@ public class DataService {
 		return result;
 	}
 
+	/**
+	 * Calculate the stuff page count by the specified page size.
+	 * 
+	 * @param pageSize
+	 * @return
+	 */
+	public int calcStuffsPageCount(int pageSize) {
+		if (pageSize <= 0) {
+			return 0;
+		}
+
+		int pageCount = 0;
+		String sql = "select count(_id) from Stuff where IsActive = 'true'";
+		Cursor cursor = db.rawQuery(sql, null);
+		try {
+			if (cursor.moveToFirst()) {
+				int totalCount = cursor.getInt(0);
+				if (totalCount > 0) {
+					pageCount = (int) (android.util.FloatMath
+							.floor((totalCount * 1.0f) / (pageSize * 1.0f)) + ((totalCount >= pageSize)
+							&& totalCount % pageSize == 0 ? 0 : 1));
+				}
+			}
+		} finally {
+			cursor.close();
+		}
+
+		return pageCount;
+	}
+
 	public int updateLastUsedTime(int stuffId) {
 		ContentValues values = new ContentValues();
 		values.put(StuffSchema.LastUsedTime, Utility.getCurrentDateTimeString());

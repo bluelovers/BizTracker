@@ -28,6 +28,7 @@ import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -58,23 +59,22 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
-import com.xiaolei.android.common.BaseActivity;
 import com.xiaolei.android.common.CurrencyNamesHelper;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
 import com.xiaolei.android.entity.Stuff;
+import com.xiaolei.android.listener.OnLoadedListener;
 import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
 import com.xiaolei.android.ui.FunctionTypes;
 
-public class BizTracker extends BaseActivity implements OnClickListener,
+public class BizTracker extends FragmentActivity implements OnClickListener,
 		OnLongClickListener {
 	private final String MULTIPLY = "¡Á";
 	private final String DEFAULT_CURRENCY_CODE = "USD";
 	private BizTracker context;
-	private Cursor cursor;
 	private int stuffId = 0;
 	private Button btnDeleteStuff;
 	// private TableLayout tblStuffs;
@@ -222,30 +222,29 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 			showDefaultCurrencyDialog(true, null);
 		}
 
-		loadAsync();
+		initSoundPoolAsync();
 		// initLocationHelper();
 		// createActionMenu();
 	}
 
-	/*
-	 * private void createActionMenu() { ActionItem nextItem = new ActionItem(1,
-	 * getString(R.string.new_stuff),
-	 * getResources().getDrawable(android.R.drawable.ic_input_add)); quickAction
-	 * = new QuickAction(this, QuickAction.VERTICAL);
-	 * quickAction.addActionItem(nextItem);
-	 * quickAction.setOnActionItemClickListener(this); }
-	 */
+	private void initSoundPoolAsync() {
+		AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
 
-	/*
-	 * private void initLocationHelper(){
-	 * LocationHelper.getInstance(getApplicationContext(), new
-	 * LocationChangedListener(){
-	 * 
-	 * @Override public void onLocationChanged(Location location) {
-	 * Utility.LatestLocation = location; } }).requestLocationUpdates(); }
-	 */
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				initSoundPool();
 
-	@Override
+				return true;
+			}
+
+			protected void onPostExecute(Boolean result) {
+				// Do nothing
+			}
+
+		};
+		task.execute();
+	}
+
 	protected void initSoundPool() {
 		try {
 			sounds = new SparseIntArray();
@@ -442,55 +441,41 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 	}
 
 	private void loadStuffsAsync() {
-		AsyncTask<Integer, Void, Boolean> task = new AsyncTask<Integer, Void, Boolean>() {
+		ViewPager stuffViewPager = (ViewPager) findViewById(R.id.viewPaperStuffs);
+		if (stuffViewPager != null) {
+			if (stuffViewPager.getAdapter() == null) {
+				StuffsFragmentStatePagerAdapter stuffsAdapter = new StuffsFragmentStatePagerAdapter(
+						this, this.getSupportFragmentManager(), this);
+				stuffsAdapter
+						.setOnLoadedListener(new OnLoadedListener<Integer>() {
 
-			@Override
-			protected Boolean doInBackground(Integer... params) {
-				if (cursor != null) {
-					cursor.close();
-					cursor = null;
-				}
-
-				cursor = DataService.GetInstance(context).getAllStuffs();
-				return true;
-			}
-
-			@Override
-			protected void onPostExecute(Boolean result) {
-				if (result) {
-					if (cursor != null && cursor.isClosed() == false) {
-						if (cursor.getCount() > 0) {
-							bindStuffsDataSource();
-
-							ViewFlipper viewFlipper = (ViewFlipper) context
-									.findViewById(R.id.viewFlipperStuffsPanel);
-							if (viewFlipper != null
-									&& viewFlipper.getDisplayedChild() != 1) {
-								viewFlipper.setDisplayedChild(1);
+							@Override
+							public void onLoaded(Integer result) {
+								if (result > 0) {
+									ViewFlipper viewFlipper = (ViewFlipper) context
+											.findViewById(R.id.viewFlipperStuffsPanel);
+									if (viewFlipper != null
+											&& viewFlipper.getDisplayedChild() != 1) {
+										viewFlipper.setDisplayedChild(1);
+									}
+								} else {
+									ViewFlipper viewFlipper = (ViewFlipper) context
+											.findViewById(R.id.viewFlipperStuffsPanel);
+									if (viewFlipper != null) {
+										viewFlipper.setDisplayedChild(2);
+									}
+								}
 							}
-						} else {
-							ViewFlipper viewFlipper = (ViewFlipper) context
-									.findViewById(R.id.viewFlipperStuffsPanel);
-							if (viewFlipper != null) {
-								viewFlipper.setDisplayedChild(2);
-							}
-						}
-					}
 
-				}
-			}
-		};
-
-		task.execute();
-	}
-
-	private void bindStuffsDataSource() {
-		if (cursor != null && cursor.isClosed() == false) {
-			ViewPager stuffViewPager = (ViewPager) findViewById(R.id.viewPaperStuffs);
-			if (stuffViewPager != null) {
-				StuffsPagerAdapter stuffsAdapter = new StuffsPagerAdapter(this,
-						cursor, this);
+						});
 				stuffViewPager.setAdapter(stuffsAdapter);
+			} else {
+				StuffsFragmentStatePagerAdapter adpt = (StuffsFragmentStatePagerAdapter) stuffViewPager
+						.getAdapter();
+				if (adpt != null) {
+					stuffViewPager.setCurrentItem(0);
+					adpt.notifyDataSetChanged();
+				}
 			}
 		}
 	}
@@ -1438,7 +1423,7 @@ public class BizTracker extends BaseActivity implements OnClickListener,
 		loadStaticsInfoAsync();
 
 		if (soundPool == null) {
-			this.loadAsync();
+			this.initSoundPoolAsync();
 		}
 	}
 
