@@ -17,7 +17,7 @@ import com.xiaolei.android.preference.PreferenceKeys;
 public class Settings extends PreferenceActivity implements
 		OnPreferenceClickListener {
 	private String FEEDBACK_EMAIL = "xiaolei.android.feedback@gmail.com";
-	public static int REQUEST_CODE = Settings.class.hashCode();
+	public static final int REQUEST_CODE = 9;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -30,7 +30,7 @@ public class Settings extends PreferenceActivity implements
 		String activeUserConfigFileName = PreferenceHelper
 				.getActiveUserConfigFileName(this);
 		PreferenceManager pm = this.getPreferenceManager();
-		if(pm != null){
+		if (pm != null) {
 			pm.setSharedPreferencesName(activeUserConfigFileName);
 		}
 

@@ -69,6 +69,7 @@ import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
 import com.xiaolei.android.ui.FunctionTypes;
+import com.xiaolei.android.ui.Settings;
 
 public class BizTracker extends FragmentActivity implements OnClickListener,
 		OnLongClickListener {
@@ -161,8 +162,6 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 		Button btnPay = (Button) findViewById(R.id.buttonExpense);
 		Button btnEarn = (Button) findViewById(R.id.buttonIncome);
 		Button btnSearchStuff = (Button) findViewById(R.id.buttonSearchStuff);
-		TextView tvDefaultCurrencyCode = (TextView) this
-				.findViewById(R.id.textViewDefaultCurrencyCode);
 		RelativeLayout relativeLayoutNoStuff = (RelativeLayout) findViewById(R.id.relativeLayoutNoStuff);
 		if (relativeLayoutNoStuff != null) {
 			relativeLayoutNoStuff.setOnClickListener(this);
@@ -198,9 +197,7 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 
 		this.defaultCurrencyCode = DataService.GetInstance(this)
 				.getDefaultCurrencyCode();
-		if (tvDefaultCurrencyCode != null) {
-			tvDefaultCurrencyCode.setText(defaultCurrencyCode);
-		}
+		showDefaultCurrencyCode();
 
 		SharedPreferences prefs = PreferenceHelper
 				.getActiveUserSharedPreferences(this);
@@ -225,6 +222,16 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 		initSoundPoolAsync();
 		// initLocationHelper();
 		// createActionMenu();
+	}
+
+	private void showDefaultCurrencyCode() {
+		TextView tvDefaultCurrencyCode = (TextView) this
+				.findViewById(R.id.textViewDefaultCurrencyCode);
+		if (tvDefaultCurrencyCode != null) {
+			this.defaultCurrencyCode = DataService.GetInstance(this)
+					.getDefaultCurrencyCode();
+			tvDefaultCurrencyCode.setText(defaultCurrencyCode);
+		}
 	}
 
 	private void initSoundPoolAsync() {
@@ -1403,8 +1410,11 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
+		
 		switch (requestCode) {
+		case Settings.REQUEST_CODE:
+			this.showDefaultCurrencyCode();
+			break;
 		case REQUEST_CODE:
 			if (resultCode == RESULT_OK) {
 				loadStaticsInfoAsync();
