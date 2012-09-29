@@ -62,14 +62,16 @@
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1" >
+                android:layout_height="0dip"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
 
                 <TextSwitcher
                     android:id="@+id/textSwitcherStuffName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
                     android:inAnimation="@anim/push_top_in"
                     android:measureAllChildren="false"
                     android:outAnimation="@anim/push_bottom_out" >
@@ -111,9 +113,9 @@
 
                 <TextView
                     android:id="@+id/textViewCost"
-                    android:layout_width="fill_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_gravity="right|center_vertical"
                     android:gravity="right"
                     android:maxLength="10"
                     android:maxLines="1"
@@ -135,8 +137,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:gravity="left"
                     android:ellipsize="marquee"
+                    android:gravity="left"
                     android:maxLines="1"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -144,9 +146,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:ellipsize="marquee"
                     android:gravity="left"
                     android:maxLines="1"
-                    android:ellipsize="marquee"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </TextSwitcher>
             <!--
