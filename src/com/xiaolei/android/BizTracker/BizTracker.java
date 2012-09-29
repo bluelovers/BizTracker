@@ -69,7 +69,6 @@ import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
 import com.xiaolei.android.ui.FunctionTypes;
-import com.xiaolei.android.ui.Settings;
 
 public class BizTracker extends FragmentActivity implements OnClickListener,
 		OnLongClickListener {
@@ -1410,11 +1409,8 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		
+
 		switch (requestCode) {
-		case Settings.REQUEST_CODE:
-			this.showDefaultCurrencyCode();
-			break;
 		case REQUEST_CODE:
 			if (resultCode == RESULT_OK) {
 				loadStaticsInfoAsync();
