@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -19,6 +20,8 @@ public class StuffsFragment extends Fragment {
 	private int mLimit = 0;
 	private int mOffset = 0;
 	private OnClickListener mOnButtonClickListener;
+	private OnLongClickListener mOnStuffLongClickListener;
+	private ViewHolder mViewHolder = new ViewHolder();
 
 	private static final String LIMIT = "limit";
 	private static final String OFFSET = "offset";
@@ -45,7 +48,13 @@ public class StuffsFragment extends Fragment {
 		View result = inflater.inflate(R.layout.stuffs_fragment, container,
 				false);
 		if (result != null) {
+			ViewFlipper flipper = (ViewFlipper) result
+					.findViewById(R.id.viewFlipperStuffsFragment);
+			View linearLayoutStuffsButtons = result
+					.findViewById(R.id.linearLayoutStuffsButtons);
 
+			mViewHolder.ViewFlipperStuffsFlagment = flipper;
+			mViewHolder.Container = linearLayoutStuffsButtons;
 		}
 
 		return result;
@@ -77,6 +86,16 @@ public class StuffsFragment extends Fragment {
 		mOnButtonClickListener = onStuffClickListener;
 	}
 
+	/**
+	 * Set stuff button long click listener.
+	 * 
+	 * @param onStuffLongClickListener
+	 */
+	public void setOnStuffLongClickListener(
+			OnLongClickListener onStuffLongClickListener) {
+		mOnStuffLongClickListener = onStuffLongClickListener;
+	}
+
 	private void showData(Cursor cursor) {
 		if (getView() == null) {
 			if (cursor != null) {
@@ -87,13 +106,11 @@ public class StuffsFragment extends Fragment {
 
 		if (cursor != null) {
 			try {
-				View container = getView().findViewById(
-						R.id.linearLayoutStuffsButtons);
-				if (container != null) {
+				if (mViewHolder.Container != null) {
 					if (cursor.moveToFirst()) {
 						int index = 0;
 						do {
-							Button btnStuff = (Button) container
+							Button btnStuff = (Button) mViewHolder.Container
 									.findViewWithTag(TAG_PREFIX + (index + 1));
 
 							if (btnStuff != null) {
@@ -105,9 +122,14 @@ public class StuffsFragment extends Fragment {
 								btnStuff.setBackgroundResource(R.drawable.button);
 								btnStuff.setText(stuffName);
 								btnStuff.setTag(stuffId);
+								btnStuff.setLongClickable(true);
 
 								if (mOnButtonClickListener != null) {
 									btnStuff.setOnClickListener(mOnButtonClickListener);
+								}
+
+								if (mOnStuffLongClickListener != null) {
+									btnStuff.setOnLongClickListener(mOnStuffLongClickListener);
 								}
 							}
 							index++;
@@ -123,16 +145,14 @@ public class StuffsFragment extends Fragment {
 	}
 
 	private void stopWaiting() {
-		ViewFlipper flipper = (ViewFlipper) getView().findViewById(
-				R.id.viewFlipperStuffsFragment);
+		ViewFlipper flipper = mViewHolder.ViewFlipperStuffsFlagment;
 		if (flipper != null) {
 			flipper.setDisplayedChild(1);
 		}
 	}
 
 	private void waiting() {
-		ViewFlipper flipper = (ViewFlipper) getView().findViewById(
-				R.id.viewFlipperStuffsFragment);
+		ViewFlipper flipper = mViewHolder.ViewFlipperStuffsFlagment;
 		if (flipper != null) {
 			flipper.setDisplayedChild(0);
 		}
@@ -155,5 +175,13 @@ public class StuffsFragment extends Fragment {
 			}
 		};
 		task.execute();
+	}
+
+	private final static class ViewHolder {
+		private ViewHolder() {
+		}
+
+		public View Container;
+		public ViewFlipper ViewFlipperStuffsFlagment;
 	}
 }

@@ -451,7 +451,7 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 		if (stuffViewPager != null) {
 			if (stuffViewPager.getAdapter() == null) {
 				StuffsFragmentStatePagerAdapter stuffsAdapter = new StuffsFragmentStatePagerAdapter(
-						this, this.getSupportFragmentManager(), this);
+						this, this.getSupportFragmentManager(), this, this);
 				stuffsAdapter
 						.setOnLoadedListener(new OnLoadedListener<Integer>() {
 
@@ -903,8 +903,8 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 		ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipperMain);
 		clear();
 
-		if (vf.getDisplayedChild() == 1) {
-			vf.showPrevious();
+		if (vf.getDisplayedChild() != 0) {
+			vf.setDisplayedChild(0);
 		}
 	}
 
@@ -976,6 +976,16 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 		switch (v.getId()) {
 		case R.id.buttonClear:
 			clearCost();
+			break;
+		// When stuff button long click.
+		case -1:
+			ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipperMain);
+			if (viewFlipper != null) {
+				// Display stuff actions view.
+				viewFlipper.setDisplayedChild(2);
+			}
+			break;
+		default:
 			break;
 		}
 		return false;
@@ -1204,6 +1214,9 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 		ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipperMain);
 
 		if (vf.getDisplayedChild() == 1) {
+			this.showStuffPanel();
+		} else if (vf.getDisplayedChild() == 2) {
+			// Form stuff actions view to stuffs panel.
 			this.showStuffPanel();
 		} else {
 			super.onBackPressed();

@@ -30,11 +30,15 @@
                 android:inAnimation="@anim/push_right_in"
                 android:outAnimation="@anim/push_left_out" >
 
-                <include layout="@layout/stuffs_panel2" >
-                </include>
+                <include layout="@layout/stuffs_panel2" />
 
-                <include layout="@layout/numbers_panel" >
-                </include>
+                <include layout="@layout/numbers_panel" />
+
+                <fragment
+                    android:id="@+id/fragmentStuffAnalysis"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    class="com.xiaolei.android.ui.StuffAnalysisFragment" />
             </ViewFlipper>
         </FrameLayout>
 

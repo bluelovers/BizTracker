@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -856,7 +857,7 @@ public class DataService {
 	public int getTotalTransactionCountByProjectId(long projectId) {
 		int result = 0;
 
-		String sql = "SELECT count(bl._id) FROM BizLog as bl where bl._id in (Select TransactionId from TransactionProjectRelation where ProjectId = 1)";
+		String sql = "SELECT count(bl._id) FROM BizLog as bl where bl._id in (Select TransactionId from TransactionProjectRelation where ProjectId = ?)";
 		Cursor cursor = db.rawQuery(sql,
 				new String[] { String.valueOf(projectId) });
 		if (cursor != null && cursor.moveToFirst()) {
@@ -871,6 +872,118 @@ public class DataService {
 
 		Cursor cursor = db.rawQuery(sql, null);
 		return cursor;
+	}
+
+	public Hashtable<String, String> getStuffAnalysisInfo(int stuffId) {
+		Hashtable<String, String> result = new Hashtable<String, String>();
+
+		result.put("AVERAGE_COST", String.valueOf(getStuffAverageCost(stuffId)));
+		result.put("TOTAL_COUNT", String.valueOf(getStuffCount(stuffId)));
+		result.put("TOTAL_COST", String.valueOf(getStuffTotalCost(stuffId)));
+		result.put("LAST_COST", String.valueOf(getStuffLastCost(stuffId)));
+
+		return result;
+	}
+
+	public double getStuffAverageCost(int stuffId) {
+		double result = 0;
+
+		String sql = "SELECT avg(cost) from BizLog where StuffId = ?";
+		String defaultCurrencyCode = this.getDefaultCurrencyCode();
+		double defaultCurrencyUSDExchangeRate = this
+				.getUSDExchangeRate(defaultCurrencyCode);
+
+		if (!TextUtils.isEmpty(defaultCurrencyCode)
+				&& defaultCurrencyUSDExchangeRate > 0) {
+			sql = String
+					.format("SELECT avg(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else (bl.Cost / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.StuffId = ?",
+							defaultCurrencyCode,
+							String.valueOf(defaultCurrencyUSDExchangeRate));
+		}
+
+		Cursor cursor = db.rawQuery(sql,
+				new String[] { String.valueOf(stuffId) });
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					result = cursor.getDouble(0);
+				}
+			} finally {
+				cursor.close();
+			}
+		}
+
+		return result;
+	}
+
+	public double getStuffTotalCost(int stuffId) {
+		double result = 0;
+
+		String sql = "SELECT sum(cost) from BizLog where StuffId = ?";
+		String defaultCurrencyCode = this.getDefaultCurrencyCode();
+		double defaultCurrencyUSDExchangeRate = this
+				.getUSDExchangeRate(defaultCurrencyCode);
+
+		if (!TextUtils.isEmpty(defaultCurrencyCode)
+				&& defaultCurrencyUSDExchangeRate > 0) {
+			sql = String
+					.format("SELECT sum(case when bl.CurrencyCode = \"%s\" or bl.CurrencyCode is null then bl.Cost*bl.StuffCount else (bl.Cost / c.USDExchangeRate) * %s end) as TotalValue from BizLog bl left join Currency c on bl.CurrencyCode = c.Code where bl.StuffId = ?",
+							defaultCurrencyCode,
+							String.valueOf(defaultCurrencyUSDExchangeRate));
+		}
+
+		Cursor cursor = db.rawQuery(sql,
+				new String[] { String.valueOf(stuffId) });
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					result = cursor.getDouble(0);
+				}
+			} finally {
+				cursor.close();
+			}
+		}
+
+		return result;
+	}
+
+	public int getStuffCount(int stuffId) {
+		int result = 0;
+
+		String sql = "select count(_id) from BizLog where StuffId = ?";
+		Cursor cursor = db.rawQuery(sql,
+				new String[] { String.valueOf(stuffId) });
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					result = cursor.getInt(0);
+				}
+			} finally {
+				cursor.close();
+			}
+		}
+
+		return result;
+	}
+
+	public String getStuffLastCost(int stuffId) {
+		String result = "";
+
+		String sql = "select Cost, CurrencyCode from BizLog where StuffId = ? order by LastUpdateTime desc limit 1";
+		Cursor cursor = db.rawQuery(sql,
+				new String[] { String.valueOf(stuffId) });
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					result = String.format("%s %s", cursor.getString(0),
+							cursor.getString(1));
+				}
+			} finally {
+				cursor.close();
+			}
+		}
+
+		return result;
 	}
 
 	public Cursor getTransactionsForExport() {

@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 
 public class StuffsFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
 
@@ -17,14 +18,18 @@ public class StuffsFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
 	private static final int PAGE_SIZE = 9;
 	private Context mContext;
 	private OnClickListener mOnButtonClickListener;
+	private OnLongClickListener mOnStuffLongClickListener;
 	private OnLoadedListener<Integer> mOnLoadedListener;
 
 	public StuffsFragmentStatePagerAdapter(Context context, FragmentManager fm,
-			OnClickListener onButtonClickListener) {
+			OnClickListener onStuffClickListener,
+			OnLongClickListener onStuffLongClickListener) {
 		super(fm);
 
 		mContext = context;
-		mOnButtonClickListener = onButtonClickListener;
+		mOnButtonClickListener = onStuffClickListener;
+		mOnStuffLongClickListener = onStuffLongClickListener;
+
 		calcPageCountAsync();
 	}
 
@@ -33,6 +38,8 @@ public class StuffsFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
 		StuffsFragment result = StuffsFragment.newInstance(PAGE_SIZE, position
 				* PAGE_SIZE);
 		result.setOnStuffClickListener(mOnButtonClickListener);
+		result.setOnStuffLongClickListener(mOnStuffLongClickListener);
+
 		return result;
 	}
 
@@ -48,9 +55,9 @@ public class StuffsFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
 	public int getCount() {
 		return mPageCount;
 	}
-	
+
 	@Override
-	public void notifyDataSetChanged(){
+	public void notifyDataSetChanged() {
 		calcPageCountAsync();
 		super.notifyDataSetChanged();
 	}
