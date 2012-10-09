@@ -229,10 +229,12 @@ public class DailyTransactionListCursorAdapter extends CursorAdapter {
 			tvCost.setText(Utility.formatCurrency(currentLog.getCost(), currentLog.getCurrencyCode(), false));
 			tvCost.setTextColor(Color.parseColor("#99CC00"));
 			tvCurrencyCode.setTextColor(Color.parseColor("#99CC00"));
+			tvCurrencyCode.setBackgroundResource(R.drawable.radius_corner_bg_earn);
 		} else {
 			tvCost.setText(Utility.formatCurrency(currentLog.getCost(), currentLog.getCurrencyCode(), false));
 			tvCost.setTextColor(Color.parseColor("#ff6600"));
 			tvCurrencyCode.setTextColor(Color.parseColor("#ff6600"));
+			tvCurrencyCode.setBackgroundResource(R.drawable.radius_corner_bg_pay);
 		}
 	}
 

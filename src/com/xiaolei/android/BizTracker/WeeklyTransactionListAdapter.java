@@ -15,6 +15,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.xiaolei.android.common.Utility;
+import com.xiaolei.android.customControl.CurrencyView;
 import com.xiaolei.android.service.DataService;
 
 /**
@@ -28,7 +29,8 @@ public class WeeklyTransactionListAdapter extends BaseAdapter {
 	private Activity context;
 	private String defaultCurrencyCode = "";
 
-	public WeeklyTransactionListAdapter(Activity context, Date startDate, Date endDate) {
+	public WeeklyTransactionListAdapter(Activity context, Date startDate,
+			Date endDate) {
 		this.context = context;
 
 		ArrayList<Date> dates = new ArrayList<Date>();
@@ -73,10 +75,10 @@ public class WeeklyTransactionListAdapter extends BaseAdapter {
 				.findViewById(R.id.textViewItemTemplateStuffName);
 		TextView tvDate = (TextView) convertView
 				.findViewById(R.id.textViewDate);
-		TextView tvPay = (TextView) convertView
-				.findViewById(R.id.textViewTotalPay);
-		TextView tvEarn = (TextView) convertView
-				.findViewById(R.id.textViewTotalEarn);
+		CurrencyView tvPay = (CurrencyView) convertView
+				.findViewById(R.id.currencyViewTotalPay);
+		CurrencyView tvEarn = (CurrencyView) convertView
+				.findViewById(R.id.currencyViewTotalEarn);
 
 		Date value = items[position];
 		Date now = new Date();
@@ -92,17 +94,8 @@ public class WeeklyTransactionListAdapter extends BaseAdapter {
 				Utility.getEndTimeOfDate(value));
 		double earn = DataService.GetInstance(context).getTotalEarn(value,
 				Utility.getEndTimeOfDate(value));
-
-		if (pay < 0) {
-			tvPay.setText(Utility.formatCurrency(pay, defaultCurrencyCode));
-		} else {
-			tvPay.setText("*");
-		}
-		if (earn > 0) {
-			tvEarn.setText(Utility.formatCurrency(earn, defaultCurrencyCode));
-		} else {
-			tvEarn.setText("*");
-		}
+		tvPay.setCost(pay, defaultCurrencyCode);
+		tvEarn.setCost(earn, defaultCurrencyCode);
 
 		return convertView;
 	}

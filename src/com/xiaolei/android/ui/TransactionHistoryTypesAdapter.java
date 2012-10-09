@@ -8,6 +8,7 @@ import java.util.Hashtable;
 
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
+import com.xiaolei.android.customControl.CurrencyView;
 import com.xiaolei.android.service.DataService;
 
 import android.app.Activity;
@@ -79,10 +80,10 @@ public class TransactionHistoryTypesAdapter extends BaseAdapter {
 				.findViewById(R.id.textViewItemTemplateStuffName);
 		TextView tvDate = (TextView) convertView
 				.findViewById(R.id.textViewDate);
-		TextView tvPay = (TextView) convertView
-				.findViewById(R.id.textViewTotalPay);
-		TextView tvEarn = (TextView) convertView
-				.findViewById(R.id.textViewTotalEarn);
+		CurrencyView tvPay = (CurrencyView) convertView
+				.findViewById(R.id.currencyViewTotalPay);
+		CurrencyView tvEarn = (CurrencyView) convertView
+				.findViewById(R.id.currencyViewTotalEarn);
 
 		tvDate.setText("");
 		tvStuffName.setText(items[position].toString());
@@ -97,19 +98,10 @@ public class TransactionHistoryTypesAdapter extends BaseAdapter {
 			tvDate.setText(Utility.getLocalCurrentDateString());
 			double[] today = mData.get(0);
 			double value = today[0];
-			if (value < 0) {
-				tvPay.setText(Utility
-						.formatCurrency(value, defaultCurrencyCode));
-			} else {
-				tvPay.setText("*");
-			}
+			tvPay.setCost(value, defaultCurrencyCode);
+
 			double value2 = today[1];
-			if (value2 > 0) {
-				tvEarn.setText(Utility.formatCurrency(value2,
-						defaultCurrencyCode));
-			} else {
-				tvEarn.setText("*");
-			}
+			tvEarn.setCost(value2, defaultCurrencyCode);
 
 			break;
 		case 1: // This week
@@ -122,19 +114,10 @@ public class TransactionHistoryTypesAdapter extends BaseAdapter {
 					Utility.toLocalDateString(context, endDayOfThisWeek)));
 
 			double valueWeekPay = thisWeek[0];
-			if (valueWeekPay < 0) {
-				tvPay.setText(Utility.formatCurrency(valueWeekPay,
-						defaultCurrencyCode));
-			} else {
-				tvPay.setText("*");
-			}
+			tvPay.setCost(valueWeekPay, defaultCurrencyCode);
+
 			double valueWeekEarn = thisWeek[1];
-			if (valueWeekEarn > 0) {
-				tvEarn.setText(Utility.formatCurrency(valueWeekEarn,
-						defaultCurrencyCode));
-			} else {
-				tvEarn.setText("*");
-			}
+			tvEarn.setCost(valueWeekEarn, defaultCurrencyCode);
 
 			break;
 		case 2:// This month
@@ -145,18 +128,8 @@ public class TransactionHistoryTypesAdapter extends BaseAdapter {
 			double monthPay = thisMonth[0];
 			double monthEarn = thisMonth[1];
 
-			if (monthPay < 0) {
-				tvPay.setText(Utility.formatCurrency(monthPay,
-						defaultCurrencyCode));
-			} else {
-				tvPay.setText("*");
-			}
-			if (monthEarn > 0) {
-				tvEarn.setText(Utility.formatCurrency(monthEarn,
-						defaultCurrencyCode));
-			} else {
-				tvEarn.setText("*");
-			}
+			tvPay.setCost(monthPay, defaultCurrencyCode);
+			tvEarn.setCost(monthEarn, defaultCurrencyCode);
 
 			break;
 		case 3: // This year
@@ -167,27 +140,15 @@ public class TransactionHistoryTypesAdapter extends BaseAdapter {
 			double yearPay = thisYear[0];
 			double yearEarn = thisYear[1];
 
-			if (yearPay < 0) {
-				tvPay.setText(String.valueOf(Utility.formatCurrency(yearPay,
-						defaultCurrencyCode)));
-			} else {
-				tvPay.setText("*");
-			}
-			if (yearEarn > 0) {
-				tvEarn.setText(Utility.formatCurrency(yearEarn,
-						defaultCurrencyCode));
-			} else {
-				tvEarn.setText("*");
-			}
+			tvPay.setCost(yearPay, defaultCurrencyCode);
+			tvEarn.setCost(yearEarn, defaultCurrencyCode);
 
 			break;
 		case 4: // All transactions
 			double[] cost = mData.get(4);
 			if (cost != null && cost.length >= 3) {
-				tvEarn.setText(cost[0] != 0 ? Utility.formatCurrency(cost[0],
-						defaultCurrencyCode) : "*");
-				tvPay.setText(cost[1] != 0 ? Utility.formatCurrency(cost[1],
-						defaultCurrencyCode) : "*");
+				tvEarn.setCost(cost[0], defaultCurrencyCode);
+				tvPay.setCost(cost[1], defaultCurrencyCode);
 			}
 
 			int count = DataService.GetInstance(context)

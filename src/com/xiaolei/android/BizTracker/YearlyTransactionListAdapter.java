@@ -162,9 +162,9 @@ public class YearlyTransactionListAdapter extends BaseAdapter {
 		TextView tvStuffName = (TextView) convertView
 				.findViewById(R.id.textViewItemTemplateStuffName);
 		TextView tvPay = (TextView) convertView
-				.findViewById(R.id.textViewTotalPay);
+				.findViewById(R.id.textViewMonthlyTotalPay);
 		TextView tvEarn = (TextView) convertView
-				.findViewById(R.id.textViewTotalEarn);
+				.findViewById(R.id.textViewMonthlyTotalEarn);
 
 		Date date = items[position];
 		SimpleDateFormat format = new SimpleDateFormat("MMMM");

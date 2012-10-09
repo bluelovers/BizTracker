@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.xiaolei.android.common.Utility;
+import com.xiaolei.android.customControl.CurrencyView;
 import com.xiaolei.android.service.DataService;
 
 public class FunctionTypesAdapter extends BaseAdapter {
@@ -21,8 +22,6 @@ public class FunctionTypesAdapter extends BaseAdapter {
 	private LayoutInflater inflater;
 	private Activity context;
 	private ArrayList<View> viewList;
-	private double todayPay = 0;
-	private double todayEarn = 0;
 	private String defaultCurrencyCode = "";
 
 	public FunctionTypesAdapter(Activity context) {
@@ -76,10 +75,10 @@ public class FunctionTypesAdapter extends BaseAdapter {
 				.findViewById(R.id.textViewItemTemplateStuffName);
 		TextView tvDate = (TextView) convertView
 				.findViewById(R.id.textViewDate);
-		TextView tvPay = (TextView) convertView
-				.findViewById(R.id.textViewTotalPay);
-		TextView tvEarn = (TextView) convertView
-				.findViewById(R.id.textViewTotalEarn);
+		CurrencyView tvPay = (CurrencyView) convertView
+				.findViewById(R.id.currencyViewTotalPay);
+		CurrencyView tvEarn = (CurrencyView) convertView
+				.findViewById(R.id.currencyViewTotalEarn);
 
 		tvDate.setText("");
 		tvStuffName.setText(items[position].toString());
@@ -93,19 +92,9 @@ public class FunctionTypesAdapter extends BaseAdapter {
 		case 0: // Today
 			tvDate.setText(Utility.getLocalCurrentDateString());
 			double value = DataService.GetInstance(context).getTodaySumPay();
-			if (value < 0) {
-				tvPay.setText(Utility
-						.formatCurrency(value, defaultCurrencyCode));
-			} else {
-				tvPay.setText("*");
-			}
 			double value2 = DataService.GetInstance(context).getTodaySumEarn();
-			if (value2 > 0) {
-				tvEarn.setText(Utility.formatCurrency(value2,
-						defaultCurrencyCode));
-			} else {
-				tvEarn.setText("*");
-			}
+			tvPay.setCost(value, defaultCurrencyCode);
+			tvEarn.setCost(value2, defaultCurrencyCode);
 
 			break;
 		case 1: // This week
@@ -118,20 +107,11 @@ public class FunctionTypesAdapter extends BaseAdapter {
 
 			double valueWeekPay = DataService.GetInstance(context).getTotalPay(
 					startDayOfThisWeek, endDayOfThisWeek);
-			if (valueWeekPay < 0) {
-				tvPay.setText(Utility.formatCurrency(valueWeekPay,
-						defaultCurrencyCode));
-			} else {
-				tvPay.setText("*");
-			}
+			tvPay.setCost(valueWeekPay, defaultCurrencyCode);
+
 			double valueWeekEarn = DataService.GetInstance(context)
 					.getTotalEarn(startDayOfThisWeek, endDayOfThisWeek);
-			if (valueWeekEarn > 0) {
-				tvEarn.setText(Utility.formatCurrency(valueWeekEarn,
-						defaultCurrencyCode));
-			} else {
-				tvEarn.setText("*");
-			}
+			tvEarn.setCost(valueWeekEarn, defaultCurrencyCode);
 
 			break;
 		case 2:// This month
@@ -145,19 +125,8 @@ public class FunctionTypesAdapter extends BaseAdapter {
 					startDayOfMonth, endDayOfMonth);
 			double monthEarn = DataService.GetInstance(context).getTotalEarn(
 					startDayOfMonth, endDayOfMonth);
-
-			if (monthPay < 0) {
-				tvPay.setText(Utility.formatCurrency(monthPay,
-						defaultCurrencyCode));
-			} else {
-				tvPay.setText("*");
-			}
-			if (monthEarn > 0) {
-				tvEarn.setText(Utility.formatCurrency(monthEarn,
-						defaultCurrencyCode));
-			} else {
-				tvEarn.setText("*");
-			}
+			tvPay.setCost(monthPay, defaultCurrencyCode);
+			tvEarn.setCost(monthEarn, defaultCurrencyCode);
 
 			break;
 		case 3: // This year
@@ -171,29 +140,16 @@ public class FunctionTypesAdapter extends BaseAdapter {
 					startDayOfYear, endDayOfYear);
 			double yearEarn = DataService.GetInstance(context).getTotalEarn(
 					startDayOfYear, endDayOfYear);
-
-			if (yearPay < 0) {
-				tvPay.setText(String.valueOf(Utility.formatCurrency(yearPay,
-						defaultCurrencyCode)));
-			} else {
-				tvPay.setText("*");
-			}
-			if (yearEarn > 0) {
-				tvEarn.setText(Utility.formatCurrency(yearEarn,
-						defaultCurrencyCode));
-			} else {
-				tvEarn.setText("*");
-			}
+			tvPay.setCost(yearPay, defaultCurrencyCode);
+			tvEarn.setCost(yearEarn, defaultCurrencyCode);
 
 			break;
 		case 4: // All transactions
 			double[] cost = DataService.GetInstance(context)
 					.getTransactionsTotalCost();
 			if (cost != null && cost.length >= 3) {
-				tvEarn.setText(cost[0] != 0 ? Utility.formatCurrency(cost[0],
-						defaultCurrencyCode) : "*");
-				tvPay.setText(cost[1] != 0 ? Utility.formatCurrency(cost[1],
-						defaultCurrencyCode) : "*");
+				tvEarn.setCost(cost[0], defaultCurrencyCode);
+				tvPay.setCost(cost[1], defaultCurrencyCode);
 			}
 
 			int count = DataService.GetInstance(context)
@@ -220,47 +176,5 @@ public class FunctionTypesAdapter extends BaseAdapter {
 		}
 
 		return convertView;
-	}
-
-	@SuppressWarnings("unused")
-	private void getTodayTotalPayAsync() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				todayPay = DataService.GetInstance(context).getTodaySumPay();
-				context.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						View view = viewList.get(0);
-						if (view != null) {
-							TextView tvPay = (TextView) view
-									.findViewById(R.id.textViewTotalPay);
-							tvPay.setText(String.valueOf(todayPay));
-						}
-					}
-				});
-			}
-		}).run();
-	}
-
-	@SuppressWarnings("unused")
-	private void getTodayTotalEarnAsync() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				todayEarn = DataService.GetInstance(context).getTodaySumEarn();
-				context.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						View view = viewList.get(0);
-						if (view != null) {
-							TextView tvPay = (TextView) view
-									.findViewById(R.id.textViewTotalEarn);
-							tvPay.setText(String.valueOf(todayEarn));
-						}
-					}
-				});
-			}
-		}).run();
 	}
 }

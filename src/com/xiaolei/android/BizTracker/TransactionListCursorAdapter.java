@@ -149,10 +149,12 @@ public class TransactionListCursorAdapter extends CursorAdapter {
 			tvCost.setText(Utility.formatCurrency(cost, currencyCode, false));
 			tvCost.setTextColor(incomeColor);
 			tvCurrencyCode.setTextColor(incomeColor);
+			tvCurrencyCode.setBackgroundResource(R.drawable.radius_corner_bg_earn);
 		} else {
 			tvCost.setText(Utility.formatCurrency(cost, currencyCode, false));
 			tvCost.setTextColor(expenseColor);
 			tvCurrencyCode.setTextColor(expenseColor);
+			tvCurrencyCode.setBackgroundResource(R.drawable.radius_corner_bg_pay);
 		}
 
 		if (this.starOnClickListener != null) {
