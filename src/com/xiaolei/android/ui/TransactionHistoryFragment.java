@@ -50,7 +50,8 @@ public class TransactionHistoryFragment extends Fragment implements
 					.findViewById(R.id.viewFlipperTransactionHistory);
 			mViewHolder.ListViewTransactionHistoryTypes = (ListView) result
 					.findViewById(R.id.listViewTransactionHistoryTypes);
-
+			mViewHolder.ListViewTransactionHistoryTypes
+					.setOnItemClickListener(this);
 		}
 
 		return result;
@@ -127,7 +128,7 @@ public class TransactionHistoryFragment extends Fragment implements
 		}
 	}
 
-	private void loadDataAsync() {
+	public void loadDataAsync() {
 		waiting();
 		AsyncTask<Void, Void, Hashtable<Integer, double[]>> task = new AsyncTask<Void, Void, Hashtable<Integer, double[]>>() {
 
@@ -176,7 +177,7 @@ public class TransactionHistoryFragment extends Fragment implements
 				startDayOfMonth, endDayOfMonth);
 		thisMonth[1] = DataService.GetInstance(getActivity()).getTotalEarn(
 				startDayOfMonth, endDayOfMonth);
-		result.put(1, thisMonth);
+		result.put(2, thisMonth);
 
 		// This year
 		Date startDayOfYear = Utility.getStartDayOfYear(now);
@@ -187,12 +188,12 @@ public class TransactionHistoryFragment extends Fragment implements
 				startDayOfYear, endDayOfYear);
 		thisYear[1] = DataService.GetInstance(getActivity()).getTotalEarn(
 				startDayOfYear, endDayOfYear);
-		result.put(1, thisYear);
+		result.put(3, thisYear);
 
 		// All transactions
 		double[] allTransactions = DataService.GetInstance(getActivity())
 				.getTransactionsTotalCost();
-		result.put(1, allTransactions);
+		result.put(4, allTransactions);
 
 		return result;
 	}
