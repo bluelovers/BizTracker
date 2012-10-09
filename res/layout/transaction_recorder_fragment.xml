@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayoutMain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#bbc9dd"
+    android:orientation="vertical" >
+
+    <include layout="@layout/top_screen" >
+    </include>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <ViewFlipper
+                android:id="@+id/viewFlipperMain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="5dip"
+                android:inAnimation="@anim/push_right_in"
+                android:outAnimation="@anim/push_left_out" >
+
+                <include layout="@layout/stuffs_panel2" />
+
+                <include layout="@layout/numbers_panel" />
+
+                <fragment
+                    android:id="@+id/fragmentStuffAnalysis"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    class="com.xiaolei.android.ui.StuffAnalysisFragment" />
+            </ViewFlipper>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/frameLayoutPopupMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" >
+
+            <include layout="@layout/price_label" />
+        </FrameLayout>
+    </FrameLayout>
+
+</LinearLayout>
