@@ -18,8 +18,8 @@ import com.xiaolei.android.common.CurrencyNamesHelper;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
-import com.xiaolei.android.entity.Stuff;
 import com.xiaolei.android.listener.OnLoadedListener;
+import com.xiaolei.android.listener.OnStuffIdChangedListener;
 import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
@@ -28,7 +28,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,10 +54,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -76,8 +74,8 @@ public class TransactionRecorderFragment extends Fragment implements
 	private String mExportErrorMessage = "";
 	private ProgressDialog exportProgressDlg;
 	private Dialog inputPasswordDlg;
-	private String stuffName = "";
-	private int stuffId = 0;
+	private String mCurrentStuffName = "";
+	private int mCurrentStuffId = 0;
 	private double cost;
 
 	private SoundPool soundPool;
@@ -89,8 +87,8 @@ public class TransactionRecorderFragment extends Fragment implements
 
 	private double todaySumPay = -1;
 	private double todaySumEarn = -1;
-
 	private Date updateDate;
+	private OnStuffIdChangedListener mOnStuffIdChangedListener;
 
 	public static final int REQUEST_CODE = 1;
 	public static final String APPLICATION_FOLDER = "BizTracker";
@@ -221,12 +219,6 @@ public class TransactionRecorderFragment extends Fragment implements
 			showSettingsUI();
 
 			return true;
-			/*
-			 * case R.id.itemControlPanel: this.startActivityForResult(new
-			 * Intent(this, ControlPanel.class), ControlPanel.REQUEST_CODE);
-			 * 
-			 * return true;
-			 */
 		case R.id.itemExport:
 			export();
 
@@ -240,20 +232,13 @@ public class TransactionRecorderFragment extends Fragment implements
 	public void onClick(View v) {
 		String currentText = null;
 		switch (v.getId()) {
-		case R.id.buttonNew:
-		case R.id.relativeLayoutNoStuff:
-			newStuff();
-
-			break;
 		case -1:
-			// ImageView iv = (ImageView) findViewById(R.id.imageViewPrior);
 			Button ib = (Button) v;
 
 			int id = Integer.parseInt(ib.getTag().toString());
-			stuffName = ib.getText().toString();
-			mViewHolder.TextSwitcherStuffName.setText(stuffName);
+			mCurrentStuffName = ib.getText().toString();
+			mViewHolder.TextSwitcherStuffName.setText(mCurrentStuffName);
 			setCurrentStuffId(id);
-			// iv.setImageDrawable(ib.getCompoundDrawables()[1]);
 
 			TextView tvPayOrEarn = mViewHolder.TextViewPayOrEarn;
 			if (tvPayOrEarn.getText().length() > 0) {
@@ -335,14 +320,14 @@ public class TransactionRecorderFragment extends Fragment implements
 			break;
 		case R.id.buttonDeleteStuff:
 			Utility.showConfirmDialog(getActivity(),
-					getString(R.string.delete_stuff), String
-							.format(getString(R.string.confirm_delete_stuff),
-									stuffName),
+					getString(R.string.delete_stuff), String.format(
+							getString(R.string.confirm_delete_stuff),
+							mCurrentStuffName),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
 								int whichButton) {
 							DataService.GetInstance(getActivity())
-									.deleteStuffById(stuffId);
+									.deleteStuffById(mCurrentStuffId);
 							loadStuffsAsync();
 							clear();
 						}
@@ -372,6 +357,25 @@ public class TransactionRecorderFragment extends Fragment implements
 		}
 	}
 
+	public void setOnStuffIdChangedListener(
+			OnStuffIdChangedListener onStuffIdChanged) {
+		mOnStuffIdChangedListener = onStuffIdChanged;
+	}
+
+	private void onStuffIdChanged(int stuffId) {
+		if (mOnStuffIdChangedListener != null) {
+			mOnStuffIdChangedListener.onStuffIdChanged(stuffId);
+		}
+	}
+
+	public String getCurrentStuffName() {
+		return mCurrentStuffName;
+	}
+
+	public int getCurrentStuffId() {
+		return mCurrentStuffId;
+	}
+
 	private void init(View container) {
 		mViewHolder.ViewFlipperMain = (ViewFlipper) container
 				.findViewById(R.id.viewFlipperMain);
@@ -391,49 +395,30 @@ public class TransactionRecorderFragment extends Fragment implements
 				.findViewById(R.id.viewFlipperStuffsPanel);
 		mViewHolder.ViewSwitcherPanel = (ViewSwitcher) container
 				.findViewById(R.id.viewSwitcherPanel);
+		mViewHolder.TextSwitcherStuffName = (TextSwitcher) container
+				.findViewById(R.id.textSwitcherStuffName);
 
-		Button btnClear = (Button) container.findViewById(R.id.buttonClear);
-		Button btnCancel = (Button) container.findViewById(R.id.buttonCancel);
-		Button btnSetCurrency = (Button) container
-				.findViewById(R.id.buttonSetCurrency);
-		Button btnDeleteStuff = (Button) container
-				.findViewById(R.id.buttonDeleteStuff);
-		Button btnPay = (Button) container.findViewById(R.id.buttonExpense);
-		Button btnEarn = (Button) container.findViewById(R.id.buttonIncome);
-		Button btnSearchStuff = (Button) container
-				.findViewById(R.id.buttonSearchStuff);
+		LinearLayout numbersPanel = (LinearLayout) container
+				.findViewById(R.id.linearLayoutNumbers);
+		LinearLayout stuffsPanel = (LinearLayout) container
+				.findViewById(R.id.linearLayoutStuffChooser);
+		if (numbersPanel != null) {
+			setButtonsOnClickListener(numbersPanel, this);
+		}
+		if (stuffsPanel != null) {
+			setButtonsOnClickListener(stuffsPanel, this);
+		}
+
 		RelativeLayout relativeLayoutNoStuff = (RelativeLayout) container
 				.findViewById(R.id.relativeLayoutNoStuff);
 		if (relativeLayoutNoStuff != null) {
 			relativeLayoutNoStuff.setOnClickListener(this);
 		}
 
-		if (btnPay != null) {
-			btnPay.setOnClickListener(this);
-		}
-		if (btnEarn != null) {
-			btnEarn.setOnClickListener(this);
-		}
-		if (btnSearchStuff != null) {
-			btnSearchStuff.setOnClickListener(this);
-		}
-
+		Button btnClear = (Button) container.findViewById(R.id.buttonClear);
 		if (btnClear != null) {
 			btnClear.setLongClickable(true);
 			btnClear.setOnLongClickListener(this);
-			btnClear.setOnClickListener(this);
-		}
-
-		if (btnCancel != null) {
-			btnCancel.setOnClickListener(this);
-		}
-
-		if (btnSetCurrency != null) {
-			btnSetCurrency.setOnClickListener(this);
-		}
-
-		if (btnDeleteStuff != null) {
-			btnDeleteStuff.setOnClickListener(this);
 		}
 
 		defaultCurrencyCode = DataService.GetInstance(getActivity())
@@ -449,12 +434,23 @@ public class TransactionRecorderFragment extends Fragment implements
 			}
 		}
 
-		ViewSwitcher topScreen = mViewHolder.ViewSwitcherPanel;
-
-		topScreen.setOnClickListener(this);
+		mViewHolder.ViewSwitcherPanel.setOnClickListener(this);
 
 		if (TextUtils.isEmpty(defaultCurrencyCode)) {
 			showDefaultCurrencyDialog(true, null);
+		}
+	}
+
+	private void setButtonsOnClickListener(ViewGroup container,
+			OnClickListener onClick) {
+		int childCount = container.getChildCount();
+		for (int i = 0; i < childCount; i++) {
+			View child = container.getChildAt(i);
+			if (child instanceof Button) {
+				((Button) child).setOnClickListener(onClick);
+			} else if (child instanceof ViewGroup) {
+				setButtonsOnClickListener((ViewGroup) child, onClick);
+			}
 		}
 	}
 
@@ -843,9 +839,10 @@ public class TransactionRecorderFragment extends Fragment implements
 				}
 
 				if (cost != 0) {
-					int idOfStuff = this.stuffId;
+					int idOfStuff = this.mCurrentStuffId;
 					showStuffPanel();
-					saveAsync(cost, idOfStuff, this.stuffName, stuffCount);
+					saveAsync(cost, idOfStuff, this.mCurrentStuffName,
+							stuffCount);
 				} else {
 					Toast.makeText(getActivity(),
 							getString(R.string.input_cost), Toast.LENGTH_SHORT)
@@ -1094,62 +1091,7 @@ public class TransactionRecorderFragment extends Fragment implements
 		exportTask.execute();
 	}
 
-	private void newStuff() {
-
-		Utility.showDialog(getActivity(), R.layout.add_stuff,
-				getString(R.string.new_stuff),
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						AlertDialog alertDialog = (AlertDialog) dialog;
-						AutoCompleteTextView txtName = (AutoCompleteTextView) alertDialog
-								.findViewById(R.id.editTextStuffName);
-						String name = txtName.getText().toString().trim();
-
-						if (!TextUtils.isEmpty(name)) {
-							Stuff stuff = new Stuff();
-							stuff.setName(name);
-
-							DataService.GetInstance(getActivity()).createStuff(
-									stuff);
-							txtName.setText("");
-
-							alertDialog.dismiss();
-							// fillDataAsync();
-							loadStuffsAsync();
-
-						} else {
-							alertDialog.dismiss();
-						}
-					}
-				}, new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				}, new DialogInterface.OnShowListener() {
-
-					@Override
-					public void onShow(DialogInterface dialog) {
-						AutoCompleteTextView editView = (AutoCompleteTextView) ((AlertDialog) dialog)
-								.findViewById(R.id.editTextStuffName);
-						if (editView != null) {
-							try {
-								InputMethodManager imm = (InputMethodManager) getActivity()
-										.getSystemService(
-												Context.INPUT_METHOD_SERVICE);
-								imm.showSoftInput(editView,
-										InputMethodManager.SHOW_IMPLICIT);
-							} catch (Exception ex) {
-							}
-						}
-					}
-				});
-	}
-
-	private void loadStuffsAsync() {
+	public void loadStuffsAsync() {
 		ViewPager stuffViewPager = mViewHolder.ViewPaperStuffs;
 		if (stuffViewPager != null) {
 			if (stuffViewPager.getAdapter() == null) {
@@ -1287,7 +1229,7 @@ public class TransactionRecorderFragment extends Fragment implements
 	}
 
 	private void showNumbersPanel() {
-		if (stuffId <= 0) {
+		if (mCurrentStuffId <= 0) {
 			return;
 		}
 		ViewFlipper vf = mViewHolder.ViewFlipperMain;
@@ -1299,7 +1241,7 @@ public class TransactionRecorderFragment extends Fragment implements
 		}
 	}
 
-	private void showStuffPanel() {
+	public void showStuffPanel() {
 		ViewFlipper vf = mViewHolder.ViewFlipperMain;
 
 		clear();
@@ -1309,7 +1251,7 @@ public class TransactionRecorderFragment extends Fragment implements
 		}
 	}
 
-	private void clear() {
+	public void clear() {
 		mViewHolder.TextSwitcherStuffName.setText("");
 		showSymbol("");
 		setCurrentStuffId(0);
@@ -1317,9 +1259,8 @@ public class TransactionRecorderFragment extends Fragment implements
 	}
 
 	private void setCurrentStuffId(int stuffId) {
-		this.stuffId = stuffId;
-		// this.btnDeleteStuff.setVisibility(stuffId > 0 ? View.VISIBLE
-		// : View.INVISIBLE);
+		this.mCurrentStuffId = stuffId;
+		onStuffIdChanged(stuffId);
 	}
 
 	private void playSound(int resourceId) {
