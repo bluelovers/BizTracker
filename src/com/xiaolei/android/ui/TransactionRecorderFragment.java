@@ -18,6 +18,7 @@ import com.xiaolei.android.common.CurrencyNamesHelper;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
+import com.xiaolei.android.entity.Stuff;
 import com.xiaolei.android.listener.OnLoadedListener;
 import com.xiaolei.android.listener.OnStuffIdChangedListener;
 import com.xiaolei.android.preference.PreferenceHelper;
@@ -28,6 +29,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,6 +56,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -69,25 +73,25 @@ import android.widget.ViewSwitcher;
 public class TransactionRecorderFragment extends Fragment implements
 		OnClickListener, OnLongClickListener {
 	private ViewHolder mViewHolder = new ViewHolder();
-	private AsyncTask<Boolean, Integer, Boolean> exportTask;
-	private String exportTargetFileName;
+	private AsyncTask<Boolean, Integer, Boolean> mExportTask;
+	private String mExportTargetFileName;
 	private String mExportErrorMessage = "";
-	private ProgressDialog exportProgressDlg;
-	private Dialog inputPasswordDlg;
+	private ProgressDialog mExportProgressDlg;
+	private Dialog mInputPasswordDlg;
 	private String mCurrentStuffName = "";
 	private int mCurrentStuffId = 0;
-	private double cost;
+	private double mCost;
 
-	private SoundPool soundPool;
-	private SparseIntArray sounds;
-	private float volume = 1.0f;
+	private SoundPool mSoundPool;
+	private SparseIntArray mSounds;
+	private float mVolume = 1.0f;
 
-	private String defaultCurrencyCode = "";
-	private Boolean saveDefaultCurrencyCodeToDB = true;
+	private String mDefaultCurrencyCode = "";
+	private Boolean mSaveDefaultCurrencyCodeToDB = true;
 
-	private double todaySumPay = -1;
-	private double todaySumEarn = -1;
-	private Date updateDate;
+	private double mTodaySumPay = -1;
+	private double mTodaySumEarn = -1;
+	private Date mTransactionDate;
 	private OnStuffIdChangedListener mOnStuffIdChangedListener;
 
 	public static final int REQUEST_CODE = 1;
@@ -161,7 +165,7 @@ public class TransactionRecorderFragment extends Fragment implements
 
 		loadStaticsInfoAsync();
 
-		if (soundPool == null) {
+		if (mSoundPool == null) {
 			initSoundPoolAsync();
 		}
 	}
@@ -176,9 +180,9 @@ public class TransactionRecorderFragment extends Fragment implements
 	public void onStop() {
 		super.onStop();
 
-		if (soundPool != null) {
-			soundPool.release();
-			soundPool = null;
+		if (mSoundPool != null) {
+			mSoundPool.release();
+			mSoundPool = null;
 		}
 
 	}
@@ -232,6 +236,9 @@ public class TransactionRecorderFragment extends Fragment implements
 	public void onClick(View v) {
 		String currentText = null;
 		switch (v.getId()) {
+		case R.id.relativeLayoutNoStuff:
+			newStuff();
+			break;
 		case -1:
 			Button ib = (Button) v;
 
@@ -421,7 +428,7 @@ public class TransactionRecorderFragment extends Fragment implements
 			btnClear.setOnLongClickListener(this);
 		}
 
-		defaultCurrencyCode = DataService.GetInstance(getActivity())
+		mDefaultCurrencyCode = DataService.GetInstance(getActivity())
 				.getDefaultCurrencyCode();
 		showDefaultCurrencyCode();
 
@@ -436,30 +443,32 @@ public class TransactionRecorderFragment extends Fragment implements
 
 		mViewHolder.ViewSwitcherPanel.setOnClickListener(this);
 
-		if (TextUtils.isEmpty(defaultCurrencyCode)) {
+		if (TextUtils.isEmpty(mDefaultCurrencyCode)) {
 			showDefaultCurrencyDialog(true, null);
 		}
 	}
 
 	private void setButtonsOnClickListener(ViewGroup container,
 			OnClickListener onClick) {
-		int childCount = container.getChildCount();
-		for (int i = 0; i < childCount; i++) {
-			View child = container.getChildAt(i);
-			if (child instanceof Button) {
-				((Button) child).setOnClickListener(onClick);
-			} else if (child instanceof ViewGroup) {
-				setButtonsOnClickListener((ViewGroup) child, onClick);
+		if (container != null) {
+			int childCount = container.getChildCount();
+			for (int i = 0; i < childCount; i++) {
+				View child = container.getChildAt(i);
+				if (child instanceof Button) {
+					((Button) child).setOnClickListener(onClick);
+				} else if (child instanceof ViewGroup) {
+					setButtonsOnClickListener((ViewGroup) child, onClick);
+				}
 			}
 		}
 	}
 
 	private void showInputPasswordDialog() {
-		inputPasswordDlg = new Dialog(getActivity());
-		inputPasswordDlg.requestWindowFeature(Window.FEATURE_LEFT_ICON);
-		inputPasswordDlg.setContentView(R.layout.sign_in);
-		inputPasswordDlg.setTitle(getString(R.string.input_password));
-		inputPasswordDlg.setOnCancelListener(new OnCancelListener() {
+		mInputPasswordDlg = new Dialog(getActivity());
+		mInputPasswordDlg.requestWindowFeature(Window.FEATURE_LEFT_ICON);
+		mInputPasswordDlg.setContentView(R.layout.sign_in);
+		mInputPasswordDlg.setTitle(getString(R.string.input_password));
+		mInputPasswordDlg.setOnCancelListener(new OnCancelListener() {
 
 			@Override
 			public void onCancel(DialogInterface arg0) {
@@ -468,22 +477,22 @@ public class TransactionRecorderFragment extends Fragment implements
 			}
 		});
 
-		Button btnOk = (Button) inputPasswordDlg
+		Button btnOk = (Button) mInputPasswordDlg
 				.findViewById(R.id.buttonInputPasswordOk);
-		Button btnCancel = (Button) inputPasswordDlg
+		Button btnCancel = (Button) mInputPasswordDlg
 				.findViewById(R.id.buttonInputPasswordCancel);
 
 		btnOk.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				EditText txtPassword = (EditText) inputPasswordDlg
+				EditText txtPassword = (EditText) mInputPasswordDlg
 						.findViewById(R.id.editTextPassword);
 				txtPassword.addTextChangedListener(new TextWatcher() {
 
 					@Override
 					public void afterTextChanged(Editable arg0) {
-						TextView tvVerifyResult = (TextView) inputPasswordDlg
+						TextView tvVerifyResult = (TextView) mInputPasswordDlg
 								.findViewById(R.id.textViewVerifyResult);
 						tvVerifyResult.setVisibility(View.GONE);
 					}
@@ -508,19 +517,19 @@ public class TransactionRecorderFragment extends Fragment implements
 				if (prefs != null) {
 					String value = prefs.getString(PreferenceKeys.Password, "");
 					if (!encryptedPassword.equals(value)) {
-						EditText txtPwd = (EditText) inputPasswordDlg
+						EditText txtPwd = (EditText) mInputPasswordDlg
 								.findViewById(R.id.editTextPassword);
-						TextView tvVerifyResult = (TextView) inputPasswordDlg
+						TextView tvVerifyResult = (TextView) mInputPasswordDlg
 								.findViewById(R.id.textViewVerifyResult);
 						tvVerifyResult.setVisibility(View.VISIBLE);
 						tvVerifyResult.setText(getActivity().getString(
 								R.string.wrong_password));
 						txtPwd.selectAll();
 					} else {
-						inputPasswordDlg.dismiss();
+						mInputPasswordDlg.dismiss();
 					}
 				} else {
-					inputPasswordDlg.dismiss();
+					mInputPasswordDlg.dismiss();
 					getActivity().finish();
 				}
 			}
@@ -530,14 +539,14 @@ public class TransactionRecorderFragment extends Fragment implements
 
 			@Override
 			public void onClick(View v) {
-				inputPasswordDlg.dismiss();
+				mInputPasswordDlg.dismiss();
 				getActivity().finish();
 			}
 		});
 
 		// Utility.requestInputMethod(inputPasswordDlg);
-		inputPasswordDlg.show();
-		inputPasswordDlg.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
+		mInputPasswordDlg.show();
+		mInputPasswordDlg.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
 				R.drawable.lock);
 	}
 
@@ -545,9 +554,9 @@ public class TransactionRecorderFragment extends Fragment implements
 		TextView tvDefaultCurrencyCode = mViewHolder.TextViewDefaultCurrencyCode;
 
 		if (tvDefaultCurrencyCode != null) {
-			this.defaultCurrencyCode = DataService.GetInstance(getActivity())
+			this.mDefaultCurrencyCode = DataService.GetInstance(getActivity())
 					.getDefaultCurrencyCode();
-			tvDefaultCurrencyCode.setText(defaultCurrencyCode);
+			tvDefaultCurrencyCode.setText(mDefaultCurrencyCode);
 		}
 	}
 
@@ -585,12 +594,12 @@ public class TransactionRecorderFragment extends Fragment implements
 
 	private void initSoundPool() {
 		try {
-			sounds = new SparseIntArray();
+			mSounds = new SparseIntArray();
 
-			soundPool = new SoundPool(3,
+			mSoundPool = new SoundPool(3,
 					android.media.AudioManager.STREAM_RING, 0);
-			int soundId = soundPool.load(getActivity(), R.raw.click, 1);
-			sounds.put(R.raw.click, soundId);
+			int soundId = mSoundPool.load(getActivity(), R.raw.click, 1);
+			mSounds.put(R.raw.click, soundId);
 
 			AudioManager audioManager = (AudioManager) getActivity()
 					.getSystemService(Activity.AUDIO_SERVICE);
@@ -605,7 +614,7 @@ public class TransactionRecorderFragment extends Fragment implements
 				streamVolumeCurrent = prefs.getInt(PreferenceKeys.Volume, 1);
 			}
 
-			volume = streamVolumeCurrent / streamVolumeMax;
+			mVolume = streamVolumeCurrent / streamVolumeMax;
 		} catch (Exception ex) {
 			// do nothing
 			ex.printStackTrace();
@@ -632,7 +641,7 @@ public class TransactionRecorderFragment extends Fragment implements
 			return;
 		}
 
-		saveDefaultCurrencyCodeToDB = saveToDB;
+		mSaveDefaultCurrencyCodeToDB = saveToDB;
 		String value = "-1";
 		int selectedItemIndex = -1;
 
@@ -716,7 +725,7 @@ public class TransactionRecorderFragment extends Fragment implements
 						if (lv != null) {
 							ListAdapter adapter = lv.getAdapter();
 							String item = (String) adapter.getItem(which);
-							defaultCurrencyCode = item.substring(
+							mDefaultCurrencyCode = item.substring(
 									item.indexOf("(") + 1, item.length() - 1);
 						}
 					}
@@ -725,21 +734,21 @@ public class TransactionRecorderFragment extends Fragment implements
 	}
 
 	private void saveDefaultCurrency() {
-		if (TextUtils.isEmpty(defaultCurrencyCode)) {
-			defaultCurrencyCode = DEFAULT_CURRENCY_CODE;
+		if (TextUtils.isEmpty(mDefaultCurrencyCode)) {
+			mDefaultCurrencyCode = DEFAULT_CURRENCY_CODE;
 		}
 
 		TextView tvDefaultCurrencyCode = (TextView) getActivity().findViewById(
 				R.id.textViewDefaultCurrencyCode);
-		tvDefaultCurrencyCode.setText(defaultCurrencyCode);
+		tvDefaultCurrencyCode.setText(mDefaultCurrencyCode);
 
-		if (saveDefaultCurrencyCodeToDB) {
+		if (mSaveDefaultCurrencyCodeToDB) {
 			SharedPreferences prefs = PreferenceHelper
 					.getActiveUserSharedPreferences(getActivity());
 			if (prefs != null) {
 				Editor editor = prefs.edit();
 				editor.putString(PreferenceKeys.DefaultCurrencyCode,
-						defaultCurrencyCode);
+						mDefaultCurrencyCode);
 				editor.commit();
 			}
 
@@ -759,15 +768,15 @@ public class TransactionRecorderFragment extends Fragment implements
 						.getTodaySumPay();
 				double sumEarn = DataService.GetInstance(getActivity())
 						.getTodaySumEarn();
-				if (sumPay != todaySumPay) {
+				if (sumPay != mTodaySumPay) {
 					valueChanged = true;
-					todaySumPay = sumPay;
+					mTodaySumPay = sumPay;
 				}
-				if (sumEarn != todaySumEarn) {
+				if (sumEarn != mTodaySumEarn) {
 					valueChanged = true;
-					todaySumEarn = sumEarn;
+					mTodaySumEarn = sumEarn;
 				}
-				defaultCurrencyCode = DataService.GetInstance(getActivity())
+				mDefaultCurrencyCode = DataService.GetInstance(getActivity())
 						.getDefaultCurrencyCode();
 
 				return valueChanged;
@@ -788,19 +797,19 @@ public class TransactionRecorderFragment extends Fragment implements
 		TextView tvCurrency = mViewHolder.TextViewDefaultCurrencyCode;
 		TextSwitcher tvTodayTotalCost = mViewHolder.TextViewTodayTotalCost;
 		if (tvCurrency != null) {
-			tvCurrency.setText(defaultCurrencyCode);
+			tvCurrency.setText(mDefaultCurrencyCode);
 		}
 		if (tvTodayTotalCost != null) {
 			tvTodayTotalCost
 					.setText(getString(R.string.today_total_pay_and_earn)
 							+ " "
-							+ this.defaultCurrencyCode
+							+ this.mDefaultCurrencyCode
 							+ " "
-							+ Utility.formatCurrency(todaySumPay,
-									defaultCurrencyCode, false)
+							+ Utility.formatCurrency(mTodaySumPay,
+									mDefaultCurrencyCode, false)
 							+ " / "
-							+ Utility.formatCurrency(todaySumEarn,
-									defaultCurrencyCode, false));
+							+ Utility.formatCurrency(mTodaySumEarn,
+									mDefaultCurrencyCode, false));
 		}
 	}
 
@@ -869,34 +878,34 @@ public class TransactionRecorderFragment extends Fragment implements
 	}
 
 	private void exportAsCSV() {
-		if (exportTask != null) {
+		if (mExportTask != null) {
 			return;
 		}
 
-		exportTask = new AsyncTask<Boolean, Integer, Boolean>() {
+		mExportTask = new AsyncTask<Boolean, Integer, Boolean>() {
 			@Override
 			protected void onPreExecute() {
-				exportProgressDlg = new ProgressDialog(getActivity());
-				exportProgressDlg.setCancelable(false);
-				exportProgressDlg.setIcon(R.drawable.export);
-				exportProgressDlg
+				mExportProgressDlg = new ProgressDialog(getActivity());
+				mExportProgressDlg.setCancelable(false);
+				mExportProgressDlg.setIcon(R.drawable.export);
+				mExportProgressDlg
 						.setTitle(getString(R.string.exporting_to_file));
-				exportProgressDlg
+				mExportProgressDlg
 						.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-				exportProgressDlg
+				mExportProgressDlg
 						.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
 							@Override
 							public void onDismiss(DialogInterface dialog) {
-								if (exportTask != null
-										&& !exportTask.isCancelled()) {
-									exportTask.cancel(false);
+								if (mExportTask != null
+										&& !mExportTask.isCancelled()) {
+									mExportTask.cancel(false);
 								}
 
-								exportProgressDlg.dismiss();
+								mExportProgressDlg.dismiss();
 							}
 						});
-				exportProgressDlg.show();
+				mExportProgressDlg.show();
 			}
 
 			@Override
@@ -921,7 +930,7 @@ public class TransactionRecorderFragment extends Fragment implements
 					String fileName = String.format("BizTracker_export_%s.csv",
 							format.format(new Date()));
 					File targetFile = new File(targetDir, fileName);
-					exportTargetFileName = targetDir.getPath() + "/" + fileName;
+					mExportTargetFileName = targetDir.getPath() + "/" + fileName;
 
 					try {
 						BufferedWriter writer = new BufferedWriter(
@@ -1028,19 +1037,19 @@ public class TransactionRecorderFragment extends Fragment implements
 
 			@Override
 			protected void onProgressUpdate(Integer... values) {
-				if (exportProgressDlg != null) {
+				if (mExportProgressDlg != null) {
 					if (values.length == 1) {
-						exportProgressDlg.setProgress(values[0]);
+						mExportProgressDlg.setProgress(values[0]);
 					} else if (values.length == 2) {
-						exportProgressDlg.setMax(values[0]);
+						mExportProgressDlg.setMax(values[0]);
 					}
 				}
 			}
 
 			@Override
 			protected void onPostExecute(Boolean result) {
-				if (exportProgressDlg != null) {
-					exportProgressDlg.dismiss();
+				if (mExportProgressDlg != null) {
+					mExportProgressDlg.dismiss();
 				}
 
 				if (result == true) {
@@ -1051,7 +1060,7 @@ public class TransactionRecorderFragment extends Fragment implements
 									R.string.export_success_title),
 							getActivity()
 									.getString(R.string.export_target_file)
-									+ exportTargetFileName,
+									+ mExportTargetFileName,
 							new DialogInterface.OnClickListener() {
 
 								@Override
@@ -1083,12 +1092,12 @@ public class TransactionRecorderFragment extends Fragment implements
 				}
 
 				// Clean up
-				exportTask = null;
-				exportTargetFileName = null;
+				mExportTask = null;
+				mExportTargetFileName = null;
 			}
 		};
 
-		exportTask.execute();
+		mExportTask.execute();
 	}
 
 	public void loadStuffsAsync() {
@@ -1129,9 +1138,83 @@ public class TransactionRecorderFragment extends Fragment implements
 		}
 	}
 
+	/**
+	 * Display stuff creation UI.
+	 */
+	public void newStuff() {
+		Utility.showDialog(getActivity(), R.layout.add_stuff,
+				getString(R.string.new_stuff),
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						AlertDialog alertDialog = (AlertDialog) dialog;
+						AutoCompleteTextView txtName = (AutoCompleteTextView) alertDialog
+								.findViewById(R.id.editTextStuffName);
+						String name = txtName.getText().toString().trim();
+
+						if (!TextUtils.isEmpty(name)) {
+							Stuff stuff = new Stuff();
+							stuff.setName(name);
+
+							DataService.GetInstance(getActivity()).createStuff(
+									stuff);
+							txtName.setText("");
+							alertDialog.dismiss();
+
+							loadStuffsAsync();
+						} else {
+							alertDialog.dismiss();
+						}
+					}
+				}, new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				}, new DialogInterface.OnShowListener() {
+
+					@Override
+					public void onShow(DialogInterface dialog) {
+						AutoCompleteTextView editView = (AutoCompleteTextView) ((AlertDialog) dialog)
+								.findViewById(R.id.editTextStuffName);
+						if (editView != null) {
+							try {
+								InputMethodManager imm = (InputMethodManager) getActivity()
+										.getSystemService(
+												Context.INPUT_METHOD_SERVICE);
+								imm.showSoftInput(editView,
+										InputMethodManager.SHOW_IMPLICIT);
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+						}
+					}
+				});
+	}
+
+	/**
+	 * Remove the currently selected stuff.
+	 */
+	public void removeCurrentStuff() {
+		Utility.showConfirmDialog(getActivity(),
+				getString(R.string.delete_stuff), String.format(
+						getString(R.string.confirm_delete_stuff),
+						getCurrentStuffName()),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						DataService.GetInstance(getActivity()).deleteStuffById(
+								getCurrentStuffId());
+						loadStuffsAsync();
+						clear();
+					}
+				});
+	}
+
 	private void saveAsync(double money, int idOfStuff, String stuffName,
 			int stuffCount) {
-		this.cost = money;
+		this.mCost = money;
 		if (stuffCount == 0) {
 			stuffCount = 1;
 		}
@@ -1152,11 +1235,11 @@ public class TransactionRecorderFragment extends Fragment implements
 				if (id > 0) {
 					BizLog log = new BizLog();
 					log.setStuffId(id);
-					log.setCost(cost);
+					log.setCost(mCost);
 					log.setCurrencyCode(currencyCode);
 					log.setStuffCount(stuffCount);
-					if (updateDate != null) {
-						log.setLastUpdateTime(updateDate);
+					if (getTransactionDate() != null) {
+						log.setLastUpdateTime(getTransactionDate());
 					}
 
 					DataService service = DataService
@@ -1164,16 +1247,16 @@ public class TransactionRecorderFragment extends Fragment implements
 					service.addTransaction(log);
 					service.updateLastUsedTime(id);
 
-					todaySumPay = service.getTodaySumPay();
-					todaySumEarn = service.getTodaySumEarn();
+					mTodaySumPay = service.getTodaySumPay();
+					mTodaySumEarn = service.getTodaySumEarn();
 					// mLastCost = cost;
 
 					return String.format(
 							"%s %s: %s%s",
-							(cost < 0 ? getActivity().getString(R.string.pay)
+							(mCost < 0 ? getActivity().getString(R.string.pay)
 									: getActivity().getString(R.string.earn)),
 							name,
-							Utility.formatCurrency(cost, currencyCode),
+							Utility.formatCurrency(mCost, currencyCode),
 							(stuffCount > 1 ? " " + MULTIPLY + " "
 									+ String.valueOf(stuffCount) : ""));
 				}
@@ -1183,7 +1266,7 @@ public class TransactionRecorderFragment extends Fragment implements
 
 			@Override
 			protected void onPostExecute(String result) {
-				if (updateDate != null) {
+				if (getTransactionDate() != null) {
 					clearTopLeftText();
 				}
 
@@ -1194,9 +1277,9 @@ public class TransactionRecorderFragment extends Fragment implements
 
 					// showPopupMessage(mLastCost);
 
-					if (updateDate != null) {
+					if (getTransactionDate() != null) {
 						getActivity().setResult(Activity.RESULT_OK);
-						updateDate = null;
+						setTransactionDate(null);
 						getActivity().finish();
 					}
 				}
@@ -1264,8 +1347,8 @@ public class TransactionRecorderFragment extends Fragment implements
 	}
 
 	private void playSound(int resourceId) {
-		if (soundPool != null) {
-			soundPool.play(sounds.get(resourceId), volume, volume, 1, 0, 1.0f);
+		if (mSoundPool != null) {
+			mSoundPool.play(mSounds.get(resourceId), mVolume, mVolume, 1, 0, 1.0f);
 		}
 	}
 
@@ -1301,6 +1384,14 @@ public class TransactionRecorderFragment extends Fragment implements
 		if (tvPrice != null) {
 			tvPrice.setText("0");
 		}
+	}
+
+	public Date getTransactionDate() {
+		return mTransactionDate;
+	}
+
+	public void setTransactionDate(Date mTransactionDate) {
+		this.mTransactionDate = mTransactionDate;
 	}
 
 	private final static class ViewHolder {

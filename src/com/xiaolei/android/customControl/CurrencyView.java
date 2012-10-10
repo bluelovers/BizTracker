@@ -6,6 +6,7 @@ import com.xiaolei.android.common.Utility;
 import android.R.color;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.LinearLayout;
@@ -60,7 +61,7 @@ public class CurrencyView extends LinearLayout {
 	}
 
 	protected void updateLayout() {
-		if (mCost != 0) {
+		if ((long)mCost != 0) {
 			mTextViewCost.setText(Utility.formatCurrency(mCost, mCurrencyCode,
 					false));
 			mTextViewCurrencyCode.setText(mCurrencyCode);

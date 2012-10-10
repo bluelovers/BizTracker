@@ -2,37 +2,28 @@ package com.xiaolei.android.BizTracker;
 
 import java.util.Date;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-import com.xiaolei.android.common.Utility;
-import com.xiaolei.android.entity.Stuff;
 import com.xiaolei.android.listener.OnStuffIdChangedListener;
 import com.xiaolei.android.preference.PreferenceHelper;
-import com.xiaolei.android.service.DataService;
 import com.xiaolei.android.ui.TransactionRecorderFragment;
 
 public class BizTracker extends FragmentActivity implements OnClickListener,
 		OnStuffIdChangedListener {
-	private BizTracker context;
-	private Date updateDate;
+	private BizTracker mContext;
+	private Date mTransactionDate;
 	private TransactionRecorderFragment mTransactionRecorderFragment;
 	private Button mButtonDeleteStuff;
 
@@ -49,7 +40,7 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.setContentView(R.layout.main);
 
-		context = this;
+		mContext = this;
 
 		Intent intent = this.getIntent();
 		if (intent != null) {
@@ -59,18 +50,19 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 					Object value = bundle.get(KEY_UPDATE_DATE);
 					if (value != null) {
 						try {
-							updateDate = (Date) value;
+							mTransactionDate = (Date) value;
 							TextView tvTopLeft = (TextView) findViewById(R.id.textViewTopLeft);
 							if (tvTopLeft != null) {
 								tvTopLeft
 										.setText(getString(R.string.transaction_date)
 												+ ": "
 												+ DateUtils.formatDateTime(
-														context,
-														updateDate.getTime(),
+														mContext,
+														mTransactionDate.getTime(),
 														DateUtils.FORMAT_SHOW_DATE));
 							}
 						} catch (Exception ex) {
+							ex.printStackTrace();
 						}
 					}
 				}
@@ -96,6 +88,7 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 		if (fragment != null) {
 			mTransactionRecorderFragment = (TransactionRecorderFragment) fragment;
 			mTransactionRecorderFragment.setOnStuffIdChangedListener(this);
+			mTransactionRecorderFragment.setTransactionDate(mTransactionDate);
 		}
 	}
 
@@ -154,83 +147,16 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.buttonNew:
-			newStuff();
+			mTransactionRecorderFragment.newStuff();
 
 			break;
 		case R.id.buttonDeleteStuff:
-			Utility.showConfirmDialog(
-					this,
-					getString(R.string.delete_stuff),
-					String.format(getString(R.string.confirm_delete_stuff),
-							mTransactionRecorderFragment.getCurrentStuffName()),
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							DataService.GetInstance(context).deleteStuffById(
-									mTransactionRecorderFragment
-											.getCurrentStuffId());
-							loadStuffsAsync();
-							mTransactionRecorderFragment.clear();
-						}
-					});
+			mTransactionRecorderFragment.removeCurrentStuff();
 
 			break;
 		default:
 			break;
 		}
-	}
-
-	private void newStuff() {
-		Utility.showDialog(this, R.layout.add_stuff,
-				getString(R.string.new_stuff),
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						AlertDialog alertDialog = (AlertDialog) dialog;
-						AutoCompleteTextView txtName = (AutoCompleteTextView) alertDialog
-								.findViewById(R.id.editTextStuffName);
-						String name = txtName.getText().toString().trim();
-
-						if (!TextUtils.isEmpty(name)) {
-							Stuff stuff = new Stuff();
-							stuff.setName(name);
-
-							DataService.GetInstance(context).createStuff(stuff);
-							txtName.setText("");
-							alertDialog.dismiss();
-
-							loadStuffsAsync();
-						} else {
-							alertDialog.dismiss();
-						}
-					}
-				}, new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				}, new DialogInterface.OnShowListener() {
-
-					@Override
-					public void onShow(DialogInterface dialog) {
-						AutoCompleteTextView editView = (AutoCompleteTextView) ((AlertDialog) dialog)
-								.findViewById(R.id.editTextStuffName);
-						if (editView != null) {
-							try {
-								InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-								imm.showSoftInput(editView,
-										InputMethodManager.SHOW_IMPLICIT);
-							} catch (Exception ex) {
-							}
-						}
-					}
-				});
-	}
-
-	private void loadStuffsAsync() {
-		mTransactionRecorderFragment.loadStuffsAsync();
 	}
 
 	@Override
