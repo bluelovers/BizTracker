@@ -20,10 +20,10 @@
             android:layout_height="wrap_content" >
 
             <Button
-                android:id="@+id/buttonConfig"
+                android:id="@+id/buttonSetTransactionDateTime"
                 style="@style/tool_button_style"
                 android:onClick="onClick"
-                android:text="@string/config" />
+                android:text="@string/transaction_date" />
 
             <Button
                 android:id="@+id/buttonExport"

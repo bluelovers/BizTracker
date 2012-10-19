@@ -148,6 +148,7 @@ public class DailyTransactionList extends FragmentActivity implements
 			date = cal.getTime();
 
 			intent.putExtra(BizTracker.KEY_UPDATE_DATE, date);
+			intent.putExtra(BizTracker.SAVE_AND_CLOSE, true);
 			this.startActivityForResult(intent, BizTracker.REQUEST_CODE);
 		}
 	}

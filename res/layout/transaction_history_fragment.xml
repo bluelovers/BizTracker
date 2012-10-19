@@ -2,14 +2,16 @@
 <ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/viewFlipperTransactionHistory"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@android:color/background_dark" >
 
     <include layout="@layout/loading" />
 
     <ListView
         android:id="@+id/listViewTransactionHistoryTypes"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:cacheColorHint="@android:color/transparent" >
     </ListView>
 
 </ViewFlipper>

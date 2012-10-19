@@ -6,47 +6,26 @@
     android:background="#bbc9dd"
     android:orientation="vertical" >
 
-    <include layout="@layout/top_screen" >
-    </include>
+    <include layout="@layout/top_screen" />
 
-    <FrameLayout
+    <ViewFlipper
+        android:id="@+id/viewFlipperMain"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1" >
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="5dip"
+        android:inAnimation="@anim/push_right_in"
+        android:outAnimation="@anim/push_left_out" >
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+        <include layout="@layout/stuffs_panel2" />
 
-            <ViewFlipper
-                android:id="@+id/viewFlipperMain"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_margin="5dip"
-                android:inAnimation="@anim/push_right_in"
-                android:outAnimation="@anim/push_left_out" >
+        <include layout="@layout/numbers_panel" />
 
-                <include layout="@layout/stuffs_panel2" />
-
-                <include layout="@layout/numbers_panel" />
-
-                <fragment
-                    android:id="@+id/fragmentStuffAnalysis"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    class="com.xiaolei.android.ui.StuffAnalysisFragment" />
-            </ViewFlipper>
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/frameLayoutPopupMessage"
+        <fragment
+            android:id="@+id/fragmentStuffAnalysis"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent" >
-
-            <include layout="@layout/price_label" />
-        </FrameLayout>
-    </FrameLayout>
+            class="com.xiaolei.android.ui.StuffAnalysisFragment" />
+    </ViewFlipper>
 
 </LinearLayout>

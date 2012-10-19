@@ -1169,6 +1169,7 @@ public class TransactionListFragment extends Fragment implements
 		Date transactionDate = cal.getTime();
 
 		intent.putExtra(BizTracker.KEY_UPDATE_DATE, transactionDate);
+		intent.putExtra(BizTracker.SAVE_AND_CLOSE, true);
 		this.startActivityForResult(intent, REQUEST_CODE);
 	}
 

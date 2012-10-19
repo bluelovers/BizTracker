@@ -3,17 +3,21 @@
     android:id="@+id/linearLayoutMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#bbc9dd"
     android:orientation="vertical" >
 
-    <include layout="@layout/title_bar" >
-    </include>
-
+    <include layout="@layout/title_bar"  />
+    <!--
     <fragment
         android:id="@+id/fragmentTransactionRecorder"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
         class="com.xiaolei.android.ui.TransactionRecorderFragment" />
+    -->
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPaperMain"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
 
 </LinearLayout>

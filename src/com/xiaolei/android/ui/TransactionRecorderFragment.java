@@ -21,6 +21,7 @@ import com.xiaolei.android.entity.CurrencySchema;
 import com.xiaolei.android.entity.Stuff;
 import com.xiaolei.android.listener.OnLoadedListener;
 import com.xiaolei.android.listener.OnStuffIdChangedListener;
+import com.xiaolei.android.listener.OnTransactionDateTimeChangedListener;
 import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
@@ -46,6 +47,7 @@ import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.format.DateUtils;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -71,7 +73,8 @@ import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
 public class TransactionRecorderFragment extends Fragment implements
-		OnClickListener, OnLongClickListener {
+		OnClickListener, OnLongClickListener,
+		OnTransactionDateTimeChangedListener {
 	private ViewHolder mViewHolder = new ViewHolder();
 	private AsyncTask<Boolean, Integer, Boolean> mExportTask;
 	private String mExportTargetFileName;
@@ -98,9 +101,13 @@ public class TransactionRecorderFragment extends Fragment implements
 	public static final String APPLICATION_FOLDER = "BizTracker";
 	private final String MULTIPLY = "¡Á";
 	private final String DEFAULT_CURRENCY_CODE = "USD";
+	private static final String DLG_TAG = "transaction_date_dialog";
+	private boolean mSaveAndClose = false;
 
 	public static TransactionRecorderFragment newInstance() {
 		TransactionRecorderFragment result = new TransactionRecorderFragment();
+		result.setHasOptionsMenu(true);
+
 		// Bundle args = new Bundle();
 		// result.setArguments(args);
 
@@ -350,8 +357,8 @@ public class TransactionRecorderFragment extends Fragment implements
 		case R.id.viewSwitcherPanel:
 			viewHistory();
 			break;
-		case R.id.buttonConfig:
-			showSettingsUI();
+		case R.id.buttonSetTransactionDateTime:
+			showDateTimePicker();
 			break;
 		case R.id.buttonExport:
 			export();
@@ -362,6 +369,16 @@ public class TransactionRecorderFragment extends Fragment implements
 		default:
 			break;
 		}
+	}
+
+	private void showDateTimePicker() {
+		DateTimePickerFragment fragment = DateTimePickerFragment.newInstance();
+		fragment.setTransactionDateTimeChangedListener(this);
+		fragment.show(this.getFragmentManager(), DLG_TAG);
+	}
+
+	public void setSaveAndClose(boolean close) {
+		mSaveAndClose = close;
 	}
 
 	public void setOnStuffIdChangedListener(
@@ -930,7 +947,8 @@ public class TransactionRecorderFragment extends Fragment implements
 					String fileName = String.format("BizTracker_export_%s.csv",
 							format.format(new Date()));
 					File targetFile = new File(targetDir, fileName);
-					mExportTargetFileName = targetDir.getPath() + "/" + fileName;
+					mExportTargetFileName = targetDir.getPath() + "/"
+							+ fileName;
 
 					try {
 						BufferedWriter writer = new BufferedWriter(
@@ -1280,7 +1298,9 @@ public class TransactionRecorderFragment extends Fragment implements
 					if (getTransactionDate() != null) {
 						getActivity().setResult(Activity.RESULT_OK);
 						setTransactionDate(null);
-						getActivity().finish();
+						if (mSaveAndClose) {
+							getActivity().finish();
+						}
 					}
 				}
 			}
@@ -1348,7 +1368,8 @@ public class TransactionRecorderFragment extends Fragment implements
 
 	private void playSound(int resourceId) {
 		if (mSoundPool != null) {
-			mSoundPool.play(mSounds.get(resourceId), mVolume, mVolume, 1, 0, 1.0f);
+			mSoundPool.play(mSounds.get(resourceId), mVolume, mVolume, 1, 0,
+					1.0f);
 		}
 	}
 
@@ -1392,6 +1413,25 @@ public class TransactionRecorderFragment extends Fragment implements
 
 	public void setTransactionDate(Date mTransactionDate) {
 		this.mTransactionDate = mTransactionDate;
+		showTransactionDateTime(mTransactionDate);
+	}
+
+	private void showTransactionDateTime(Date date) {
+		if (getView() != null) {
+			TextView tvTopLeft = (TextView) getView().findViewById(
+					R.id.textViewTopLeft);
+			if (tvTopLeft != null) {
+				if (date != null) {
+					tvTopLeft.setText(getString(R.string.transaction_date)
+							+ ": "
+							+ DateUtils.formatDateTime(getActivity(),
+									date.getTime(), DateUtils.FORMAT_SHOW_DATE
+											| DateUtils.FORMAT_SHOW_TIME));
+				} else {
+					tvTopLeft.setText("");
+				}
+			}
+		}
 	}
 
 	private final static class ViewHolder {
@@ -1408,5 +1448,10 @@ public class TransactionRecorderFragment extends Fragment implements
 		public TextSwitcher TextViewTodayTotalCost;
 		public ViewFlipper ViewFlipperStuffsPanel;
 		public ViewSwitcher ViewSwitcherPanel;
+	}
+
+	@Override
+	public void onTransactionDateTimeChanged(Date date) {
+		this.setTransactionDate(date);
 	}
 }
