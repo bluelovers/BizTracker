@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.common.Utility;
+import com.xiaolei.android.listener.OnRefreshListener;
 import com.xiaolei.android.service.DataService;
 
 import android.R.drawable;
@@ -25,7 +26,7 @@ import android.widget.ListView;
 import android.widget.ViewFlipper;
 
 public class TransactionHistoryFragment extends Fragment implements
-		AdapterView.OnItemClickListener {
+		AdapterView.OnItemClickListener, OnRefreshListener {
 	private ViewHolder mViewHolder = new ViewHolder();
 
 	public static TransactionHistoryFragment newInstance() {
@@ -387,5 +388,10 @@ public class TransactionHistoryFragment extends Fragment implements
 
 		public ListView ListViewTransactionHistoryTypes;
 		public ViewFlipper ViewFlipperTransactionHistory;
+	}
+
+	@Override
+	public void onRefresh() {
+		loadDataAsync();
 	}
 }

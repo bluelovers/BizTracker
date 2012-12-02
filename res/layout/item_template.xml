@@ -30,22 +30,10 @@
         </TextView>
     </LinearLayout>
 
-    <LinearLayout
+    <com.xiaolei.android.customControl.CurrencyView
+        android:id="@+id/currencyViewMoney"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
-
-        <com.xiaolei.android.customControl.CurrencyView
-            android:id="@+id/currencyViewTotalPay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|center_vertical" />
-
-        <com.xiaolei.android.customControl.CurrencyView
-            android:id="@+id/currencyViewTotalEarn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|center_vertical" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center_vertical" />
 
 </LinearLayout>

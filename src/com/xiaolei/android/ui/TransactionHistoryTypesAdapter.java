@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Locale;
 
 import com.xiaolei.android.BizTracker.R;
+import com.xiaolei.android.common.Money;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.customControl.CurrencyView;
 import com.xiaolei.android.service.DataService;
@@ -80,16 +82,11 @@ public class TransactionHistoryTypesAdapter extends BaseAdapter {
 				.findViewById(R.id.textViewItemTemplateStuffName);
 		TextView tvDate = (TextView) convertView
 				.findViewById(R.id.textViewDate);
-		CurrencyView tvPay = (CurrencyView) convertView
-				.findViewById(R.id.currencyViewTotalPay);
-		CurrencyView tvEarn = (CurrencyView) convertView
-				.findViewById(R.id.currencyViewTotalEarn);
+		CurrencyView tvMoney = (CurrencyView) convertView
+				.findViewById(R.id.currencyViewMoney);
 
 		tvDate.setText("");
 		tvStuffName.setText(items[position].toString());
-
-		tvPay.setVisibility(View.VISIBLE);
-		tvEarn.setVisibility(View.VISIBLE);
 
 		Date now = new Date();
 
@@ -97,11 +94,10 @@ public class TransactionHistoryTypesAdapter extends BaseAdapter {
 		case 0: // Today
 			tvDate.setText(Utility.getLocalCurrentDateString());
 			double[] today = mData.get(0);
-			double value = today[0];
-			tvPay.setCost(value, defaultCurrencyCode);
-
-			double value2 = today[1];
-			tvEarn.setCost(value2, defaultCurrencyCode);
+			Money[] todayMoney = new Money[2];
+		    todayMoney[0] = new Money(today[0], defaultCurrencyCode);
+		    todayMoney[1] = new Money(today[1], defaultCurrencyCode);
+		    tvMoney.setCost(todayMoney);
 
 			break;
 		case 1: // This week
@@ -113,23 +109,21 @@ public class TransactionHistoryTypesAdapter extends BaseAdapter {
 					Utility.toLocalDateString(context, startDayOfThisWeek),
 					Utility.toLocalDateString(context, endDayOfThisWeek)));
 
-			double valueWeekPay = thisWeek[0];
-			tvPay.setCost(valueWeekPay, defaultCurrencyCode);
-
-			double valueWeekEarn = thisWeek[1];
-			tvEarn.setCost(valueWeekEarn, defaultCurrencyCode);
+			Money[] weeklyMoney = new Money[2];
+			weeklyMoney[0] = new Money(thisWeek[0], defaultCurrencyCode);
+			weeklyMoney[1] = new Money(thisWeek[1], defaultCurrencyCode);
+		    tvMoney.setCost(weeklyMoney);
 
 			break;
 		case 2:// This month
 			double[] thisMonth = mData.get(2);
-			SimpleDateFormat format = new SimpleDateFormat("MMM");
+			SimpleDateFormat format = new SimpleDateFormat("MMM", Locale.getDefault());
 			tvDate.setText(format.format(now));
 
-			double monthPay = thisMonth[0];
-			double monthEarn = thisMonth[1];
-
-			tvPay.setCost(monthPay, defaultCurrencyCode);
-			tvEarn.setCost(monthEarn, defaultCurrencyCode);
+			Money[] monthlyMoney = new Money[2];
+			monthlyMoney[0] = new Money(thisMonth[0], defaultCurrencyCode);
+			monthlyMoney[1] = new Money(thisMonth[1], defaultCurrencyCode);
+		    tvMoney.setCost(monthlyMoney);
 
 			break;
 		case 3: // This year
@@ -137,18 +131,19 @@ public class TransactionHistoryTypesAdapter extends BaseAdapter {
 			tvDate.setText(String.valueOf(Calendar.getInstance().get(
 					Calendar.YEAR)));
 
-			double yearPay = thisYear[0];
-			double yearEarn = thisYear[1];
-
-			tvPay.setCost(yearPay, defaultCurrencyCode);
-			tvEarn.setCost(yearEarn, defaultCurrencyCode);
+			Money[] yearlyMoney = new Money[2];
+			yearlyMoney[0] = new Money(thisYear[0], defaultCurrencyCode);
+			yearlyMoney[1] = new Money(thisYear[1], defaultCurrencyCode);
+		    tvMoney.setCost(yearlyMoney);
 
 			break;
 		case 4: // All transactions
 			double[] cost = mData.get(4);
 			if (cost != null && cost.length >= 3) {
-				tvEarn.setCost(cost[0], defaultCurrencyCode);
-				tvPay.setCost(cost[1], defaultCurrencyCode);
+				Money[] allTransactionsMoney = new Money[2];
+				allTransactionsMoney[0] = new Money(cost[0], defaultCurrencyCode);
+				allTransactionsMoney[1] = new Money(cost[1], defaultCurrencyCode);
+			    tvMoney.setCost(allTransactionsMoney);
 			}
 
 			int count = DataService.GetInstance(context)
@@ -158,13 +153,11 @@ public class TransactionHistoryTypesAdapter extends BaseAdapter {
 
 			break;
 		case 5: // Search
-			tvPay.setVisibility(View.INVISIBLE);
-			tvEarn.setVisibility(View.INVISIBLE);
+			tvMoney.setVisibility(View.GONE);
 			tvDate.setText(context.getString(R.string.search_by));
 			break;
 		case 6: // Starred
-			tvPay.setVisibility(View.INVISIBLE);
-			tvEarn.setVisibility(View.INVISIBLE);
+			tvMoney.setVisibility(View.GONE);
 			tvDate.setText(context.getString(R.string.view_starred_items));
 			break;
 		case 7: // Project

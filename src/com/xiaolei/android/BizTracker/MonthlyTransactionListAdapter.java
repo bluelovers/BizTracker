@@ -19,7 +19,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.xiaolei.android.common.Money;
 import com.xiaolei.android.common.Utility;
+import com.xiaolei.android.customControl.CurrencyView;
 import com.xiaolei.android.entity.CostValue;
 import com.xiaolei.android.listener.OnLoadCompletedListener;
 import com.xiaolei.android.service.DataService;
@@ -167,10 +169,8 @@ public class MonthlyTransactionListAdapter extends BaseAdapter {
 
 		TextView tvStuffName = (TextView) convertView
 				.findViewById(R.id.textViewItemTemplateStuffName);
-		TextView tvPay = (TextView) convertView
-				.findViewById(R.id.textViewMonthlyTotalPay);
-		TextView tvEarn = (TextView) convertView
-				.findViewById(R.id.textViewMonthlyTotalEarn);
+		CurrencyView currencyViewMoney = (CurrencyView) convertView
+				.findViewById(R.id.currencyViewMoney);
 
 		Date date = items[position];
 
@@ -182,17 +182,10 @@ public class MonthlyTransactionListAdapter extends BaseAdapter {
 		double pay = dataSource.get(position).ExpenseMoney;
 		double earn = dataSource.get(position).IncomeMoney;
 
-		if (pay < 0) {
-			tvPay.setText(Utility.formatCurrency(pay, defaultCurrencyCode));
-		} else {
-			tvPay.setText("*");
-		}
-
-		if (earn > 0) {
-			tvEarn.setText(Utility.formatCurrency(earn, defaultCurrencyCode));
-		} else {
-			tvEarn.setText("*");
-		}
+		Money[] values = new Money[2];
+		values[0] = new Money(pay, defaultCurrencyCode);
+		values[1] = new Money(earn, defaultCurrencyCode);
+		currencyViewMoney.setCost(values);
 
 		return convertView;
 	}

@@ -6,6 +6,7 @@ package com.xiaolei.android.BizTracker;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.xiaolei.android.common.Money;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.customControl.CurrencyView;
 import com.xiaolei.android.service.DataService;
@@ -75,15 +77,14 @@ public class WeeklyTransactionListAdapter extends BaseAdapter {
 				.findViewById(R.id.textViewItemTemplateStuffName);
 		TextView tvDate = (TextView) convertView
 				.findViewById(R.id.textViewDate);
-		CurrencyView tvPay = (CurrencyView) convertView
-				.findViewById(R.id.currencyViewTotalPay);
-		CurrencyView tvEarn = (CurrencyView) convertView
-				.findViewById(R.id.currencyViewTotalEarn);
+		CurrencyView tvMoney = (CurrencyView) convertView
+				.findViewById(R.id.currencyViewMoney);
 
 		Date value = items[position];
 		Date now = new Date();
 		tvDate.setText(Utility.toLocalDateString(context, value));
-		SimpleDateFormat format = new SimpleDateFormat("EEEE");// E
+		SimpleDateFormat format = new SimpleDateFormat("EEEE",
+				Locale.getDefault());// E
 		tvStuffName.setText(format.format(value));
 		if (value.getDate() == now.getDate()) {
 			tvDate.setText(tvDate.getText().toString() + " ("
@@ -94,8 +95,10 @@ public class WeeklyTransactionListAdapter extends BaseAdapter {
 				Utility.getEndTimeOfDate(value));
 		double earn = DataService.GetInstance(context).getTotalEarn(value,
 				Utility.getEndTimeOfDate(value));
-		tvPay.setCost(pay, defaultCurrencyCode);
-		tvEarn.setCost(earn, defaultCurrencyCode);
+		Money[] values = new Money[2];
+		values[0] = new Money(pay, defaultCurrencyCode);
+		values[1] = new Money(earn, defaultCurrencyCode);
+		tvMoney.setCost(values);
 
 		return convertView;
 	}

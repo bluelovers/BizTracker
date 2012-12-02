@@ -18,33 +18,12 @@
         android:textAppearance="?android:attr/textAppearanceLarge" >
     </TextView>
 
-    <LinearLayout
-        android:id="@+id/linearLayout1"
+    <com.xiaolei.android.customControl.CurrencyView
+        android:id="@+id/currencyViewMoney"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/textViewMonthlyTotalPay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="0.00"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/expenseColor" >
-        </TextView>
-
-        <TextView
-            android:id="@+id/textViewMonthlyTotalEarn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="0.00"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/incomeColor" >
-        </TextView>
-    </LinearLayout>
+        android:layout_gravity="right|center_vertical" />
 
 </RelativeLayout>

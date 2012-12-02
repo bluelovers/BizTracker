@@ -1,6 +1,8 @@
 package com.xiaolei.android.BizTracker;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,14 +16,17 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
+import com.xiaolei.android.common.NavigationRequestType;
+import com.xiaolei.android.listener.OnBackButtonClickListener;
+import com.xiaolei.android.listener.OnRequestNavigateListener;
 import com.xiaolei.android.listener.OnStuffIdChangedListener;
 import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.ui.TransactionRecorderFragment;
 
 public class BizTracker extends FragmentActivity implements OnClickListener,
-		OnStuffIdChangedListener, OnPageChangeListener {
+		OnStuffIdChangedListener, OnPageChangeListener,
+		OnRequestNavigateListener {
 	private BizTracker mContext;
 	private Date mTransactionDate;
 	private ViewHolder mViewHolder = new ViewHolder();
@@ -32,7 +37,11 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 	public static final int REQUEST_CODE = 1;
 	public static final String APPLICATION_FOLDER = "BizTracker";
 	public static final String PHOTO_PATH = "BizTracker/photo";
-	private final int MAIN_ITEM_INDEX = 0;
+
+	private final int INDEX_HOME = 0;
+	//private final int INDEX_FINANCE_SUMMARY = 1;
+
+	private List<OnBackButtonClickListener> mOnBackButtonClickListener = new ArrayList<OnBackButtonClickListener>();
 
 	/** Called when the activity is first created. */
 	@Override
@@ -84,10 +93,25 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 		if (mViewHolder.ViewPagerMain != null) {
 			MainFragmentPagerAdapter adpt = new MainFragmentPagerAdapter(
 					this.getSupportFragmentManager());
+			adpt.setOnRequestNavigateListener(this);
+			mOnBackButtonClickListener.add(adpt);
 			mViewHolder.ViewPagerMain.setOnPageChangeListener(this);
 			mViewHolder.ViewPagerMain.setAdapter(adpt);
-			mViewHolder.ViewPagerMain.setCurrentItem(MAIN_ITEM_INDEX);
+			mViewHolder.ViewPagerMain.setCurrentItem(INDEX_HOME);
 		}
+	}
+
+	private boolean NotifyBackButtonPressed() {
+		boolean preventClose = false;
+		if (mOnBackButtonClickListener != null) {
+			for (OnBackButtonClickListener listener : mOnBackButtonClickListener) {
+				boolean result = listener.OnBackButtonClick();
+				if (result) {
+					preventClose = true;
+				}
+			}
+		}
+		return preventClose;
 	}
 
 	private void showTransactionDateTime(Date date) {
@@ -107,18 +131,15 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 	@Override
 	public void onBackPressed() {
 		try {
-			getRecorderFragment();
-			if (mViewHolder.RecorderFragment != null) {
-				ViewFlipper vf = (ViewFlipper) findViewById(R.id.viewFlipperMain);
+			//If the current page is not home page, then scroll to home page.
+			if (mViewHolder.ViewPagerMain != null
+					&& mViewHolder.ViewPagerMain.getCurrentItem() != INDEX_HOME) {
+				mViewHolder.ViewPagerMain.setCurrentItem(INDEX_HOME, true);
+				return;
+			}
 
-				if (vf.getDisplayedChild() == 1) {
-					mViewHolder.RecorderFragment.showStuffPanel();
-				} else if (vf.getDisplayedChild() == 2) {
-					mViewHolder.RecorderFragment.showStuffPanel();
-				} else {
-					super.onBackPressed();
-				}
-			} else {
+			boolean preventClose = NotifyBackButtonPressed();
+			if (!preventClose) {
 				super.onBackPressed();
 			}
 		} catch (Exception e) {
@@ -196,7 +217,7 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 						.getAdapter();
 				if (adpt != null) {
 					mViewHolder.RecorderFragment = (TransactionRecorderFragment) adpt
-							.getFragmentAtPosition(MAIN_ITEM_INDEX);
+							.getFragmentAtPosition(INDEX_HOME);
 
 					if (mViewHolder.RecorderFragment != null) {
 						mViewHolder.RecorderFragment
@@ -210,7 +231,7 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 				}
 			}
 		}
-		
+
 	}
 
 	@Override
@@ -242,6 +263,19 @@ public class BizTracker extends FragmentActivity implements OnClickListener,
 	@Override
 	public void onPageSelected(int position) {
 
+	}
+
+	@Override
+	public void OnRequestNavigate(NavigationRequestType type) {
+		switch (type) {
+		case FinanceSummaryView:
+			if (mViewHolder.ViewPagerMain != null) {
+				mViewHolder.ViewPagerMain.setCurrentItem(1, true);
+			}
+			break;
+		default:
+			break;
+		}
 	}
 
 }

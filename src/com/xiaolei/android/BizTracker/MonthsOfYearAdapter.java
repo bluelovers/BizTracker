@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +16,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.xiaolei.android.common.Money;
 import com.xiaolei.android.common.Utility;
+import com.xiaolei.android.customControl.CurrencyView;
 import com.xiaolei.android.service.DataService;
 
 /**
@@ -70,13 +74,11 @@ public class MonthsOfYearAdapter extends BaseAdapter {
 
 		TextView tvStuffName = (TextView) convertView
 				.findViewById(R.id.textViewItemTemplateStuffName);
-		TextView tvPay = (TextView) convertView
-				.findViewById(R.id.textViewMonthlyTotalPay);
-		TextView tvEarn = (TextView) convertView
-				.findViewById(R.id.textViewMonthlyTotalEarn);
+		CurrencyView currencyViewMoney = (CurrencyView) convertView
+				.findViewById(R.id.currencyViewMoney);
 
 		Date date = items[position];
-		SimpleDateFormat format = new SimpleDateFormat("MMMM");
+		SimpleDateFormat format = new SimpleDateFormat("MMM", Locale.getDefault());
 		tvStuffName.setText(format.format(date));
 
 		Date endDate = Utility.getEndTimeOfDate(Utility.getEndDayOfMonth(date));
@@ -86,17 +88,10 @@ public class MonthsOfYearAdapter extends BaseAdapter {
 		double earn = DataService.GetInstance(context).getTotalEarn(date,
 				endDate);
 
-		if (pay < 0) {
-			tvPay.setText(Utility.formatCurrency(pay, defaultCurrencyCode));
-		} else {
-			tvPay.setText("*");
-		}
-
-		if (earn > 0) {
-			tvEarn.setText(Utility.formatCurrency(earn, defaultCurrencyCode));
-		} else {
-			tvEarn.setText("*");
-		}
+		Money[] values = new Money[2];
+		values[0] = new Money(pay, defaultCurrencyCode);
+		values[1] = new Money(earn, defaultCurrencyCode);
+		currencyViewMoney.setCost(values);
 
 		return convertView;
 	}

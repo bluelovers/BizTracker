@@ -9,17 +9,22 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 
 import org.json.JSONException;
 
 import com.xiaolei.android.BizTracker.R;
 import com.xiaolei.android.BizTracker.StuffsFragmentStatePagerAdapter;
 import com.xiaolei.android.common.CurrencyNamesHelper;
+import com.xiaolei.android.common.NavigationRequestType;
 import com.xiaolei.android.common.Utility;
 import com.xiaolei.android.entity.BizLog;
 import com.xiaolei.android.entity.CurrencySchema;
 import com.xiaolei.android.entity.Stuff;
+import com.xiaolei.android.listener.OnBackButtonClickListener;
 import com.xiaolei.android.listener.OnLoadedListener;
+import com.xiaolei.android.listener.OnRefreshListener;
+import com.xiaolei.android.listener.OnRequestNavigateListener;
 import com.xiaolei.android.listener.OnStuffIdChangedListener;
 import com.xiaolei.android.listener.OnTransactionDateTimeChangedListener;
 import com.xiaolei.android.preference.PreferenceHelper;
@@ -74,7 +79,7 @@ import android.widget.ViewSwitcher;
 
 public class TransactionRecorderFragment extends Fragment implements
 		OnClickListener, OnLongClickListener,
-		OnTransactionDateTimeChangedListener {
+		OnTransactionDateTimeChangedListener, OnBackButtonClickListener {
 	private ViewHolder mViewHolder = new ViewHolder();
 	private AsyncTask<Boolean, Integer, Boolean> mExportTask;
 	private String mExportTargetFileName;
@@ -103,6 +108,8 @@ public class TransactionRecorderFragment extends Fragment implements
 	private final String DEFAULT_CURRENCY_CODE = "USD";
 	private static final String DLG_TAG = "transaction_date_dialog";
 	private boolean mSaveAndClose = false;
+	private OnRefreshListener mOnRefreshListener;
+	private OnRequestNavigateListener mOnRequestNavigateListener;
 
 	public static TransactionRecorderFragment newInstance() {
 		TransactionRecorderFragment result = new TransactionRecorderFragment();
@@ -112,6 +119,26 @@ public class TransactionRecorderFragment extends Fragment implements
 		// result.setArguments(args);
 
 		return result;
+	}
+
+	public void setOnRefreshListener(OnRefreshListener listener) {
+		mOnRefreshListener = listener;
+	}
+
+	public void setOnRequestNavigate(OnRequestNavigateListener listener) {
+		mOnRequestNavigateListener = listener;
+	}
+
+	private void NotifyNavigationRequest(NavigationRequestType type) {
+		if (mOnRequestNavigateListener != null) {
+			mOnRequestNavigateListener.OnRequestNavigate(type);
+		}
+	}
+
+	private void NotifyRefresh() {
+		if (mOnRefreshListener != null) {
+			mOnRefreshListener.onRefresh();
+		}
 	}
 
 	@Override
@@ -223,7 +250,7 @@ public class TransactionRecorderFragment extends Fragment implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.itemViewCostHistory:
-			viewHistory();
+			NotifyNavigationRequest(NavigationRequestType.FinanceSummaryView);
 
 			return true;
 		case R.id.itemConfig:
@@ -943,7 +970,8 @@ public class TransactionRecorderFragment extends Fragment implements
 						}
 					}
 
-					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+					SimpleDateFormat format = new SimpleDateFormat(
+							"yyyy-MM-dd", Locale.getDefault());
 					String fileName = String.format("BizTracker_export_%s.csv",
 							format.format(new Date()));
 					File targetFile = new File(targetDir, fileName);
@@ -1292,6 +1320,7 @@ public class TransactionRecorderFragment extends Fragment implements
 					Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT)
 							.show();
 					refreshTodayCost();
+					NotifyRefresh();
 
 					// showPopupMessage(mLastCost);
 
@@ -1344,14 +1373,17 @@ public class TransactionRecorderFragment extends Fragment implements
 		}
 	}
 
-	public void showStuffPanel() {
+	public boolean showStuffPanel() {
 		ViewFlipper vf = mViewHolder.ViewFlipperMain;
 
 		clear();
 
 		if (vf != null && vf.getDisplayedChild() != 0) {
 			vf.setDisplayedChild(0);
+			return true;
 		}
+
+		return false;
 	}
 
 	public void clear() {
@@ -1453,5 +1485,10 @@ public class TransactionRecorderFragment extends Fragment implements
 	@Override
 	public void onTransactionDateTimeChanged(Date date) {
 		this.setTransactionDate(date);
+	}
+
+	@Override
+	public boolean OnBackButtonClick() {
+		return this.showStuffPanel();
 	}
 }

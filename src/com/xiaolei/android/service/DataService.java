@@ -280,8 +280,8 @@ public class DataService {
 		if (cursor != null && cursor.getCount() > 0) {
 			try {
 				if (cursor.moveToFirst()) {
-					result[0] = cursor.getDouble(0);
-					result[1] = cursor.getDouble(1);
+					result[0] = cursor.getDouble(1);
+					result[1] = cursor.getDouble(0);
 					result[2] = cursor.getDouble(2);
 				}
 			} finally {
