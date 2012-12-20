@@ -33,6 +33,7 @@ import com.xiaolei.android.entity.TransactionPhoto;
 import com.xiaolei.android.entity.TransactionProjectRelationSchema;
 import com.xiaolei.android.entity.VoiceNote;
 import com.xiaolei.android.entity.VoiceNoteSchema;
+import com.xiaolei.android.model.TransactionCost;
 import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 
@@ -148,8 +149,8 @@ public class DataService {
 			if (cursor.moveToFirst()) {
 				int totalCount = cursor.getInt(0);
 				if (totalCount > 0) {
-					pageCount = (int) (android.util.FloatMath
-							.floor((totalCount * 1.0f) / (pageSize * 1.0f)) + ((totalCount >= pageSize)
+					pageCount = (int) (java.lang.Math.floor((totalCount * 1.0f)
+							/ (pageSize * 1.0f)) + ((totalCount >= pageSize)
 							&& totalCount % pageSize == 0 ? 0 : 1));
 				}
 			}
@@ -1284,6 +1285,48 @@ public class DataService {
 			db.execSQL(sql,
 					new String[] { star, String.valueOf(transactionId) });
 		}
+	}
+
+	/***
+	 * Get last cost of the specified stuff.
+	 * 
+	 * @param stuffId
+	 * @return
+	 */
+	public TransactionCost getLastCostByStuffId(int stuffId, String currencyCode) {
+		TransactionCost result = new TransactionCost();
+		String sql = "select StuffId, Cost, CurrencyCode, StuffCount from BizLog where StuffId = ? order by LastUpdateTime desc limit 1";
+		Cursor cursor = db.rawQuery(sql,
+				new String[] { String.valueOf(stuffId) });
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				result.StuffId = cursor.getInt(0);
+				result.Cost = cursor.getDouble(1);
+				result.CurrencyCode = cursor.getString(2);
+				int count = cursor.getInt(3);
+				if (count > 1) {
+					result.Cost = result.Cost / count;
+				}
+
+				// Convert cost to the specified currency
+				if (!TextUtils.isEmpty(currencyCode)
+						&& !currencyCode.equalsIgnoreCase(result.CurrencyCode)) {
+					double currentRate = this
+							.getUSDExchangeRate(result.CurrencyCode);
+					double targetRate = this.getUSDExchangeRate(currencyCode);
+					double actualCost = Utility.roundToDecimal(result.Cost
+							/ currentRate * targetRate);
+					result.Cost = actualCost;
+					result.CurrencyCode = currencyCode;
+				}
+
+				result.IsNull = false;
+			}
+
+			cursor.close();
+			cursor = null;
+		}
+		return result;
 	}
 
 	public Cursor getStarredBizLog() {

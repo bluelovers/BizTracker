@@ -13,33 +13,15 @@ import java.util.Locale;
 
 import org.json.JSONException;
 
-import com.xiaolei.android.BizTracker.R;
-import com.xiaolei.android.BizTracker.StuffsFragmentStatePagerAdapter;
-import com.xiaolei.android.common.CurrencyNamesHelper;
-import com.xiaolei.android.common.NavigationRequestType;
-import com.xiaolei.android.common.Utility;
-import com.xiaolei.android.entity.BizLog;
-import com.xiaolei.android.entity.CurrencySchema;
-import com.xiaolei.android.entity.Stuff;
-import com.xiaolei.android.listener.OnBackButtonClickListener;
-import com.xiaolei.android.listener.OnLoadedListener;
-import com.xiaolei.android.listener.OnRefreshListener;
-import com.xiaolei.android.listener.OnRequestNavigateListener;
-import com.xiaolei.android.listener.OnStuffIdChangedListener;
-import com.xiaolei.android.listener.OnTransactionDateTimeChangedListener;
-import com.xiaolei.android.preference.PreferenceHelper;
-import com.xiaolei.android.preference.PreferenceKeys;
-import com.xiaolei.android.service.DataService;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.media.AudioManager;
@@ -59,10 +41,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -76,6 +58,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
+
+import com.xiaolei.android.BizTracker.R;
+import com.xiaolei.android.BizTracker.R.color;
+import com.xiaolei.android.BizTracker.StuffsFragmentStatePagerAdapter;
+import com.xiaolei.android.common.CurrencyNamesHelper;
+import com.xiaolei.android.common.NavigationRequestType;
+import com.xiaolei.android.common.Utility;
+import com.xiaolei.android.entity.BizLog;
+import com.xiaolei.android.entity.CurrencySchema;
+import com.xiaolei.android.entity.Stuff;
+import com.xiaolei.android.listener.OnBackButtonClickListener;
+import com.xiaolei.android.listener.OnLoadedListener;
+import com.xiaolei.android.listener.OnRefreshListener;
+import com.xiaolei.android.listener.OnRequestNavigateListener;
+import com.xiaolei.android.listener.OnStuffIdChangedListener;
+import com.xiaolei.android.listener.OnTransactionDateTimeChangedListener;
+import com.xiaolei.android.model.TransactionCost;
+import com.xiaolei.android.preference.PreferenceHelper;
+import com.xiaolei.android.preference.PreferenceKeys;
+import com.xiaolei.android.service.DataService;
 
 public class TransactionRecorderFragment extends Fragment implements
 		OnClickListener, OnLongClickListener,
@@ -139,6 +141,39 @@ public class TransactionRecorderFragment extends Fragment implements
 		if (mOnRefreshListener != null) {
 			mOnRefreshListener.onRefresh();
 		}
+	}
+
+	private void displayLastCostAsync() {
+		if (mCurrentStuffId <= 0) {
+			return;
+		}
+
+		AsyncTask<Integer, Void, TransactionCost> task = new AsyncTask<Integer, Void, TransactionCost>() {
+
+			@Override
+			protected TransactionCost doInBackground(Integer... args) {
+				int stuffId = args[0];
+				TransactionCost cost = DataService.GetInstance(getActivity())
+						.getLastCostByStuffId(stuffId, mDefaultCurrencyCode);
+
+				return cost;
+			}
+
+			@Override
+			protected void onPostExecute(TransactionCost result) {
+				if (result != null && !result.IsNull
+						&& result.StuffId == mCurrentStuffId) {
+					if (mViewHolder.TextViewCost.getText().toString()
+							.equalsIgnoreCase("0")) {
+						mViewHolder.TextViewCost.setTextColor(getResources()
+								.getColor(android.R.color.primary_text_light));
+						mViewHolder.TextViewCost.setText(String
+								.valueOf(java.lang.Math.abs(result.Cost)));
+					}
+				}
+			}
+		};
+		task.execute(mCurrentStuffId);
 	}
 
 	@Override
@@ -290,11 +325,13 @@ public class TransactionRecorderFragment extends Fragment implements
 		case R.id.buttonIncome:
 			showSymbol("+");
 			showNumbersPanel();
+			//displayLastCostAsync();
 
 			break;
 		case R.id.buttonExpense:
 			showSymbol("-");
 			showNumbersPanel();
+			//displayLastCostAsync();
 
 			break;
 		case R.id.buttonNum0:
@@ -308,8 +345,6 @@ public class TransactionRecorderFragment extends Fragment implements
 		case R.id.buttonNum8:
 		case R.id.buttonNum9:
 		case R.id.buttonNumDot:
-			playSound(R.raw.click);
-
 			TextView tv1 = mViewHolder.TextViewCost;
 			Button button = (Button) v;
 			String originalText = tv1.getText().toString();
@@ -330,6 +365,8 @@ public class TransactionRecorderFragment extends Fragment implements
 			}
 
 			tv1.setText(originalText + inputText);
+
+			playSound(R.raw.click);
 
 			break;
 		case R.id.buttonStuffCount:
@@ -382,7 +419,7 @@ public class TransactionRecorderFragment extends Fragment implements
 			showDefaultCurrencyDialog(false, getString(R.string.currency));
 			break;
 		case R.id.viewSwitcherPanel:
-			viewHistory();
+			openTransactionHistory();
 			break;
 		case R.id.buttonSetTransactionDateTime:
 			showDateTimePicker();
@@ -391,7 +428,7 @@ public class TransactionRecorderFragment extends Fragment implements
 			export();
 			break;
 		case R.id.buttonViewCostHistory:
-			viewHistory();
+			openTransactionHistory();
 			break;
 		default:
 			break;
@@ -1428,8 +1465,8 @@ public class TransactionRecorderFragment extends Fragment implements
 				com.xiaolei.android.ui.Settings.REQUEST_CODE);
 	}
 
-	private void viewHistory() {
-		this.startActivity(new Intent(getActivity(), FunctionTypes.class));
+	private void openTransactionHistory() {
+		NotifyNavigationRequest(NavigationRequestType.FinanceSummaryView);
 	}
 
 	private void clearCost() {

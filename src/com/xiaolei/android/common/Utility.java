@@ -56,6 +56,21 @@ public final class Utility {
 	public static Location LatestLocation = null;
 	private static final int DAYS_OF_WEEK = 7;
 
+	public static double round(double value, int places) {
+		if (places < 0)
+			throw new IllegalArgumentException();
+
+		long factor = (long) Math.pow(10, places);
+		value = value * factor;
+		long tmp = Math.round(value);
+		return (double) tmp / factor;
+	}
+
+	public static double roundToDecimal(double value) {
+		DecimalFormat format = new DecimalFormat("#.##");
+		return Double.valueOf(format.format(value));
+	}
+
 	public static Date getCurrentDateTime() {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date now = new Date();
