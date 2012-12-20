@@ -18,12 +18,6 @@
             android:summary="@string/config_exchange_rate_description"
             android:title="@string/config_exchange_rate" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/sound" >
-        <com.xiaolei.android.preference.VolumeControlPreference
-            android:key="Volume"
-            android:summary="@string/volume_description"
-            android:title="@string/volume" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/feedback" >
         <Preference
             android:key="FEEDBACK"

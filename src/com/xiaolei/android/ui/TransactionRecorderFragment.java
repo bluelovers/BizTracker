@@ -24,8 +24,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,7 +33,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
-import android.util.SparseIntArray;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,7 +58,6 @@ import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
 import com.xiaolei.android.BizTracker.R;
-import com.xiaolei.android.BizTracker.R.color;
 import com.xiaolei.android.BizTracker.StuffsFragmentStatePagerAdapter;
 import com.xiaolei.android.common.CurrencyNamesHelper;
 import com.xiaolei.android.common.NavigationRequestType;
@@ -78,6 +75,7 @@ import com.xiaolei.android.model.TransactionCost;
 import com.xiaolei.android.preference.PreferenceHelper;
 import com.xiaolei.android.preference.PreferenceKeys;
 import com.xiaolei.android.service.DataService;
+import com.xiaolei.android.widget.CostTextView;
 
 public class TransactionRecorderFragment extends Fragment implements
 		OnClickListener, OnLongClickListener,
@@ -92,10 +90,6 @@ public class TransactionRecorderFragment extends Fragment implements
 	private int mCurrentStuffId = 0;
 	private double mCost;
 
-	private SoundPool mSoundPool;
-	private SparseIntArray mSounds;
-	private float mVolume = 1.0f;
-
 	private String mDefaultCurrencyCode = "";
 	private Boolean mSaveDefaultCurrencyCodeToDB = true;
 
@@ -109,6 +103,7 @@ public class TransactionRecorderFragment extends Fragment implements
 	private final String MULTIPLY = "¡Á";
 	private final String DEFAULT_CURRENCY_CODE = "USD";
 	private static final String DLG_TAG = "transaction_date_dialog";
+	public static final String TAG = "TransactionRecorderFragment";
 	private boolean mSaveAndClose = false;
 	private OnRefreshListener mOnRefreshListener;
 	private OnRequestNavigateListener mOnRequestNavigateListener;
@@ -152,11 +147,16 @@ public class TransactionRecorderFragment extends Fragment implements
 
 			@Override
 			protected TransactionCost doInBackground(Integer... args) {
-				int stuffId = args[0];
-				TransactionCost cost = DataService.GetInstance(getActivity())
-						.getLastCostByStuffId(stuffId, mDefaultCurrencyCode);
-
-				return cost;
+				try {
+					int stuffId = args[0];
+					TransactionCost cost = DataService.GetInstance(
+							getActivity()).getLastCostByStuffId(stuffId,
+							mDefaultCurrencyCode);
+					return cost;
+				} catch (Exception ex) {
+					Log.e(TAG, ex.getMessage());
+				}
+				return null;
 			}
 
 			@Override
@@ -165,10 +165,9 @@ public class TransactionRecorderFragment extends Fragment implements
 						&& result.StuffId == mCurrentStuffId) {
 					if (mViewHolder.TextViewCost.getText().toString()
 							.equalsIgnoreCase("0")) {
-						mViewHolder.TextViewCost.setTextColor(getResources()
-								.getColor(android.R.color.primary_text_light));
-						mViewHolder.TextViewCost.setText(String
-								.valueOf(java.lang.Math.abs(result.Cost)));
+						mViewHolder.TextViewCost
+								.setCost(String.valueOf(java.lang.Math
+										.abs(result.Cost)), true);
 					}
 				}
 			}
@@ -196,7 +195,6 @@ public class TransactionRecorderFragment extends Fragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		initSoundPoolAsync();
 		loadStuffsAsync();
 		loadStaticsInfoAsync();
 	}
@@ -233,10 +231,6 @@ public class TransactionRecorderFragment extends Fragment implements
 		super.onResume();
 
 		loadStaticsInfoAsync();
-
-		if (mSoundPool == null) {
-			initSoundPoolAsync();
-		}
 	}
 
 	@Override
@@ -248,11 +242,6 @@ public class TransactionRecorderFragment extends Fragment implements
 	@Override
 	public void onStop() {
 		super.onStop();
-
-		if (mSoundPool != null) {
-			mSoundPool.release();
-			mSoundPool = null;
-		}
 
 	}
 
@@ -325,13 +314,11 @@ public class TransactionRecorderFragment extends Fragment implements
 		case R.id.buttonIncome:
 			showSymbol("+");
 			showNumbersPanel();
-			//displayLastCostAsync();
 
 			break;
 		case R.id.buttonExpense:
 			showSymbol("-");
 			showNumbersPanel();
-			//displayLastCostAsync();
 
 			break;
 		case R.id.buttonNum0:
@@ -345,12 +332,12 @@ public class TransactionRecorderFragment extends Fragment implements
 		case R.id.buttonNum8:
 		case R.id.buttonNum9:
 		case R.id.buttonNumDot:
-			TextView tv1 = mViewHolder.TextViewCost;
+			CostTextView tv1 = mViewHolder.TextViewCost;
 			Button button = (Button) v;
 			String originalText = tv1.getText().toString();
 			String inputText = button.getText().toString();
-			if (originalText.equalsIgnoreCase("0")
-					&& !inputText.equalsIgnoreCase(".")) {
+			if ((originalText.equalsIgnoreCase("0") && !inputText
+					.equalsIgnoreCase(".")) || tv1.IsHintText()) {
 				originalText = "";
 			}
 
@@ -364,9 +351,7 @@ public class TransactionRecorderFragment extends Fragment implements
 				return;
 			}
 
-			tv1.setText(originalText + inputText);
-
-			playSound(R.raw.click);
+			tv1.setCost(originalText + inputText, false);
 
 			break;
 		case R.id.buttonStuffCount:
@@ -378,7 +363,6 @@ public class TransactionRecorderFragment extends Fragment implements
 
 			break;
 		case R.id.buttonSave:
-			playSound(R.raw.click);
 			saveTransaction();
 
 			break;
@@ -467,7 +451,7 @@ public class TransactionRecorderFragment extends Fragment implements
 	private void init(View container) {
 		mViewHolder.ViewFlipperMain = (ViewFlipper) container
 				.findViewById(R.id.viewFlipperMain);
-		mViewHolder.TextViewCost = (TextView) container
+		mViewHolder.TextViewCost = (CostTextView) container
 				.findViewById(R.id.textViewCost);
 		mViewHolder.TextViewPayOrEarn = (TextView) container
 				.findViewById(R.id.textViewPayOrEarn);
@@ -652,53 +636,6 @@ public class TransactionRecorderFragment extends Fragment implements
 			} else {
 				viewPager.setCurrentItem(0, true);
 			}
-		}
-	}
-
-	private void initSoundPoolAsync() {
-		AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
-
-			@Override
-			protected Boolean doInBackground(Void... params) {
-				initSoundPool();
-
-				return true;
-			}
-
-			protected void onPostExecute(Boolean result) {
-				// Do nothing
-			}
-
-		};
-		task.execute();
-	}
-
-	private void initSoundPool() {
-		try {
-			mSounds = new SparseIntArray();
-
-			mSoundPool = new SoundPool(3,
-					android.media.AudioManager.STREAM_RING, 0);
-			int soundId = mSoundPool.load(getActivity(), R.raw.click, 1);
-			mSounds.put(R.raw.click, soundId);
-
-			AudioManager audioManager = (AudioManager) getActivity()
-					.getSystemService(Activity.AUDIO_SERVICE);
-
-			float streamVolumeMax = audioManager
-					.getStreamMaxVolume(AudioManager.STREAM_RING);
-
-			int streamVolumeCurrent = 1;
-			SharedPreferences prefs = PreferenceHelper
-					.getActiveUserSharedPreferences(getActivity());
-			if (prefs != null) {
-				streamVolumeCurrent = prefs.getInt(PreferenceKeys.Volume, 1);
-			}
-
-			mVolume = streamVolumeCurrent / streamVolumeMax;
-		} catch (Exception ex) {
-			// do nothing
-			ex.printStackTrace();
 		}
 	}
 
@@ -1408,6 +1345,8 @@ public class TransactionRecorderFragment extends Fragment implements
 			tv1.setText("0");
 			vf.showNext();
 		}
+		
+		displayLastCostAsync();
 	}
 
 	public boolean showStuffPanel() {
@@ -1427,19 +1366,12 @@ public class TransactionRecorderFragment extends Fragment implements
 		mViewHolder.TextSwitcherStuffName.setText("");
 		showSymbol("");
 		setCurrentStuffId(0);
-		mViewHolder.TextViewCost.setText("0");
+		mViewHolder.TextViewCost.setCost("0", false);
 	}
 
 	private void setCurrentStuffId(int stuffId) {
 		this.mCurrentStuffId = stuffId;
 		onStuffIdChanged(stuffId);
-	}
-
-	private void playSound(int resourceId) {
-		if (mSoundPool != null) {
-			mSoundPool.play(mSounds.get(resourceId), mVolume, mVolume, 1, 0,
-					1.0f);
-		}
 	}
 
 	private String getCurrentCostText() {
@@ -1508,7 +1440,7 @@ public class TransactionRecorderFragment extends Fragment implements
 		}
 
 		public ViewFlipper ViewFlipperMain;
-		public TextView TextViewCost;
+		public CostTextView TextViewCost;
 		public TextView TextViewPayOrEarn;
 		public TextView TextViewTopLeft;
 		public TextSwitcher TextSwitcherStuffName;

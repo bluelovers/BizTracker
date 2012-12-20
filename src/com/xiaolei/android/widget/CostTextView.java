@@ -29,10 +29,8 @@ public class CostTextView extends TextView {
 	private void init() {
 		mDefaultTextColor = getContext().getResources().getColor(
 				R.color.lightGreen);
-		mHintTextColor = getContext().getResources().getColor(
-				android.R.color.primary_text_light);
+		mHintTextColor = this.getTextColors().getDefaultColor();
 		this.setTextColor(mDefaultTextColor);
-
 	}
 
 	public boolean IsHintText() {
@@ -49,7 +47,10 @@ public class CostTextView extends TextView {
 	}
 
 	public void setCost(double cost, boolean isHintText) {
+		setCost(String.valueOf(cost), isHintText);
+	}
+	public void setCost(String costText, boolean isHintText){
 		setIsHintText(isHintText);
-		this.setText(String.valueOf(cost));
+		this.setText(costText);
 	}
 }
